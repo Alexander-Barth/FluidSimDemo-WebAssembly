@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+<!--    <script src="wasm_fluid_sim.js"></script>-->
+
+<script type="text/javascript" src="numeric-1.2.3.js"></script>
+   <link href="matplot.css" rel="stylesheet" type="text/css" />
+   <script type="text/javascript" src="matplot.js"></script>
+</head>
+
+   <script type="text/javascript">
+function init() {
+  
+var i,j,x=[],y=[],z=[], r, theta;
+
+// generate some data to plot
+for (i=0; i < 100; i++) {
+  x[i] = [];
+  y[i] = [];
+  z[i] = [];
+
+  for (j=0; j < 100; j++) {
+    r = 20 + i;
+      x[i][j] = i;
+      y[i][j] = j;
+      z[i][j] = i+j;
+  }
+}
+
+fig = new matplot.Figure("plot",700,500, {renderer: matplot.RasterCanvas});
+ax = fig.axes();
+    ax.pcolor(x,y,z);
+ax.colorbar();
+ax.DataAspectRatio([1,1,1]);
+fig.draw();
+
+
+}
+
+    </script>
+
+  <body>
+    <script type="module">
+
+function MallocArray(typearray,memory,base,size) {
+    // number of elements in array
+    let len = size.reduce((a, b)=> a*b, 1);
+
+    // pointer (Int32), length (Int32), size1 (Int32), size2, ...
+    // where
+    // length = size1*size2*...
+    let metadata = new Int32Array(memory.buffer, base[0], 2 + size.length)
+    base[0] += metadata.byteLength;
+    metadata.set([base[0], len].concat(size));
+
+    //console.log("metadata ",metadata);
+    
+    const data = new typearray(memory.buffer, base[0], len)
+    base[0] += data.byteLength;
+
+    return [metadata.byteOffset, data]
+}
+
+
+
+      
+      (async() => {
+        const response = await fetch('test_julia.wasm');
+        const bytes = await response.arrayBuffer();
+        const { instance } = await WebAssembly.instantiate(bytes);
+
+    console.log("memory.buffer.byteLength ",instance);
+
+
+
+const { julia_sum_matrix, memory } = instance.exports;
+
+    console.log("memory.buffer.byteLength ",memory.buffer.byteLength);
+
+    // base[0] offset of memory, increased by MallocArray
+    let base = [0];
+
+    //const sz = [300,10];
+    const sz = [300,100];
+    const DeltaT = 1/60;
+    const rho = 1000.;
+    const overrelaxation = 1.9
+    const iter_pressure = 40
+    const u0 = 2.
+    const h = 0.01
+    
+    let [mask_p, mask] = MallocArray(Int32Array,memory,base,sz);
+    let [pressure_p, pressure] = MallocArray(Float32Array,memory,base,sz);
+    
+    let [u_p, u] = MallocArray(Float32Array,memory,base,[sz[0]+1,sz[1]]);
+    let [v_p, v] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
+
+    let [newu_p, newu] = MallocArray(Float32Array,memory,base,[sz[0]+1,sz[1]]);
+    let [newv_p, newv] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
+    
+    
+/*    let metadata = new Int32Array(memory.buffer, base[0], 9)
+    metadata.set([8*4, 6, 2, 3,        10, 8, 2, 4, 10])*/
+
+
+    const result = julia_sum_matrix(u0,h,DeltaT,rho,overrelaxation,iter_pressure,
+                                    mask_p,pressure_p,u_p,v_p,newu_p,newv_p);
+    
+    console.log("result ",result);
+    //console.log(pressure[1 + sz[1] * 1]);
+    //console.log(data2);
+
+
+})();
+
+       init();
+    </script>
+
+    <div id="plot"></div>
+  </body>
+</html>
