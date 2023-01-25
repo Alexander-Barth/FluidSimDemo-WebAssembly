@@ -74,19 +74,11 @@ const { julia_sum_matrix, memory } = instance.exports;
     let [v_p, v] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
 
     let [newu_p, newu] = MallocArray(Float32Array,memory,base,[sz[0]+1,sz[1]]);
-    let [newv_p, newv] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
+let [newv_p, newv] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
     
     
-/*    let metadata = new Int32Array(memory.buffer, base[0], 9)
-    metadata.set([8*4, 6, 2, 3,        10, 8, 2, 4, 10])*/
-
-
-    const result = julia_sum_matrix(u0,h,DeltaT,rho,overrelaxation,iter_pressure,
-                                    mask_p,pressure_p,u_p,v_p,newu_p,newv_p);
-    
-    console.log("result ",result);
-    //console.log(pressure[1 + sz[1] * 1]);
-    //console.log(data2);
+let fig = new matplot.Figure("plot",920,300, {renderer: matplot.RasterCanvas});
+let ax = fig.axes();
 
 
 let i,j,x=[],y=[],z=[];
@@ -99,12 +91,25 @@ for (i=0; i < sz[0]; i++) {
   for (j=0; j < sz[1]; j++) {
       x[i][j] = i;
       y[i][j] = j;
+      z[i][j] = 0;
+  }
+                }
+                
+
+  const result = julia_sum_matrix(u0,h,DeltaT,rho,overrelaxation,iter_pressure,
+                                    mask_p,pressure_p,u_p,v_p,newu_p,newv_p);
+
+for (i=0; i < sz[0]; i++) {
+  for (j=0; j < sz[1]; j++) {
       z[i][j] = pressure[i + sz[0] * j];
   }
 }
+                
+    
+    console.log("result ",result);
+    //console.log(pressure[1 + sz[1] * 1]);
+    //console.log(data2);
 
-let fig = new matplot.Figure("plot",700,500, {renderer: matplot.RasterCanvas});
-let ax = fig.axes();
                 ax.pcolor(x,y,z);
 ax.colorbar();
 ax.DataAspectRatio([1,1,1]);
