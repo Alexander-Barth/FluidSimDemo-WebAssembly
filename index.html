@@ -11,28 +11,6 @@
    <script type="text/javascript">
 function init() {
   
-var i,j,x=[],y=[],z=[], r, theta;
-
-// generate some data to plot
-for (i=0; i < 100; i++) {
-  x[i] = [];
-  y[i] = [];
-  z[i] = [];
-
-  for (j=0; j < 100; j++) {
-    r = 20 + i;
-      x[i][j] = i;
-      y[i][j] = j;
-      z[i][j] = i+j;
-  }
-}
-
-fig = new matplot.Figure("plot",700,500, {renderer: matplot.RasterCanvas});
-ax = fig.axes();
-    ax.pcolor(x,y,z);
-ax.colorbar();
-ax.DataAspectRatio([1,1,1]);
-fig.draw();
 
 
 }
@@ -111,9 +89,30 @@ const { julia_sum_matrix, memory } = instance.exports;
     //console.log(data2);
 
 
+let i,j,x=[],y=[],z=[];
+
+for (i=0; i < sz[0]; i++) {
+  x[i] = [];
+  y[i] = [];
+  z[i] = [];
+
+  for (j=0; j < sz[1]; j++) {
+      x[i][j] = i;
+      y[i][j] = j;
+      z[i][j] = pressure[i + sz[0] * j];
+  }
+}
+
+let fig = new matplot.Figure("plot",700,500, {renderer: matplot.RasterCanvas});
+let ax = fig.axes();
+                ax.pcolor(x,y,z);
+ax.colorbar();
+ax.DataAspectRatio([1,1,1]);
+fig.draw();
+
 })();
 
-       init();
+
     </script>
 
     <div id="plot"></div>
