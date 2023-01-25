@@ -1,7 +1,7 @@
 // Assume add.wasm file exists that contains a single function adding 2 provided arguments
 const fs = require('fs');
 
-const wasmBuffer = fs.readFileSync('julia_matrix.wasm');
+const wasmBuffer = fs.readFileSync('test_matrix.wasm');
 WebAssembly.instantiate(wasmBuffer).then(wasmModule => {
   // Exported function live under instance.exports
   const { julia_sum_matrix, memory } = wasmModule.instance.exports;

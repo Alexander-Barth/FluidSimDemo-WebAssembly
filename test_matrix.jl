@@ -18,7 +18,7 @@ end
 
 obj = build_obj(sum_matrix, Tuple{MallocMatrix{Float32}})
 
-write("julia_matrix.o", obj)
-run(`wasm-ld --no-entry --export-all -o julia_matrix.wasm julia_matrix.o`)
-run(`wasm2wat julia_matrix.wasm`)
-run(`node julia_matrix_node.js`)
+write("test_matrix.o", obj)
+run(`wasm-ld --no-entry --export-all -o test_matrix.wasm test_matrix.o`)
+run(`wasm2wat test_matrix.wasm`)
+run(`node test_matrix_node.js`)
