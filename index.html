@@ -1,46 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-<!--    <script src="wasm_fluid_sim.js"></script>-->
+    <!--    <script src="wasm_fluid_sim.js"></script>-->
 
-<script type="text/javascript" src="numeric-1.2.3.js"></script>
-   <link href="matplot.css" rel="stylesheet" type="text/css" />
-   <script type="text/javascript" src="matplot.js"></script>
-</head>
-
-   <script type="text/javascript">
-function init() {
-  
-
-
-}
-
-    </script>
+    <script type="text/javascript" src="numeric-1.2.3.js"></script>
+    <link href="matplot.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="matplot.js"></script>
+  </head>
 
   <body>
     <script type="module">
-
-function MallocArray(typearray,memory,base,size) {
-    // number of elements in array
-    let len = size.reduce((a, b)=> a*b, 1);
-
-    // pointer (Int32), length (Int32), size1 (Int32), size2, ...
-    // where
-    // length = size1*size2*...
-    let metadata = new Int32Array(memory.buffer, base[0], 2 + size.length)
-    base[0] += metadata.byteLength;
-    metadata.set([base[0], len].concat(size));
-
-    //console.log("metadata ",metadata);
-    
-    const data = new typearray(memory.buffer, base[0], len)
-    base[0] += data.byteLength;
-
-    return [metadata.byteOffset, data]
-}
-
-
-
+      import { sayHi,MallocArray } from './wasm_fluid_sim.js';
       
       (async() => {
         const response = await fetch('test_julia.wasm');
