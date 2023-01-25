@@ -5,11 +5,9 @@
   </head>  
   <body>
     <script type="module">
-      import { init } from './wasm_fluid_sim.js';
-      init();
+      import { run } from './wasm_fluid_sim.js';
+      run();
     </script>
-
-    <div id="plot"></div>
-    <canvas id="plot2" width="600" height="200" />
+    <canvas id="plot" width="600" height="200" />
   </body>
 </html>
