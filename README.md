@@ -1,22 +1,16 @@
 
 WebAssembly or WASM is a low level instruction set which allows running compiled language
-inside a WebBrowser. For example C and Rust code can be compiled to WASM and then loaded and executed by the Browser runtile.
+inside a WebBrowser. For example C and Rust code can be compiled to WASM and then loaded and executed by the Browser runtime.
 
 Technically one could also run intepreted language like Python (implemented in C)
-in a webbrowser by compiling the interpreter to WASM.
+in a webbrowser by compiling the interpreter to WASM (in the case of python, this is the goal of the [pyodide](https://pyodide.org/) project).
+A similar approach was undertaken by Keno Fisher porting [julia 1.3 to WASM](https://github.com/Keno/julia-wasm) using emscripten.
 
-Julia on the other hand, can be compiled ahead-of-time using StaticCompiler.jl and WASM is one of the enabled output target.
+On the other hand, a subset of Julia can also be compiled ahead-of-time using GPUCompiler.jl/StaticCompiler.jl. WASM is one of the enabled output target.
 
-Encourage by post of running Julia with StaticCompiler.jl on an Adruino by [Seelengrab](https://github.com/Seelengrab), how difficult could it be run a non-trival julia code
-in a WebBrowser using WASM?
+Encouraged by post of running [Julia with StaticCompiler.jl](https://seelengrab.github.io/articles/Running%20Julia%20baremetal%20on%20an%20Arduino/)  on an Adruino, how difficult could it be run a non-trival julia code in a WebBrowser using WASM?
 
-Note Keno Fisher ported julia 1.3 to WASM using emscripten.
-https://github.com/Keno/julia-wasm
-
-
-This approach here use a subset of the Julia language and the array object of StaticTools.jl to create a small WASM program.
-
-In particular:
+This approach here use a subset of the Julia language and the array object of StaticTools.jl to create a small WASM program. In particular we should have:
 * No dynamical memory allocation and garbage collector
 * No code that could thow an an exception
 
@@ -87,7 +81,7 @@ by the caller.
 
 As a final example we take a simple 2D fluid simulation solving the inviscic and incompressible Navier-Stokes equations.
 It is based on the [compact implementation](https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/17-fluidSim.html) of
-Matthias Müller.
+Matthias Müller reimplemented in Julia.
 
 
 
