@@ -1,13 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!--    <script src="wasm_fluid_sim.js"></script>-->
-
-    <script type="text/javascript" src="numeric-1.2.3.js"></script>
-    <link href="matplot.css" rel="stylesheet" type="text/css" />
-    <script type="text/javascript" src="matplot.js"></script>
-  </head>
-
+    <title>Fluid Simulation using Julia compiled to WASM</title>
+  </head>  
   <body>
     <script type="module">
       import { init } from './wasm_fluid_sim.js';
@@ -15,6 +10,6 @@
     </script>
 
     <div id="plot"></div>
-    <canvas id="plot2" width="300" height="100" />
+    <canvas id="plot2" width="600" height="200" />
   </body>
 </html>
