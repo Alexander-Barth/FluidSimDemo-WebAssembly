@@ -24,7 +24,7 @@ function clamp(num, min, max) {
 }
 
 export async function run() {
-    const response = await fetch('test_julia.wasm');
+    const response = await fetch('test_fluid_sim.wasm');
     const bytes = await response.arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes);
 

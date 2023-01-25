@@ -2,12 +2,20 @@
 <html>
   <head>
     <title>Fluid Simulation using Julia compiled to WASM</title>
-  </head>  
+  </head>
+  <style>
+    body {
+      font-family: Sans-Serif;
+    }
+  </style>
   <body>
     <script type="module">
-      import { run } from './wasm_fluid_sim.js';
+      import { run } from './test_fluid_sim.js';
       run();
     </script>
-    <canvas id="plot" width="600" height="200" />
+
+    <h3>Inviscit and incompressible Navier-Stokes equations in 2D implemented in Julia and compiled to WASM.</h3>
+    <div><canvas id="plot" width="600" height="200" /></div>
+    <p>The field shows the pressure of the flow around a circular obstacle.</p>
   </body>
 </html>
