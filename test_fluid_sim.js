@@ -40,19 +40,19 @@ export async function run() {
     const iter_pressure = 40;
     const u0 = 2.;
     const h = 0.01;
-    
+
     let [mask_p, mask] = MallocArray(Int32Array,memory,base,sz);
     let [pressure_p, pressure] = MallocArray(Float32Array,memory,base,sz);
-    
+
     let [u_p, u] = MallocArray(Float32Array,memory,base,[sz[0]+1,sz[1]]);
     let [v_p, v] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
 
     let [newu_p, newu] = MallocArray(Float32Array,memory,base,[sz[0]+1,sz[1]]);
     let [newv_p, newv] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
-        
+
     // pressure range
-    let min = -4000;
-    let max = 2000;
+    let pmin = -4000;
+    let pmax = 2000;
     // resolution for the plot
     let res = 2;
     // canvas for plotting
@@ -60,21 +60,30 @@ export async function run() {
     var ctx = canvas.getContext("2d");
 
     function step(timestamp) {
-        const result = julia_fluid_sim_step(u0,h,DeltaT,rho,overrelaxation,iter_pressure,
-                                    mask_p,pressure_p,u_p,v_p,newu_p,newv_p);
-        
-        for (let i=0; i < sz[0]; i++) {
-            for (let j=0; j < sz[1]; j++) {
-                let ij = i + sz[0] * j;
-                if (mask[ij] == 1) {                
-                    let ind = Math.floor(255 * clamp((pressure[ij] - min) / (max-min),0,1));
-                    let color = turbo_colormap_data[ind];
-                    ctx.fillStyle = rgb(255*color[0],255*color[1],255*color[2]);
-                    ctx.fillRect(res*i, res*j, res, res);
+
+        let u0 = parseFloat(document.getElementById("u0").value);
+        let DeltaT = parseFloat(document.getElementById("DeltaT").value);
+        let pmin = parseFloat(document.getElementById("pmin").value);
+        let pmax = parseFloat(document.getElementById("pmax").value);
+        let iter_pressure = parseInt(document.getElementById("iter_pressure").value);
+        let overrelaxation = parseFloat(document.getElementById("overrelaxation").value);
+
+        if (!isNaN(u0) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(iter_pressure) && !isNaN(iter_pressure)) {
+            const result = julia_fluid_sim_step(u0,h,DeltaT,rho,overrelaxation,iter_pressure,
+                                                mask_p,pressure_p,u_p,v_p,newu_p,newv_p);
+
+            for (let i=0; i < sz[0]; i++) {
+                for (let j=0; j < sz[1]; j++) {
+                    let ij = i + sz[0] * j;
+                    if (mask[ij] == 1) {
+                        let ind = Math.floor(255 * clamp((pressure[ij] - pmin) / (pmax-pmin),0,1));
+                        let color = turbo_colormap_data[ind];
+                        ctx.fillStyle = rgb(255*color[0],255*color[1],255*color[2]);
+                        ctx.fillRect(res*i, res*j, res, res);
+                    }
                 }
             }
         }
-            
         window.requestAnimationFrame(step);
     }
 
