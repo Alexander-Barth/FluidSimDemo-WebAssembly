@@ -22,8 +22,10 @@ Luckily, the julia programming language does not get in your way to write low-le
 
 We will use GPUCompiler to declare a WASMTarget and to emit WASM code. This is the file `wasm_target.jl` which we will use:
 
+https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/wasm_target.jl
+
 Note that we use 32-bit julia (on Linux) and 32-bit WASM format.
-Using the 64-bit version (of julia or WASM format) did not work for me.
+Using the 64-bit version (of julia or the WASM format) did not work for me.
 
 One of the simplest functions would be to add two integers and return the sum. 
 
