@@ -1,4 +1,8 @@
 
+### Online demo: https://alexander-barth.github.io/FluidSimDemo-WebAssembly/
+
+STILL A DRAFT
+
 WebAssembly or WASM is a low level instruction set which allows running compiled language
 inside a WebBrowser. For example C and Rust code can be compiled to WASM and then loaded and executed by the Browser runtime.
 
