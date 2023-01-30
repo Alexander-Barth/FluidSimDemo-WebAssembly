@@ -16,9 +16,9 @@ Encouraged by post of running [Julia with StaticCompiler.jl](https://seelengrab.
 
 This approach here uses a subset of the Julia language and the array object of StaticTools.jl to create a small WASM program. In particular we should have:
 * No dynamic memory allocation and garbage collector
-* No code that could throw an an exception
+* No code that could throw an exception
 
-The julia programming language does not get in your way to write low-level code.
+Luckily, the julia programming language does not get in your way to write low-level code.
 
 We will use GPUCompiler to declare a WASMTarget and to emit WASM code. This is the file `wasm_target.jl` which we will use:
 
@@ -27,7 +27,7 @@ Using the 64-bit version (of julia or WASM format) did not work for me.
 
 One of the simplest functions would be to add two integers and return the sum. 
 
-#include test_add.jl
+https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/test_add.jl
 
 The wasm object file is saved to `test_add.o` which can be inspected by `wasm2wat`.
 
@@ -58,7 +58,7 @@ node test_add_node.js
 
 where `test_add_node.js` is the file:
 
-#include test_add_node.js
+https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/test_add_node.js
 
 The Julia base array type can unfortunately not be used but the array type of StaticTools.jl
 is accepted by CPUCompiler.jl.
@@ -85,9 +85,12 @@ by the caller.
 
 As a final example we take a simple 2D fluid simulation solving the inviscid and incompressible Navier-Stokes equations.
 It is based on the [compact implementation](https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/17-fluidSim.html) of
-Matthias Müller reimplemented in Julia.
+Matthias Müller reimplemented in Julia:
 
+https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/test_fluid_sim.jl
 
+The online demo is avialable here
+ https://alexander-barth.github.io/FluidSimDemo-WebAssembly/
 
 
 
