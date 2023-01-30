@@ -12,7 +12,7 @@ A similar approach was undertaken by Keno Fisher porting [julia 1.3 to WASM](htt
 
 On the other hand, a subset of Julia can also be compiled ahead-of-time using GPUCompiler.jl/StaticCompiler.jl. WASM is one of the enabled output targets of the LLVM compiler bundled in julia.
 
-Encouraged by post of running [Julia with StaticCompiler.jl](https://seelengrab.github.io/articles/Running%20Julia%20baremetal%20on%20an%20Arduino/)  on an Arduino, how difficult could it be run a non-trivial julia code in a WebBrowser using WASM?
+Encouraged by post of running [Julia with StaticCompiler.jl](https://seelengrab.github.io/articles/Running%20Julia%20baremetal%20on%20an%20Arduino/)  on an Arduino, how difficult could it be to run a non-trivial julia code in a WebBrowser using WASM?
 
 This approach here uses a subset of the Julia language and the array object of StaticTools.jl to create a small WASM program. In particular we should have:
 * No dynamic memory allocation and garbage collector
