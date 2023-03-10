@@ -143,7 +143,7 @@ end
 
 # need to inline because of named tuples
 
-function fluid_sim_step(u0,h,Δt,ρ,overrelaxation,iter_pressure,
+function fluid_sim_step(u0,h,Δt,ρ,overrelaxation,iter_pressure,ntime,
                     mask,p,u,v,newu,newv)
 
     uv = (u,v)
@@ -152,7 +152,21 @@ function fluid_sim_step(u0,h,Δt,ρ,overrelaxation,iter_pressure,
     config = (; u0,h,Δt,ρ,overrelaxation,iter_pressure,
               xy)
 
-    @inline set_mask!(config,mask,xy)
+    if ntime == 0
+        @inline set_mask!(config,mask,xy)
+    end
+
+    # mask can change
+    @inbounds for j = 1:size(mask,2)
+        for i = 2:size(mask,1)
+            if mask[i,j] == 0
+                u[i,j] = 0
+                u[i+1,j] = 0
+                v[i,j] = 0
+                v[i,j+1] = 0
+            end
+        end
+    end
     p .= 0
     @inline incompressibility!(config,mask,p,uv)
     @inline boundary_conditions!(config,uv)
@@ -167,6 +181,7 @@ obj = build_obj(fluid_sim_step, Tuple{
     Float32,
     Float32,
     Float32,
+    Int32,
     Int32,
     MallocMatrix{Int32},
     MallocMatrix{Float32},
@@ -185,4 +200,3 @@ mem = 65536*16
 run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o memset.c`)
 
 run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o test_fluid_sim.wasm memset.o test_fluid_sim.o`)
-
