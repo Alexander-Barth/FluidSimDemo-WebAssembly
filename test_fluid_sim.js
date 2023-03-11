@@ -104,6 +104,7 @@ export async function run(document) {
         let pmax = parseFloat(document.getElementById("pmax").value);
         let iter_pressure = parseInt(document.getElementById("iter_pressure").value);
         let overrelaxation = parseFloat(document.getElementById("overrelaxation").value);
+        let show_velocity = document.getElementById("show_velocity").checked;
 
         if (!isNaN(u0) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(iter_pressure) && !isNaN(iter_pressure)) {
 
@@ -112,6 +113,7 @@ export async function run(document) {
 
             ntime += 1;
 
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (let i=0; i < sz[0]; i++) {
                 for (let j=0; j < sz[1]; j++) {
                     let ij = i + sz[0] * j;
@@ -124,6 +126,37 @@ export async function run(document) {
                         ctx.fillStyle = rgb(255,255,255);
                     }
                     ctx.fillRect(res*i, res*j, res, res);
+
+                }
+            }
+
+            let subsample = 5;
+            let a = 0.7;
+            let b = 0.2;
+            let scale = 2.5;
+
+            if (show_velocity) {
+                for (let i=0; i < sz[0]; i+=subsample) {
+                    for (let j=0; j < sz[1]; j+=subsample) {
+                        let ij = i + sz[0] * j;
+                        if (mask[ij] == 1) {
+
+                            let um = scale * 0.5 * (u[i + (sz[0]+1) * j] + u[i+1 + (sz[0]+1) * j]);
+                            let vm = scale * 0.5 * (v[i + sz[0] * j] + v[i + sz[0] * (j+1)]);
+                            let x0 = res*(i+0.5);
+                            let y0 = res*(j+0.5);
+                            ctx.beginPath();
+                            ctx.moveTo(x0, y0);
+                            ctx.lineTo(x0 + um, y0 + vm);
+                            ctx.stroke();
+
+                            ctx.beginPath();
+                            ctx.moveTo(x0 + a*um - b*vm, y0  + a*vm + b*um);
+                            ctx.lineTo(x0 + um, y0 + vm);
+                            ctx.lineTo(x0 + a*um + b*vm, y0  + a*vm - b*um);
+                            ctx.stroke();
+                        }
+                    }
                 }
             }
         }
