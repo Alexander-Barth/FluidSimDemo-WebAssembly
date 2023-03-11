@@ -121,8 +121,20 @@ function set_mask!(config,mask,xy)
     end
 end
 
-function boundary_conditions!(config,(u,v))
+function boundary_conditions!(config,mask,(u,v))
     sz = (size(u,1)-1,size(u,2))
+
+    # mask can change
+    @inbounds for j = 1:size(mask,2)
+        for i = 2:size(mask,1)
+            if mask[i,j] == 0
+                u[i,j] = 0
+                u[i+1,j] = 0
+                v[i,j] = 0
+                v[i,j+1] = 0
+            end
+        end
+    end
 
     # inflow
     @inbounds for j = 1:size(u,2)
@@ -156,22 +168,12 @@ function fluid_sim_step(u0,h,Δt,ρ,overrelaxation,iter_pressure,ntime,
         @inline set_mask!(config,mask,xy)
     end
 
-    # mask can change
-    @inbounds for j = 1:size(mask,2)
-        for i = 2:size(mask,1)
-            if mask[i,j] == 0
-                u[i,j] = 0
-                u[i+1,j] = 0
-                v[i,j] = 0
-                v[i,j+1] = 0
-            end
-        end
-    end
     p .= 0
+    @inline boundary_conditions!(config,mask,uv)
     @inline incompressibility!(config,mask,p,uv)
-    @inline boundary_conditions!(config,uv)
+    @inline boundary_conditions!(config,mask,uv)
     @inline advection!(config,mask,uv,newuv)
-    @inline boundary_conditions!(config,uv)
+    @inline boundary_conditions!(config,mask,uv)
     return 0
 end
 
