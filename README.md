@@ -19,16 +19,24 @@ This approach here uses a subset of the Julia language and the array object of S
 
 Luckily, the julia programming language does not get in your way to write low-level code.
 
-We will use GPUCompiler to declare a WASMTarget and to emit WASM code. This is the file `wasm_target.jl` which we will use:
-
-https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/wasm_target.jl
+We will use GPUCompiler to declare a WASMTarget and to emit WASM code. This is the file [`wasm_target.jl`](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/wasm_target.jl) which we will use.
 
 Note that we use 32-bit julia (on Linux) and 32-bit WASM format.
 Using the 64-bit version (of julia or the WASM format) did not work for me.
 
 One of the simplest functions would be to add two integers and return the sum. 
 
-https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/test_add.jl
+```julia
+include("wasm_target.jl")
+
+function add(a::Int32,b::Int32)
+    return a+b
+end
+
+obj = build_obj(add, Tuple{Int32,Int32})
+
+write("test_add.o", obj)
+```
 
 The wasm object file is saved to `test_add.o` which can be inspected by `wasm2wat`.
 
@@ -59,21 +67,39 @@ node test_add_node.js
 
 where `test_add_node.js` is the file:
 
-https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/test_add_node.js
+```javascript
+const fs = require('fs');
+
+const wasmBuffer = fs.readFileSync('test_add.wasm');
+WebAssembly.instantiate(wasmBuffer).then(wasmModule => {
+    // Exported function live under instance.exports
+    const { julia_add, memory } = wasmModule.instance.exports;
+
+    // Call the function and display the results.
+    const result = julia_add(2,3)
+    console.log(result);
+});
+```
 
 The Julia base array type can unfortunately not be used but the array type of StaticTools.jl
 is accepted by CPUCompiler.jl.
 
-The memory layout is relatively simple:
+The memory layout is [relatively simple](https://github.com/brenhinkeller/StaticTools.jl/blob/480d7514304190cb6b8e71331d7119959d80e3e2/src/mallocarray.jl#L21-L25):
 
-https://github.com/brenhinkeller/StaticTools.jl/blob/480d7514304190cb6b8e71331d7119959d80e3e2/src/mallocarray.jl#L21-L25
-
+```julia
+ struct MallocArray{T,N} <: DensePointerArray{T,N}
+     pointer::Ptr{T}
+     length::Int
+     size::NTuple{N, Int}
+ end
+ ```
+ 
 So we have essentially:
 * a pointer
 * the total number of elements (`length`)
 * a tuple with the size along each dimension
 
-The code `test_matrix_node.js` emulates such an array. For a matrix (2D array), there are thus four 32-bit integers: pointer, number of elements, number of lines and number of rows (where the number of elements is the product of the number of rows and lines).
+The code [`test_matrix_node.js`](test_matrix_node.js) emulates such an array. For a matrix (2D array), there are thus four 32-bit integers: pointer, number of elements, number of lines and number of rows (where the number of elements is the product of the number of rows and lines).
 
 WASM exposes a special binary data buffer `memory.buffer` to allocate such data structures. A pointer would then just be an index or rather offset relative to the start of this byte buffer. Using JavaScript’s typed arrays, a part of the buffer can be interpreted as a vector of 32-bit integer, 64-bit floating point number,...
 JavaScript typed arrays are always one-dimensional, which correspond to a flatten view of the array seen from Julia. As a consequence, for
