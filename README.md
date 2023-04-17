@@ -19,7 +19,7 @@ This approach here uses a subset of the Julia language and the array object of S
 
 Luckily, the julia programming language does not get in your way to write low-level code.
 
-We will use GPUCompiler to declare a WASMTarget and to emit WASM code. This is the file [`wasm_target.jl`](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/wasm_target.jl) which we will use.
+We will use GPUCompiler to declare a WASMTarget and to emit WASM code. This is the file [`wasm_target.jl`](wasm_target.jl) which we will use.
 
 Note that we use 32-bit julia (on Linux) and 32-bit WASM format.
 Using the 64-bit version (of julia or the WASM format) did not work for me.
@@ -106,8 +106,7 @@ JavaScript typed arrays are always one-dimensional, which correspond to a flatte
 JavaScript typed array there is no additional difficulty concerning row-major or column-major matrix layout.
 
 
-The example code `test_matrix.jl` sums over all elements of a matrix and in addition it mutates all elements by adding 1. Running the JavaScript code `test_matrix_node.js`
-gives the expected output. As in Julia, scalar parameters (32/64-bit integer, floats) are passed by value while arrays are passed by reference and can thus changes are visible
+The example code [`test_matrix.jl`](test_matrix.jl) sums over all elements of a matrix and in addition it mutates all elements by adding 1. Running the JavaScript code [`test_matrix_node.js`](test_matrix_node.js) gives the expected output. As in Julia, scalar parameters (32/64-bit integer, floats) are passed by value while arrays are passed by reference and can thus changes are visible
 by the caller.
 
 As a final example we take a simple 2D fluid simulation solving the inviscid and incompressible Navier-Stokes equations.
