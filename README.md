@@ -90,6 +90,8 @@ Matthias Müller reimplemented in Julia:
 
 https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/test_fluid_sim.jl
 
+The generated WASM binary assumes that a `memset` function exists. Lukily, this function is simple enought that we can provide a [C-implementation](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/memset.c) that can be compiled to wasm with `clang`.
+
 The online demo is avialable here
  https://alexander-barth.github.io/FluidSimDemo-WebAssembly/
 
