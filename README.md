@@ -22,10 +22,10 @@ Luckily, the julia programming language does not get in your way to write low-le
 
 ## Perequisites
 
-* julia 32-bit from https://julialang.org/downloads/
-* the command line tools  `wasm-ld` and `wasm2wat`
-* clang
-* for testing, it is useful to to node
+* Julia 32-bit from https://julialang.org/downloads/
+* The command line tools  `wasm-ld` and `wasm2wat`
+* Compiler clang
+* For testing, it is useful to use JavaScript runtime node
 
 On Ubuntu 20.04, these requirements can be install by:
 
