@@ -37,7 +37,7 @@ To install all julia dependencies, start the 32-bit version of julia and run:
 
 ```julia
 using Pkg
-Pkg.activate("/path/with/this/source/code")
+Pkg.activate("/path/to/this/source/code")
 Pkg.instantiate()
 ```
 
@@ -135,6 +135,8 @@ JavaScript typed array there is no additional difficulty concerning row-major or
 
 The example code [`test_matrix.jl`](test_matrix.jl) sums over all elements of a matrix and in addition it mutates all elements by adding 1. Running the JavaScript code [`test_matrix_node.js`](test_matrix_node.js) gives the expected output. As in Julia, scalar parameters (32/64-bit integer, floats) are passed by value while arrays are passed by reference and can thus changes are visible
 by the caller.
+
+## Fluid simulation
 
 As a final example we take a simple 2D fluid simulation solving the inviscid and incompressible Navier-Stokes equations.
 It is based on the [compact implementation](https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/17-fluidSim.html) of
