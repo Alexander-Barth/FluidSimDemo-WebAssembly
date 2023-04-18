@@ -32,24 +32,23 @@ GPUCompiler.runtime_module(::GPUCompiler.CompilerJob{WASMTarget}) = StaticRuntim
 GPUCompiler.runtime_module(::GPUCompiler.CompilerJob{WASMTarget,WASMTargetParams}) = StaticRuntime
 
 
-function native_job(@nospecialize(func), @nospecialize(types))
+function wasm_job(@nospecialize(func), @nospecialize(types))
     @info "Creating compiler job for '$func($types)'"
-    source = GPUCompiler.FunctionSpec(
-                func, # our function
-                Base.to_tuple_type(types), # its signature
-                false, # whether this is a GPU kernel
-                GPUCompiler.safe_name(repr(func))) # the name to use in the asm
+    source = methodinstance(typeof(func), types)
     target = WASMTarget()
     params = WASMTargetParams()
-    job = GPUCompiler.CompilerJob(target, source, params)
+    # per default the function name will use C++ name mangling (GPUCompiler 0.19)
+    # for example _Z3add5Int32S_ for add(Int32, Int32) (see llvm-cxxfilt)
+    # here we will prefix a function with julia_ as it was the default in
+    # GPUCompiler 0.17
+    config = GPUCompiler.CompilerConfig(target, params, name = string("julia_",func))
+    job = GPUCompiler.CompilerJob(source, config)
 end
 
 function build_ir(job, @nospecialize(func), @nospecialize(types))
     @info "Bulding LLVM IR for '$func($types)'"
-    mi, _ = GPUCompiler.emit_julia(job)
     ir, ir_meta = GPUCompiler.emit_llvm(
                     job, # our job
-                    mi; # the method instance to compile
                     libraries=false, # whether this code uses libraries
                     deferred_codegen=false, # is there runtime codegen?
                     optimize=true, # do we want to optimize the llvm?
@@ -59,7 +58,7 @@ function build_ir(job, @nospecialize(func), @nospecialize(types))
 end
 
 function build_obj(@nospecialize(func), @nospecialize(types); kwargs...)
-    job = native_job(func, types)
+    job = wasm_job(func, types)
     @info "Compiling WASM ASM for '$func($types)'"
     ir, ir_meta = build_ir(job, func, types)
     obj, _ = GPUCompiler.emit_asm(
