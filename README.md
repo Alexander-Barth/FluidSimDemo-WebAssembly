@@ -109,7 +109,7 @@ WebAssembly.instantiate(wasmBuffer).then(wasmModule => {
 ## Using arrays
 
 The Julia base array type can unfortunately not be used but the array type of [StaticTools.jl](https://github.com/brenhinkeller/StaticTools.jl)
-is accepted by CPUCompiler.jl.
+is accepted by GPUCompiler.jl.
 
 The memory layout is [relatively simple](https://github.com/brenhinkeller/StaticTools.jl/blob/480d7514304190cb6b8e71331d7119959d80e3e2/src/mallocarray.jl#L21-L25):
 
