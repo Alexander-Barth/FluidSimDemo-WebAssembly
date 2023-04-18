@@ -20,7 +20,7 @@ This approach here uses a subset of the Julia language and the array object of S
 Luckily, the julia programming language does not get in your way to write low-level code.
 
 
-# Perequisites
+## Perequisites
 
 * julia 32-bit from https://julialang.org/downloads/
 * the command line tools  `wasm-ld` and `wasm2wat`
@@ -30,10 +30,18 @@ Luckily, the julia programming language does not get in your way to write low-le
 On Ubuntu 20.04, these requirements can be install by:
 
 ```bash
-sudo apt install wabt clang lld node 
+sudo apt install wabt clang lld node
 ```
 
-# Generating WASM binary from julia code
+To install all julia dependencies, start the 32-bit version of julia and run:
+
+```julia
+using Pkg
+Pkg.activate("/path/with/this/source/code")
+Pkg.instantiate()
+```
+
+## Generating WASM binary from julia code
 
 We will use `GPUCompiler.jl` to declare a `WASMTarget` and to emit WASM code. This is the file [`wasm_target.jl`](wasm_target.jl) which we will use.
 
@@ -97,7 +105,10 @@ WebAssembly.instantiate(wasmBuffer).then(wasmModule => {
 });
 ```
 
-The Julia base array type can unfortunately not be used but the array type of StaticTools.jl
+
+## Using arrays
+
+The Julia base array type can unfortunately not be used but the array type of [StaticTools.jl](https://github.com/brenhinkeller/StaticTools.jl)
 is accepted by CPUCompiler.jl.
 
 The memory layout is [relatively simple](https://github.com/brenhinkeller/StaticTools.jl/blob/480d7514304190cb6b8e71331d7119959d80e3e2/src/mallocarray.jl#L21-L25):
