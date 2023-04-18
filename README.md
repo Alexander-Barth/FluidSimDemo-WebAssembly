@@ -19,7 +19,23 @@ This approach here uses a subset of the Julia language and the array object of S
 
 Luckily, the julia programming language does not get in your way to write low-level code.
 
-We will use GPUCompiler to declare a WASMTarget and to emit WASM code. This is the file [`wasm_target.jl`](wasm_target.jl) which we will use.
+
+# Perequisites
+
+* julia 32-bit from https://julialang.org/downloads/
+* the command line tools  `wasm-ld` and `wasm2wat`
+* clang
+* for testing, it is useful to to node
+
+On Ubuntu 20.04, these requirements can be install by:
+
+```bash
+sudo apt install wabt clang lld node 
+```
+
+# Generating WASM binary from julia code
+
+We will use `GPUCompiler.jl` to declare a `WASMTarget` and to emit WASM code. This is the file [`wasm_target.jl`](wasm_target.jl) which we will use.
 
 Note that we use 32-bit julia (on Linux) and 32-bit WASM format.
 Using the 64-bit version (of julia or the WASM format) did not work for me.
