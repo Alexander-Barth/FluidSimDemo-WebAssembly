@@ -14,12 +14,7 @@ export async function run(document) {
     let base = [__heap_base];
 
     const sz = [300,100];
-    const DeltaT = 1/60;
-    const rho = 1000.;
-    const overrelaxation = 1.9;
-    const iter_pressure = 40;
-    const u0 = 2.;
-    const dx = 0.01;
+    const dx = 5000;
     var ntime = 0;
 
     let [mask_p, mask] = MallocArray(Int32Array,memory,base,sz);
@@ -35,14 +30,11 @@ export async function run(document) {
     let [newu_p, newu] = MallocArray(Float32Array,memory,base,[sz[0]+1,sz[1]]);
     let [newv_p, newv] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
 
-    // pressure range
-    let pmin = -4000;
-    let pmax = 2000;
-    // resolution for the plot
-    let res = 2;
     // canvas for plotting
     let canvas = document.getElementById("plot");
     var ctx = canvas.getContext("2d");
+    // resolution for the plot
+    let res = canvas.width/sz[0];
 
     function handle_mouse(e) {
         var flags = e.buttons !== undefined ? e.buttons : e.which;
@@ -77,30 +69,26 @@ export async function run(document) {
     canvas.addEventListener("mouseup", handle_mouse);
 
     function step(timestamp) {
-        let u0 = parseFloat(document.getElementById("u0").value);
+        let grav = parseFloat(document.getElementById("grav").value);
+        let f = parseFloat(document.getElementById("f").value);
         let DeltaT = parseFloat(document.getElementById("DeltaT").value);
         let pmin = parseFloat(document.getElementById("pmin").value);
         let pmax = parseFloat(document.getElementById("pmax").value);
-        let iter_pressure = parseInt(document.getElementById("iter_pressure").value);
-        let overrelaxation = parseFloat(document.getElementById("overrelaxation").value);
         let show_velocity = document.getElementById("show_velocity").checked;
 
-        if (!isNaN(u0) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(iter_pressure) && !isNaN(iter_pressure)) {
-
+        if (!isNaN(grav) && !isNaN(f) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(DeltaT)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
 
-            const result = julia_fluid_sim_step(u0,dx,DeltaT,rho,overrelaxation,iter_pressure,ntime,
-                                                mask_p,h_p,hu_p,hv_p,pressure_p,u_p,v_p,newu_p,newv_p);
+            const result = julia_fluid_sim_step(
+                grav,f,dx,DeltaT,ntime,
+                mask_p,h_p,hu_p,hv_p,pressure_p,u_p,v_p,newu_p,newv_p);
 
-            //console.log("u ",u[140 + sz[0] * 40]);
-            //console.log("p ",pressure[140 + sz[0] * 40]);
-            console.log("h ",h[140 + sz[0] * 40],ntime,result);
             ntime += 1;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax});
 
             if (show_velocity) {
-                quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 2.5});
+                quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 500});
 
             }
         }

@@ -14,12 +14,8 @@ export async function run(document) {
     let base = [__heap_base];
 
     const sz = [300,100];
-    const DeltaT = 1/60;
     const rho = 1000.;
-    const overrelaxation = 1.9;
-    const iter_pressure = 40;
-    const u0 = 2.;
-    const h = 0.01;
+    const dx = 0.01;
     var ntime = 0;
 
     let [mask_p, mask] = MallocArray(Int32Array,memory,base,sz);
@@ -31,14 +27,11 @@ export async function run(document) {
     let [newu_p, newu] = MallocArray(Float32Array,memory,base,[sz[0]+1,sz[1]]);
     let [newv_p, newv] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
 
-    // pressure range
-    let pmin = -4000;
-    let pmax = 2000;
-    // resolution for the plot
-    let res = 2;
     // canvas for plotting
     let canvas = document.getElementById("plot");
     var ctx = canvas.getContext("2d");
+    // resolution for the plot
+    let res = canvas.width/sz[0];
 
     function handle_mouse(e) {
         var flags = e.buttons !== undefined ? e.buttons : e.which;
@@ -83,7 +76,7 @@ export async function run(document) {
 
         if (!isNaN(u0) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(iter_pressure) && !isNaN(iter_pressure)) {
 
-            const result = julia_fluid_sim_step(u0,h,DeltaT,rho,overrelaxation,iter_pressure,ntime,
+            const result = julia_fluid_sim_step(u0,dx,DeltaT,rho,overrelaxation,iter_pressure,ntime,
                                                 mask_p,pressure_p,u_p,v_p,newu_p,newv_p);
 
             ntime += 1;
