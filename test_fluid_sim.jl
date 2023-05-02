@@ -1,6 +1,3 @@
-# https://rob-blackbourn.github.io/blog/webassembly/wasm/array/arrays/javascript/c/2020/06/07/wasm-arrays.html
-
-
 include("wasm_target.jl")
 
 # assume that we use 32-bit julia
