@@ -32,8 +32,7 @@
 
     <h3>2D shallow water equations implemented in Julia and compiled to WASM.</h3>
     <div><canvas id="plot" width="900" height="300" /></div>
-    <p>The field surface elevation as gouvened by the 2D linear shallow water equations. The area represents a water body of 500 km x 1500 km with a constant depth of 100. Use the mouse to change and add obstacles in the flow field. You can you
-    the mouse to modify the domain.</p>
+    <p>The surface elevation as governed by the 2D linear shallow water equations. The area represents a water body of 500 km x 1500 km with a constant depth of 100 m. Use the mouse to change and add obstacles in the flow field.</p>
 
     <form>
       <div>
@@ -48,7 +47,7 @@
         <label for="grav">gravity (m/s²)</label><input id="grav" type="number" value="9.81" step="0.1" min="0">
       </div>
       <div>
-        <label for="f">Coriolis force (1/s)</label><input id="f" type="number" value="0" step="0.0001">
+        <label for="f">Coriolis parameter (s⁻¹)</label><input id="f" type="number" value="0.0005" step="0.0001">
       </div>
       <div>
         <label for="DeltaT">Time step (s)</label><input id="DeltaT" type="number" value="100" step="1">
@@ -74,8 +73,12 @@
     <li>Change the acceleration due to gravity</li>
     <li>Use a negative time-step</li>
     <li>Note that the model can become unstable of the once the <a href="https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition">CFL conditions</a> are not satisfied.</li>
+    <li>A typical value of the Coriolis parameter on Earth is 0.0001 s⁻¹.
     </ul>
 </p>
     <p>More information and the code is <a href="https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly">available here</a>.</p>
   </body>
 </html>
+
+<!--  LocalWords:  WASM px CFL
+ -->
