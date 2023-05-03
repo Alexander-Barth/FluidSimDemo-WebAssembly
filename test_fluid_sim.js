@@ -30,6 +30,7 @@ export async function run(document) {
     // canvas for plotting
     let canvas = document.getElementById("plot");
     var ctx = canvas.getContext("2d");
+    ctx.transform(1, 0, 0, -1, 0, canvas.height)
     // resolution for the plot
     let res = canvas.width/sz[0];
 
@@ -39,7 +40,7 @@ export async function run(document) {
 
         var rect = e.target.getBoundingClientRect();
         var x = e.clientX - rect.left; //x position within the element.
-        var y = e.clientY - rect.top;  //y position within the element.
+        var y = rect.bottom - e.clientY;  //y position within the element.
 
         if (!mouse_button_down) {
             return
