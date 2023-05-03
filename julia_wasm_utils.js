@@ -45,7 +45,7 @@ export function pcolor(ctx,sz,res,pressure,mask,{pmin=null, pmax=null, cmap=turb
             else {
                 ctx.fillStyle = rgb(255,255,255);
             }
-            ctx.fillRect(res*i, res*j, res, res);            
+            ctx.fillRect(res*i, res*j, res, res);
         }
     }
 }
@@ -63,7 +63,7 @@ export function quiver(ctx,sz,res,u,v,mask,{subsample = 1, scale = 1, a = 0.7, b
                 ctx.moveTo(x0, y0);
                 ctx.lineTo(x0 + um, y0 + vm);
                 ctx.stroke();
-                
+
                 ctx.beginPath();
                 ctx.moveTo(x0 + a*um - b*vm, y0  + a*vm + b*um);
                 ctx.lineTo(x0 + um, y0 + vm);
@@ -72,4 +72,48 @@ export function quiver(ctx,sz,res,u,v,mask,{subsample = 1, scale = 1, a = 0.7, b
             }
         }
     }
+}
+
+export function mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz) {
+    var mouse_button_down = false;
+
+    function handle_mouse(e) {
+        var flags = e.buttons !== undefined ? e.buttons : e.which;
+        mouse_button_down = (flags & 1) === 1;
+
+        // y-axis is up
+        var rect = e.target.getBoundingClientRect();
+        var x = e.clientX - rect.left;   // x position within the element
+        var y = rect.bottom - e.clientY; // y position within the element
+
+        if (!mouse_button_down) {
+            return
+        }
+
+        let erase = erase_elem.checked;
+        let pen_size = parseFloat(pen_size_elem.value);
+
+        // do not change boundary walls
+        for (let i=1; i < sz[0]; i++) {
+            for (let j=1; j < sz[1]-1; j++) {
+                let dx = (res*i - x);
+                let dy = (res*j - y);
+                if (dx*dx + dy*dy < pen_size*pen_size) {
+                    let ij = i + sz[0] * j;
+                    mask[i + sz[0] * j] = erase;
+                }
+            }
+        }
+
+    }
+
+    var ctx = canvas.getContext("2d");
+    ctx.transform(1, 0, 0, -1, 0, canvas.height)
+    // resolution for the plot
+    let res = canvas.width/sz[0];
+
+    canvas.addEventListener("mousedown", handle_mouse);
+    canvas.addEventListener("mousemove", handle_mouse);
+    canvas.addEventListener("mouseup", handle_mouse);
+    return [ctx,res]
 }

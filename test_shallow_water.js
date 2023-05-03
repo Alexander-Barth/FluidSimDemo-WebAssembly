@@ -1,9 +1,6 @@
-import { MallocArray, pcolor, quiver } from "./julia_wasm_utils.js";
+import { MallocArray, pcolor, quiver, mouse_edit_mask } from "./julia_wasm_utils.js";
 
 export async function run(document) {
-    var mouse_button_down = false;
-
-
     const response = await fetch('test_shallow_water.wasm');
     const bytes = await response.arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes);
@@ -26,49 +23,15 @@ export async function run(document) {
     let [h_p, h] = MallocArray(Float32Array,memory,base,sz);
     let [hu_p, hu] = MallocArray(Float32Array,memory,base,[sz[0]+1,sz[1]]);
     let [hv_p, hv] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
-    
+
     let [newu_p, newu] = MallocArray(Float32Array,memory,base,[sz[0]+1,sz[1]]);
     let [newv_p, newv] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
 
     // canvas for plotting
-    let canvas = document.getElementById("plot");
-    var ctx = canvas.getContext("2d");
-    ctx.transform(1, 0, 0, -1, 0, canvas.height)
-    // resolution for the plot
-    let res = canvas.width/sz[0];
-
-    function handle_mouse(e) {
-        var flags = e.buttons !== undefined ? e.buttons : e.which;
-        mouse_button_down = (flags & 1) === 1;
-
-        // y-axis is up
-        var rect = e.target.getBoundingClientRect();
-        var x = e.clientX - rect.left; //x position within the element.
-        var y = rect.bottom - e.clientY;  //y position within the element.
-
-        if (!mouse_button_down) {
-            return
-        }
-        let erase = document.getElementById("erase").checked;
-        let pen_size = parseFloat(document.getElementById("pen_size").value);
-
-        // do not change boundary walls
-        for (let i=1; i < sz[0]; i++) {
-            for (let j=1; j < sz[1]-1; j++) {
-                let dx = (res*i - x);
-                let dy = (res*j - y);
-                if (dx*dx + dy*dy < pen_size*pen_size) {
-                    let ij = i + sz[0] * j;
-                    mask[i + sz[0] * j] = erase;
-                }
-            }
-        }
-
-    }
-
-    canvas.addEventListener("mousedown", handle_mouse);
-    canvas.addEventListener("mousemove", handle_mouse);
-    canvas.addEventListener("mouseup", handle_mouse);
+    const canvas = document.getElementById("plot");
+    const erase_elem = document.getElementById("erase");
+    const pen_size_elem = document.getElementById("pen_size");
+    const [ctx,res] = mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz);
 
     function step(timestamp) {
         let grav = parseFloat(document.getElementById("grav").value);
@@ -94,10 +57,8 @@ export async function run(document) {
 
             }
         }
-
         window.requestAnimationFrame(step);
     }
 
     window.requestAnimationFrame(step);
 }
-
