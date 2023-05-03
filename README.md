@@ -141,7 +141,7 @@ by the caller.
 
 ## Fluid simulation
 
-### 2D Navier-Stokes equations (with rigit lit)
+### 2D Navier-Stokes equations (with rigit lid)
 
 As a final example we take a simple 2D fluid simulation solving the inviscid and incompressible Navier-Stokes equations.
 It is based on the [compact implementation](https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/17-fluidSim.html) of
@@ -155,5 +155,7 @@ The online demo is avialable here
  https://alexander-barth.github.io/FluidSimDemo-WebAssembly/
 
 ### 2D Linear shallow water equations
+
+The shallow water equations model is similar to the 2D Navier-Stokes equations but the implicit pressure solver is replaced by explicit for the free surface. If the time step is too large the model can be come unstable.
 
 https://alexander-barth.github.io/FluidSimDemo-WebAssembly/shallow_water.html
