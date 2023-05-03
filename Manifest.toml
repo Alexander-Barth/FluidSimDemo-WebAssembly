@@ -126,7 +126,9 @@ version = "0.1.9"
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
 [[deps.FluidSimDemo]]
-path = "/home/abarth/.julia/dev/FluidSimDemo"
+git-tree-sha1 = "1322b6bc2ad4a3283f452e722b59509a94195277"
+repo-rev = "master"
+repo-url = "https://github.com/Alexander-Barth/FluidSimDemo.jl"
 uuid = "413075f5-a476-4ea7-bb3e-c053e85577fa"
 version = "0.1.0"
 
