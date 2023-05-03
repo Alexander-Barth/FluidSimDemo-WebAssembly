@@ -16,9 +16,10 @@ Encouraged by post of running [Julia with StaticCompiler.jl](https://seelengrab.
 
 This approach here uses a subset of the Julia language and the array object of StaticTools.jl to create a small WASM program. In particular we should have:
 * No dynamic memory allocation and garbage collector
-* No code that could throw an exception
+* No code that could throw an exception (in particular no bounds checks)
+* Only scalars and arrays of integer and floats can be used between JavaScript and Julia (in particular no boolean arrays).
 
-Luckily, the julia programming language does not get in your way to write low-level code.
+Luckily, the julia programming language does not get in your way to write low-level code. However it is possible to use higher-level constructs like tuples and named tuples inside the julia code but such data structures cannot be (easily) made available in JavaScript.
 
 
 ## Perequisites
