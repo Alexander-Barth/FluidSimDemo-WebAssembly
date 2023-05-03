@@ -42,6 +42,8 @@ Pkg.activate("/path/to/this/source/code")
 Pkg.instantiate()
 ```
 
+The source code of the fluid model is in a separate repository: https://github.com/Alexander-Barth/FluidSimDemo.jl
+
 ## Generating WASM binary from julia code
 
 We will use `GPUCompiler.jl` to declare a `WASMTarget` and to emit WASM code. This is the file [`wasm_target.jl`](wasm_target.jl) which we will use.
@@ -139,6 +141,8 @@ by the caller.
 
 ## Fluid simulation
 
+### 2D Navier-Stokes equations (with rigit lit)
+
 As a final example we take a simple 2D fluid simulation solving the inviscid and incompressible Navier-Stokes equations.
 It is based on the [compact implementation](https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/17-fluidSim.html) of
 Matthias Müller reimplemented in Julia:
@@ -150,6 +154,6 @@ The generated WASM binary assumes that a `memset` function exists. Lukily, this 
 The online demo is avialable here
  https://alexander-barth.github.io/FluidSimDemo-WebAssembly/
 
+### 2D Linear shallow water equations
 
-
-
+https://alexander-barth.github.io/FluidSimDemo-WebAssembly/shallow_water.html
