@@ -1,4 +1,4 @@
-include("wasm_target.jl")
+include("../wasm_target.jl")
 
 using FluidSimDemo
 using FluidSimDemo:sw_boundary_conditions!, sw_initial_conditions!
@@ -60,6 +60,6 @@ write("model.o", obj)
 mem = 65536*16*2
 
 # the linker needs memset
-run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o memset.c`)
+run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o ../memset.c`)
 
 run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm memset.o model.o`)
