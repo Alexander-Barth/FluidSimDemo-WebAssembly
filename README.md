@@ -142,7 +142,7 @@ by the caller.
 
 ## Fluid simulation
 
-### 2D Navier-Stokes equations (with rigit lid)
+### 2D Navier-Stokes equations (with rigid-lid)
 
 As a final example we take a simple 2D fluid simulation solving the inviscid and incompressible Navier-Stokes equations.
 It is based on the [compact implementation](https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/17-fluidSim.html) of
