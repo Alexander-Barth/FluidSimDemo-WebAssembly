@@ -71,10 +71,11 @@ grav,f,Δx,Δt,ntime = 0,0,0,0,0
 mask = MallocMatrix{Int32}(undef,(20,20))
 particles = MallocVector{Particle{2,Float32}}(undef,(20,))
 
-model_step(grav,f,Δx,Δt,ntime,
-                    mask,
-                    particles,
-                    )
+model_step(
+    grav,f,Δx,Δt,ntime,
+    mask,
+    particles,
+)
 
 obj = build_obj(model_step, Tuple{
     Float32,
@@ -88,7 +89,6 @@ obj = build_obj(model_step, Tuple{
 
 write("model.o", obj)
 
-# heap base: 66560
 
 # size of the total memory
 mem = 65536*16*2

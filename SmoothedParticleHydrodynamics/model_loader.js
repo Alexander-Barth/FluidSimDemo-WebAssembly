@@ -41,22 +41,25 @@ export async function run(document) {
                 mask_p,particles_p);
 
             ntime += 1;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            //pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax});
-            console.log(particles[8*3 ]);
 
-            for (let i = 0; i < nparticles; i++) {
-                ctx.beginPath();
-                let x = scale * particles[8 * i + 0];
-                let y = scale * particles[8 * i + 1];
-                let radius = 2;
-                ctx.arc(x, y, radius, 0, 2 * Math.PI);
-                ctx.stroke();
-            }
+            if ((ntime % 10) == 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                //pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax});
+                console.log(ntime,particles[8*3 ]);
 
-            if (show_velocity) {
-                //quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 500});
+                for (let i = 0; i < nparticles; i++) {
+                    ctx.beginPath();
+                    let x = scale * particles[8 * i + 0];
+                    let y = scale * particles[8 * i + 1];
+                    let radius = 2;
+                    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                    ctx.stroke();
+                }
 
+                if (show_velocity) {
+                    //quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 500});
+
+                }
             }
         }
         window.requestAnimationFrame(step);
