@@ -117,3 +117,11 @@ export function mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz) {
     canvas.addEventListener("mouseup", handle_mouse);
     return [ctx,res]
 }
+
+
+
+export function color(v,vmin,vmax,{cmap=turbo_colormap} = {}) {
+    let ind = Math.floor(255 * clamp((v - vmin) / (vmax-vmin),0,1));
+    let color = cmap[ind];
+    return rgb(255*color[0],255*color[1],255*color[2]);
+}
