@@ -1,4 +1,4 @@
-import { MallocArray, pcolor, quiver, mouse_edit_mask, color } from "../julia_wasm_utils.js";
+import { MallocArray, MallocArray2, pcolor, quiver, mouse_edit_mask, color } from "../julia_wasm_utils.js";
 
 export async function run(document) {
     const response = await fetch('model.wasm');
@@ -18,7 +18,8 @@ export async function run(document) {
     let scale = 0.6;
 
     let [mask_p, mask] = MallocArray(Int32Array,memory,base,sz);
-    let [particles_p, particles] = MallocArray(Float32Array,memory,base,[8,nparticles]);
+    //let [particles_p, particles] = MallocArray(Float32Array,memory,base,[8,nparticles]);
+    let [particles_p, particles] = MallocArray2(Float32Array,memory,base,[nparticles],8);
 
     // canvas for plotting
     const canvas = document.getElementById("plot");
@@ -27,9 +28,13 @@ export async function run(document) {
     const [ctx,res] = mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz);
 
     const ipressure = 7;
+    const idensity = 6;
     const ix = 0;
     const iy = 1;
     const partsize = 8;
+
+    const iscalar = ipressure;
+    //const iscalar = idensity;
 
     function step(timestamp) {
         let grav = parseFloat(document.getElementById("grav").value);
@@ -39,40 +44,44 @@ export async function run(document) {
         let pmax = parseFloat(document.getElementById("pmax").value);
         let show_velocity = document.getElementById("show_velocity").checked;
 
-        if (!isNaN(grav) && !isNaN(f) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(DeltaT)) {
+        if (!isNaN(grav) && !isNaN(f) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(DeltaT) && (pmax > pmin)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
 
+            const start = performance.now();
             const result = julia_model_step(
                 grav,f,dx,DeltaT,ntime,
                 mask_p,particles_p);
+            const end = performance.now();
+            //console.log(`Execution time: ${end - start} ms. result ${result}`);
 
             ntime += 1;
 
             if ((ntime % 10) == 0) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 //pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax});
-                //console.log(ntime,particles[partsize*3 ],particles[partsize * 0 + ipressure]);
+                //console.log(ntime,particles[partsize*3 ],particles[partsize * 0 + iscalar]);
 
                 let pminc = +Infinity;
                 let pmaxc = -Infinity;
                 for (let i = 0; i < nparticles; i++) {
-                    //ctx.fillStyle = color(particles[partsize * i + ipressure],pmin,pmax);
+                    //ctx.fillStyle = color(particles[partsize * i + iscalar],pmin,pmax);
 
-                    let p = particles[partsize * i + ipressure];
+                    let p = particles[partsize * i + iscalar];
                     if (p > pmaxc) pmaxc = p;
                     if (p < pminc) pminc = p;
                 }
 
-                //console.log("pmax",pmaxc,pminc);
+                console.log("pmax",pmaxc,pminc);
 
                 for (let i = 0; i < nparticles; i++) {
-                    ctx.fillStyle = color(particles[partsize * i + ipressure],pmin,pmax);
-                    //ctx.fillStyle = color(0,pmin,pmax);
-                    //console.log("color",ctx.fillStyle);
-                    ctx.beginPath();
                     let x = scale * particles[partsize * i + ix];
                     let y = scale * particles[partsize * i + iy];
                     let radius = 2;
+
+                    ctx.fillStyle = color(particles[partsize * i + iscalar],pmin,pmax);
+                    //ctx.fillStyle = color(0,pmin,pmax);
+                    //console.log("color",ctx.fillStyle);
+                    ctx.beginPath();
                     ctx.arc(x, y, radius, 0, 2 * Math.PI);
                     ctx.fill();
                 }
@@ -81,8 +90,12 @@ export async function run(document) {
                     //quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 500});
 
                 }
+
             }
         }
+        if (ntime  == 50) {
+//            return
+        };
         window.requestAnimationFrame(step);
     }
 

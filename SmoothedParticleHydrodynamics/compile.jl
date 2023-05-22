@@ -18,14 +18,6 @@ mutable struct LinearCongruentialGenerators <: AbstractRNG
     seed::Int32
 end
 
-struct LinearCongruentialGenerators2 <: AbstractRNG
-    seed::Int32
-end
-
-struct LinearCongruentialGenerators3 <: AbstractRNG
-    seed::Ref{Int32}
-end
-
 rng = LinearCongruentialGenerators(42)
 
 function rand(rng::LinearCongruentialGenerators,::Type{Int32})
@@ -41,25 +33,18 @@ function rand(rng::LinearCongruentialGenerators,::Type{Float32})
     return (Int64(rand(rng,Int32)) - typemin(Int32))/Float32(r)
 end
 
-# rand(rng,Float32)
-
 function model_step(grav,f,Δx,Δt,ntime,
                     mask,
                     particles,
                     )
-
-
-#    rng = StableRNG(123)
-#    rng = Random.GLOBAL_RNG;
     rng = LinearCongruentialGenerators(42)
-#    rng = LinearCongruentialGenerators2(42)
-#    rng = LinearCongruentialGenerators3(42)
-#    rng = 42
 
     config,particles,W_spiky,W_rho =
-        SmoothedParticleHydrodynamics.case_dam_break2!(#rng,
+        SmoothedParticleHydrodynamics.case_dam_break2!(
             particles,
             init_particles = ntime == 0,
+            Δt = Δt,
+            g = (0, -grav),
             rng = rng,
         )
 
@@ -67,11 +52,23 @@ function model_step(grav,f,Δx,Δt,ntime,
     return 0
 end
 
-grav,f,Δx,Δt,ntime = 0,0,0,0,0
+nparticles = 1219
+grav,f,Δx = 9.81f0,0f0,0f0
+Δt = 0.0007f0
 mask = MallocMatrix{Int32}(undef,(20,20))
-particles = MallocVector{Particle{2,Float32}}(undef,(20,))
+particles = MallocVector{Particle{2,Float32}}(undef,(nparticles,))
+ntime = 0
 
-model_step(
+length(particles)
+
+@time model_step(
+    grav,f,Δx,Δt,ntime,
+    mask,
+    particles,
+)
+
+ntime = 1
+@time model_step(
     grav,f,Δx,Δt,ntime,
     mask,
     particles,
@@ -93,7 +90,6 @@ write("model.o", obj)
 # size of the total memory
 mem = 65536*16*2
 
-# the linker needs memset
-run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o ../memset.c`)
+run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm model.o`)
 
-run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm memset.o model.o`)
+
