@@ -40,7 +40,7 @@ function model_step(grav,f,Δx,Δt,ntime,
     rng = LinearCongruentialGenerators(42)
 
     config,particles,W_spiky,W_rho =
-        SmoothedParticleHydrodynamics.case_dam_break2!(
+        SmoothedParticleHydrodynamics.case_dam_break!(
             particles,
             init_particles = ntime == 0,
             Δt = Δt,

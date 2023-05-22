@@ -18,7 +18,6 @@ export async function run(document) {
     let scale = 0.6;
 
     let [mask_p, mask] = MallocArray(Int32Array,memory,base,sz);
-    //let [particles_p, particles] = MallocArray(Float32Array,memory,base,[8,nparticles]);
     let [particles_p, particles] = MallocArray2(Float32Array,memory,base,[nparticles],8);
 
     // canvas for plotting
@@ -58,14 +57,10 @@ export async function run(document) {
 
             if ((ntime % 10) == 0) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                //pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax});
-                //console.log(ntime,particles[partsize*3 ],particles[partsize * 0 + iscalar]);
 
                 let pminc = +Infinity;
                 let pmaxc = -Infinity;
                 for (let i = 0; i < nparticles; i++) {
-                    //ctx.fillStyle = color(particles[partsize * i + iscalar],pmin,pmax);
-
                     let p = particles[partsize * i + iscalar];
                     if (p > pmaxc) pmaxc = p;
                     if (p < pminc) pminc = p;
@@ -79,8 +74,6 @@ export async function run(document) {
                     let radius = 2;
 
                     ctx.fillStyle = color(particles[partsize * i + iscalar],pmin,pmax);
-                    //ctx.fillStyle = color(0,pmin,pmax);
-                    //console.log("color",ctx.fillStyle);
                     ctx.beginPath();
                     ctx.arc(x, y, radius, 0, 2 * Math.PI);
                     ctx.fill();
@@ -93,9 +86,7 @@ export async function run(document) {
 
             }
         }
-        if (ntime  == 50) {
-//            return
-        };
+
         window.requestAnimationFrame(step);
     }
 
