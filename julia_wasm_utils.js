@@ -16,6 +16,24 @@ export function MallocArray(typearray,memory,base,size) {
 }
 
 
+export function MallocArray2(typearray,memory,base,size,elsize4) {
+    // number of elements in array
+    let len = size.reduce((a, b)=> a*b, 1);
+
+    // pointer (Int32), length (Int32), size1 (Int32), size2, ...
+    // where
+    // length = size1*size2*...
+    let metadata = new Int32Array(memory.buffer, base[0], 2 + size.length);
+    base[0] += metadata.byteLength;
+    metadata.set([base[0], len].concat(size));
+
+    const data = new typearray(memory.buffer, base[0], len*elsize4);
+    base[0] += data.byteLength;
+
+    return [metadata.byteOffset, data];
+}
+
+
 
 function rgb(r, g, b){
     return `rgb(${r}, ${g}, ${b})`
@@ -116,4 +134,12 @@ export function mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz) {
     canvas.addEventListener("mousemove", handle_mouse);
     canvas.addEventListener("mouseup", handle_mouse);
     return [ctx,res]
+}
+
+
+
+export function color(v,vmin,vmax,{cmap=turbo_colormap} = {}) {
+    let ind = Math.floor(255 * clamp((v - vmin) / (vmax-vmin),0,1));
+    let color = cmap[ind];
+    return rgb(255*color[0],255*color[1],255*color[2]);
 }
