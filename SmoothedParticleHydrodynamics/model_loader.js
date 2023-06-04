@@ -46,7 +46,7 @@ export async function run(document) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 //pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax});
                 console.log(ntime,particles[8*3 ]);
-
+/*
                 for (let i = 0; i < nparticles; i++) {
                     ctx.beginPath();
                     let x = scale * particles[8 * i + 0];
@@ -60,6 +60,7 @@ export async function run(document) {
                     //quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 500});
 
                 }
+*/
             }
         }
         window.requestAnimationFrame(step);

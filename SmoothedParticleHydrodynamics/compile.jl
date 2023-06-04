@@ -2,7 +2,6 @@ include("../wasm_target.jl")
 
 using SmoothedParticleHydrodynamics
 using SmoothedParticleHydrodynamics: Particle, W, update!
-using StableRNGs
 using Random
 import Random: rand, AbstractRNG
 # assume that we use 32-bit julia
@@ -57,9 +56,11 @@ function model_step(grav,f,Δx,Δt,ntime,
 #    rng = 42
 
     config,particles,W_spiky,W_rho =
-        SmoothedParticleHydrodynamics.case_dam_break2!(#rng,
+        SmoothedParticleHydrodynamics.case_dam_break2!(
+            #rng,
             particles,
             init_particles = ntime == 0,
+            Δt = Δt,
             rng = rng,
         )
 
