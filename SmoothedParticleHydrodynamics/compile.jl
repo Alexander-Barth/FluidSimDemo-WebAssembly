@@ -50,6 +50,12 @@ function model_step(grav,f,Δx,Δt,ntime,
 
     update!(config,W_spiky,W_rho,particles)
     return 0
+    #return SmoothedParticleHydrodynamics.lanczos_gamma(f + 20.0)
+
+    # if f > 1000
+    #     error("foo");
+    # end
+    # return 0
 end
 
 nparticles = 1219
@@ -89,7 +95,8 @@ write("model.o", obj)
 
 # size of the total memory
 mem = 65536*16*2
+run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o ../memset.c`)
 
-run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm model.o`)
+run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm memset.o /home/abarth/src/llvm-project/compiler-rt/lib/builtins/lshrti3.o /home/abarth/src/llvm-project/compiler-rt/lib/builtins/ashlti3.o model.o`)
 
 
