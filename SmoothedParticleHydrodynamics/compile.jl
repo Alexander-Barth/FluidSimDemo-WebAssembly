@@ -2,7 +2,6 @@ include("../wasm_target.jl")
 
 using SmoothedParticleHydrodynamics
 using SmoothedParticleHydrodynamics: Particle, W, update!
-using StableRNGs
 using Random
 import Random: rand, AbstractRNG
 # assume that we use 32-bit julia

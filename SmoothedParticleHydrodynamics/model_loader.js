@@ -83,7 +83,6 @@ export async function run(document) {
                     //quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 500});
 
                 }
-
             }
         }
 
