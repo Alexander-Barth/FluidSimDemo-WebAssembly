@@ -64,6 +64,17 @@ mask = MallocMatrix{Int32}(undef,(20,20))
 particles = MallocVector{Particle{2,Float32}}(undef,(nparticles,))
 ntime = 0
 
+limits = (1200,900)
+h = 16.f0
+
+# 76 x 57
+sz = unsafe_trunc.(Int,limits ./ h) .+ 1
+# 4333
+table = zeros(Int,prod(sz)+1)
+num_particles = zeros(Int,length(particles))
+limits = Tuple(limits)
+
+
 length(particles)
 
 @time model_step(
@@ -96,6 +107,10 @@ write("model.o", obj)
 mem = 65536*16*2
 run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o ../memset.c`)
 
-run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm memset.o /home/abarth/src/llvm-project/compiler-rt/lib/builtins/lshrti3.o /home/abarth/src/llvm-project/compiler-rt/lib/builtins/ashlti3.o model.o`)
+# using https://github.com/llvm/llvm-project/tree/main/compiler-rt/lib/builtins
+# $ clang --target=wasm32 --no-standard-libraries -c ashlti3.c
+# $ clang --target=wasm32 --no-standard-libraries -c lshrti3.c
+
+run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm memset.o lshrti3.o ashlti3.o model.o`)
 
 
