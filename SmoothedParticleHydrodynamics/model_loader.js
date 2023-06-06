@@ -17,8 +17,14 @@ export async function run(document) {
     //let scale = 0.2;
     let scale = 0.6;
 
+    const sz_table = [76,57];
+
     let [mask_p, mask] = MallocArray(Int32Array,memory,base,sz);
     let [particles_p, particles] = MallocArray2(Float32Array,memory,base,[nparticles],8);
+    let [table_p, table] = MallocArray(Int32Array,memory,base,[sz_table[0] * sz_table[1] + 1]);
+    let [num_particles_p, num_particles] = MallocArray(Int32Array,memory,base,[nparticles]);
+    let [visited_p, visited] = MallocArray(Int32Array,memory,base,[nparticles]);
+
 
     // canvas for plotting
     const canvas = document.getElementById("plot");
@@ -48,8 +54,12 @@ export async function run(document) {
 
             const start = performance.now();
             const result = julia_model_step(
-                grav,f,dx,DeltaT,ntime,
-                mask_p,particles_p);
+                grav,f,dx,DeltaT,ntime,sz_table[0],sz_table[1],
+                mask_p,particles_p,
+                table_p,
+                num_particles_p,
+                visited_p
+            );
             const end = performance.now();
             //console.log(`Execution time: ${end - start} ms. result ${result}`);
 
