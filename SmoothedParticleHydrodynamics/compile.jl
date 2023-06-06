@@ -32,9 +32,12 @@ function rand(rng::LinearCongruentialGenerators,::Type{Float32})
     return (Int64(rand(rng,Int32)) - typemin(Int32))/Float32(r)
 end
 
-function model_step(grav,f,Δx,Δt,ntime,
+function model_step(grav,f,Δx,Δt,ntime,imax,jmax,
                     mask,
                     particles,
+                    table,
+                    num_particles,
+                    visited,
                     )
     rng = LinearCongruentialGenerators(42)
 
@@ -47,7 +50,9 @@ function model_step(grav,f,Δx,Δt,ntime,
             rng = rng,
         )
 
-    update!(config,W_spiky,W_rho,particles)
+    sz = (imax,jmax)
+    spatial_index = (; table, num_particles, config.h, sz)
+    update!(config,W_spiky,W_rho,particles,spatial_index,visited)
     return 0
     #return SmoothedParticleHydrodynamics.lanczos_gamma(f + 20.0)
 
@@ -62,7 +67,6 @@ grav,f,Δx = 9.81f0,0f0,0f0
 Δt = 0.0007f0
 mask = MallocMatrix{Int32}(undef,(20,20))
 particles = MallocVector{Particle{2,Float32}}(undef,(nparticles,))
-ntime = 0
 
 limits = (1200,900)
 h = 16.f0
@@ -72,22 +76,39 @@ sz = unsafe_trunc.(Int,limits ./ h) .+ 1
 # 4333
 table = zeros(Int,prod(sz)+1)
 num_particles = zeros(Int,length(particles))
+visited = zeros(Int,length(particles))
 limits = Tuple(limits)
 
 
 length(particles)
+ntime = 0
 
 @time model_step(
-    grav,f,Δx,Δt,ntime,
+    grav,f,Δx,Δt,ntime,sz[1],sz[2],
     mask,
     particles,
+    table,
+    num_particles,
+    visited,
+)
+
+@time model_step(
+    grav,f,Δx,Δt,ntime,sz[1],sz[2],
+    mask,
+    particles,
+    table,
+    num_particles,
+    visited,
 )
 
 ntime = 1
 @time model_step(
-    grav,f,Δx,Δt,ntime,
+    grav,f,Δx,Δt,ntime,sz[1],sz[2],
     mask,
     particles,
+    table,
+    num_particles,
+    visited,
 )
 
 obj = build_obj(model_step, Tuple{
@@ -96,10 +117,16 @@ obj = build_obj(model_step, Tuple{
     Float32,
     Float32,
     Int32,
+    Int32,
+    Int32,
     MallocMatrix{Int32},
     MallocVector{Particle{2,Float32}},
+    MallocMatrix{Int32},
+    MallocMatrix{Int32},
+    MallocMatrix{Int32},
 })
 
+#=
 write("model.o", obj)
 
 
@@ -114,3 +141,5 @@ run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o ../memset.c`)
 run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm memset.o lshrti3.o ashlti3.o model.o`)
 
 
+
+=#
