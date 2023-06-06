@@ -2,7 +2,7 @@
 
 julia_version = "1.9.0"
 manifest_format = "2.0"
-project_hash = "09779b6dee212bbb94c219de9857567ef2b3a357"
+project_hash = "4131f0921f37c106e6723e24641adc652b895cd0"
 
 [[deps.Adapt]]
 deps = ["LinearAlgebra", "Requires"]
@@ -350,7 +350,7 @@ version = "1.2.0"
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 
 [[deps.SmoothedParticleHydrodynamics]]
-deps = ["LinearAlgebra", "Random", "SpecialFunctions", "StaticArrays"]
+deps = ["LinearAlgebra", "Random", "SpatialHashing", "SpecialFunctions", "StaticArrays"]
 path = "/home/abarth/.julia/dev/SmoothedParticleHydrodynamics"
 uuid = "0e947886-cfe6-4b54-a7de-1ae1ad1ec6c7"
 version = "0.1.0"
@@ -367,6 +367,11 @@ uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 [[deps.SparseArrays]]
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+
+[[deps.SpatialHashing]]
+path = "/home/abarth/.julia/dev/SpatialHashing"
+uuid = "e2e8a281-5b48-4fd6-b542-65e07fde0794"
+version = "0.1.0"
 
 [[deps.SpecialFunctions]]
 deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]

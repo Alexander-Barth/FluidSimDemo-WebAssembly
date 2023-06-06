@@ -126,7 +126,7 @@ obj = build_obj(model_step, Tuple{
     MallocMatrix{Int32},
 })
 
-#=
+
 write("model.o", obj)
 
 
@@ -142,4 +142,4 @@ run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm memse
 
 
 
-=#
+
