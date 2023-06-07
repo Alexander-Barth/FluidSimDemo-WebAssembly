@@ -162,4 +162,4 @@ The shallow water equations model is similar to the 2D Navier-Stokes equations b
 
 The online demo is avialable here:
 
-https://alexander-barth.github.io/FluidSimDemo-WebAssembly/shallow_water.html
+https://alexander-barth.github.io/FluidSimDemo-WebAssembly/ShallowWater

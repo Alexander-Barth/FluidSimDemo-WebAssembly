@@ -11,3 +11,13 @@ void *memset(void *b, int c, unsigned long len)
     }
   return b;
 }
+
+
+void gpu_signal_exception() {
+}
+
+
+void gpu_report_exception(int err) {
+}
+
+

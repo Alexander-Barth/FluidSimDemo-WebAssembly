@@ -1,7 +1,7 @@
-import { MallocArray, pcolor, quiver, mouse_edit_mask } from "./julia_wasm_utils.js";
+import { MallocArray, pcolor, quiver, mouse_edit_mask } from "../julia_wasm_utils.js";
 
 export async function run(document) {
-    const response = await fetch('test_shallow_water.wasm');
+    const response = await fetch('model.wasm');
     const bytes = await response.arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes);
 

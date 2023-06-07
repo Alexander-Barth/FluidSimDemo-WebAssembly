@@ -1,4 +1,4 @@
-include("wasm_target.jl")
+include("../wasm_target.jl")
 
 using FluidSimDemo
 using FluidSimDemo:sw_boundary_conditions!, sw_initial_conditions!
@@ -52,7 +52,7 @@ obj = build_obj(fluid_sim_step, Tuple{
     MallocMatrix{Float32}
 })
 
-write("test_shallow_water.o", obj)
+write("model.o", obj)
 
 # heap base: 66560
 
@@ -60,6 +60,6 @@ write("test_shallow_water.o", obj)
 mem = 65536*16*2
 
 # the linker needs memset
-run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o memset.c`)
+run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o ../memset.c`)
 
-run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o test_shallow_water.wasm memset.o test_shallow_water.o`)
+run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm memset.o model.o`)

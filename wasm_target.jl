@@ -48,12 +48,13 @@ end
 function build_ir(job, @nospecialize(func), @nospecialize(types))
     @info "Bulding LLVM IR for '$func($types)'"
     ir, ir_meta = GPUCompiler.emit_llvm(
-                    job, # our job
-                    libraries=false, # whether this code uses libraries
-                    deferred_codegen=false, # is there runtime codegen?
-                    optimize=true, # do we want to optimize the llvm?
-                    only_entry=false, # is this an entry point?
-                    ctx=JuliaContext()) # the LLVM context to use
+        job, # our job
+        libraries=false, # whether this code uses libraries
+        deferred_codegen=false, # is there runtime codegen?
+        optimize=true, # do we want to optimize the llvm?
+        only_entry=false, # is this an entry point?
+        validate = false,
+        ctx=JuliaContext()) # the LLVM context to use
     return ir, ir_meta
 end
 
