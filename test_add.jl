@@ -1,5 +1,3 @@
-# https://rob-blackbourn.github.io/blog/webassembly/wasm/array/arrays/javascript/c/2020/06/07/wasm-arrays.html
-
 include("wasm_target.jl")
 
 function add(a::Int32,b::Int32)
