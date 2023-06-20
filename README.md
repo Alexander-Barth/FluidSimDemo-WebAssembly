@@ -163,3 +163,10 @@ The shallow water equations model is similar to the 2D Navier-Stokes equations b
 The online demo is avialable here:
 
 https://alexander-barth.github.io/FluidSimDemo-WebAssembly/ShallowWater
+
+
+### Smoothed-particle hydrodynamics
+
+The online demo is avialable here:
+
+https://github.com/Alexander-Barth/SmoothedParticleHydrodynamics.jl
