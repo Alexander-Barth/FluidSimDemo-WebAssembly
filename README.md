@@ -163,7 +163,7 @@ The shallow water equations model is similar to the 2D Navier-Stokes equations b
 
 The online demo is [avialable here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/ShallowWater):
 
-[![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/3110f0e0-a139-4491-8951-2e7b443be86c)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/ShallowWater)
+[![image](images/ShallowWater.png)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/ShallowWater)
 
 
 
@@ -172,7 +172,7 @@ The online demo is [avialable here](https://alexander-barth.github.io/FluidSimDe
 The online demo is [avialable here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/SmoothedParticleHydrodynamics/).
 
 
-[![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/c7834b59-4936-4499-807d-4b0ed94617df)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/SmoothedParticleHydrodynamics/)
+[![image](images/SmoothedParticleHydrodynamics.png)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/SmoothedParticleHydrodynamics/)
 
 
 The julia code is based on [SmoothedParticleHydrodynamics.jl](https://github.com/Alexander-Barth/SmoothedParticleHydrodynamics.jl)
