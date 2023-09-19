@@ -154,8 +154,7 @@ The generated WASM binary assumes that a `memset` function exists. Lukily, this 
 
 The online demo is [avialable here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/):
 
-[![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/fb6b4fba-fd31-45da-a5b6-2a57903239de)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/)
-
+[![image](images/test_fluid_sim.png)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/)
 
 
 ### 2D shallow water equations
