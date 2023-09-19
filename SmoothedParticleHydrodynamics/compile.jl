@@ -51,7 +51,7 @@ function model_step(grav,f,Δx,Δt,ntime,imax,jmax,
         )
 
     sz = (imax,jmax)
-    spatial_index = (; table, num_particles, config.h, sz)
+    spatial_index = (; table, num_particles, config.h)
     update!(config,W_spiky,W_rho,particles,spatial_index,visited)
     return 0
     #return SmoothedParticleHydrodynamics.lanczos_gamma(f + 20.0)
