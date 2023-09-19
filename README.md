@@ -152,21 +152,28 @@ https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/test_fluid
 
 The generated WASM binary assumes that a `memset` function exists. Lukily, this function is simple enought that we can provide a [C-implementation](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/memset.c) that can be compiled to wasm with `clang`.
 
-The online demo is avialable here:
+The online demo is [avialable here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/):
 
-https://alexander-barth.github.io/FluidSimDemo-WebAssembly/
+[![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/fb6b4fba-fd31-45da-a5b6-2a57903239de)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/)
+
+
 
 ### 2D shallow water equations
 
 The shallow water equations model is similar to the 2D Navier-Stokes equations but the implicit pressure solver is replaced by explicit for the free surface. If the time step is too large, the model can be come unstable.
 
-The online demo is avialable here:
-https://alexander-barth.github.io/FluidSimDemo-WebAssembly/ShallowWater
+The online demo is [avialable here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/ShallowWater):
+
+[![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/3110f0e0-a139-4491-8951-2e7b443be86c)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/ShallowWater)
+
 
 
 ### Smoothed-particle hydrodynamics
 
-The online demo is avialable here:
-https://alexander-barth.github.io/FluidSimDemo-WebAssembly/SmoothedParticleHydrodynamics/
+The online demo is [avialable here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/SmoothedParticleHydrodynamics/).
+
+
+[![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/c7834b59-4936-4499-807d-4b0ed94617df)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/SmoothedParticleHydrodynamics/)
+
 
 The julia code is based on [SmoothedParticleHydrodynamics.jl](https://github.com/Alexander-Barth/SmoothedParticleHydrodynamics.jl)
