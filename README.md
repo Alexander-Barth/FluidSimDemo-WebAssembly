@@ -161,12 +161,12 @@ https://alexander-barth.github.io/FluidSimDemo-WebAssembly/
 The shallow water equations model is similar to the 2D Navier-Stokes equations but the implicit pressure solver is replaced by explicit for the free surface. If the time step is too large, the model can be come unstable.
 
 The online demo is avialable here:
-
 https://alexander-barth.github.io/FluidSimDemo-WebAssembly/ShallowWater
 
 
 ### Smoothed-particle hydrodynamics
 
 The online demo is avialable here:
+https://alexander-barth.github.io/FluidSimDemo-WebAssembly/SmoothedParticleHydrodynamics/
 
-https://github.com/Alexander-Barth/SmoothedParticleHydrodynamics.jl
+The julia code is based on [SmoothedParticleHydrodynamics.jl](https://github.com/Alexander-Barth/SmoothedParticleHydrodynamics.jl)
