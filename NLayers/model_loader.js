@@ -3,7 +3,7 @@ import { MallocArray, pcolor, quiver, mouse_edit_mask } from "../julia_wasm_util
 export async function run(document) {
     makeDraggable(document.getElementById("profile"));
 
-    
+
     const response = await fetch('model.wasm');
     const bytes = await response.arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes);
@@ -67,7 +67,7 @@ export async function run(document) {
 }
 
 
-// 
+//
 function makeDraggable(svg) {
     svg.addEventListener('mousedown', startDrag);
     svg.addEventListener('mousemove', drag);
@@ -79,6 +79,7 @@ function makeDraggable(svg) {
     svg.addEventListener('touchleave', endDrag);
     svg.addEventListener('touchcancel', endDrag);
 
+    drawlines(svg);
     var selectedElement, offset, transform,
         bbox, minX, maxX, minY, maxY, confined;
 
@@ -98,6 +99,12 @@ function makeDraggable(svg) {
 
     function startDrag(evt) {
         if (evt.target.classList.contains('draggable')) {
+
+            selectedElement = evt.target;
+            offset = getMousePosition(evt);
+            offset.x -= parseFloat(selectedElement.getAttributeNS(null, "cx"));
+            offset.y -= parseFloat(selectedElement.getAttributeNS(null, "cy"));
+/*
             selectedElement = evt.target;
             offset = getMousePosition(evt);
 
@@ -124,6 +131,7 @@ function makeDraggable(svg) {
                 minY = boundaryY1 - bbox.y;
                 maxY = boundaryY2 - bbox.y - bbox.height;
             }
+*/
         }
     }
 
@@ -131,37 +139,63 @@ function makeDraggable(svg) {
         if (selectedElement) {
             evt.preventDefault();
 
+
             var coord = getMousePosition(evt);
+
+            // constrait position
+            // density must to monotonic
+            var prev, next;
+            prev = selectedElement.previousElementSibling;
+            if (prev) {
+                coord.x = Math.min(coord.x,parseFloat(prev.getAttributeNS(null, "cx")));
+                coord.y = Math.min(coord.y,parseFloat(prev.getAttributeNS(null, "cy")));
+            }
+
+            next = selectedElement.nextElementSibling;
+            if (next) {
+                coord.x = Math.max(coord.x,parseFloat(next.getAttributeNS(null, "cx")));
+                coord.y = Math.max(coord.y,parseFloat(next.getAttributeNS(null, "cy")));
+            }
+
             var dx = coord.x - offset.x;
             var dy = coord.y - offset.y;
 
-            if (confined) {
-                if (dx < minX) { dx = minX; }
-                else if (dx > maxX) { dx = maxX; }
-                if (dy < minY) { dy = minY; }
-                else if (dy > maxY) { dy = maxY; }
-            }
+            selectedElement.setAttributeNS(null, "cx", dx);
+            selectedElement.setAttributeNS(null, "cy", dy);
 
-            transform.setTranslate(dx, dy);
+
+
+            drawlines(svg);
         }
 
 
     }
 
-    function endDrag(evt) {
-        console.log("foo");
+
+    function drawlines(svg) {
+        var ll = svg.getElementById("lines");
+        while (ll.hasChildNodes()) {
+            ll.removeChild(ll.firstChild);
+        }
         var drags = svg.getElementsByClassName("draggable");
 
-        console.log("drags",drags[0].getAttribute("cx"),drags[0].getAttribute("cx"));
-        var svgNS = "http://www.w3.org/2000/svg";  
-        var ll0 = document.createElementNS(svgNS,"line");
-        ll0.setAttributeNS(null,"x1",drags[0].getAttribute("cx"));
-        ll0.setAttributeNS(null,"y1",drags[0].getAttribute("cy"));
-        ll0.setAttributeNS(null,"x2",drags[1].getAttribute("cx"));
-        ll0.setAttributeNS(null,"y2",drags[1].getAttribute("cy"));
-        ll0.setAttributeNS(null,"style","stroke:rgb(255,0,0);stroke-width:2")
-        var ll = svg.getElementById("lines");
-        ll.appendChild(ll0);
+        //console.log("drags",drags[0].getAttribute("cx"),drags[0].getAttribute("cx"));
+        var svgNS = "http://www.w3.org/2000/svg";
+
+        for (var i = 0; i < drags.length-1; i++) {
+            var ll0 = document.createElementNS(svgNS,"line");
+            ll0.setAttributeNS(null,"x1",drags[i].getAttribute("cx"));
+            ll0.setAttributeNS(null,"y1",drags[i].getAttribute("cy"));
+            ll0.setAttributeNS(null,"x2",drags[i+1].getAttribute("cx"));
+            ll0.setAttributeNS(null,"y2",drags[i+1].getAttribute("cy"));
+            ll0.setAttributeNS(null,"style","stroke:rgb(255,0,0);stroke-width:2")
+            ll.appendChild(ll0);
+        }
+    }
+
+    function endDrag(evt) {
+        console.log("foo");
+        drawlines(svg);
 
 
         selectedElement = false;
