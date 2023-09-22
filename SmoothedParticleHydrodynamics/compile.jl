@@ -13,24 +13,6 @@ import Random: rand, AbstractRNG
 seed = 123456789
 m = Int64(2)^31
 
-mutable struct LinearCongruentialGenerators <: AbstractRNG
-    seed::Int32
-end
-
-rng = LinearCongruentialGenerators(42)
-
-function rand(rng::LinearCongruentialGenerators,::Type{Int32})
-    m = Int64(1) << 31
-    a = 1103515245
-    c = 12345
-    rng.seed = Int32((a * rng.seed + c) % m)
-    return rng.seed
-end
-
-function rand(rng::LinearCongruentialGenerators,::Type{Float32})
-    r = Int64(typemax(Int32)) - typemin(Int32)
-    return (Int64(rand(rng,Int32)) - typemin(Int32))/Float32(r)
-end
 
 function model_step(grav,f,Δx,Δt,ntime,imax,jmax,
                     mask,

@@ -8,12 +8,13 @@ export async function run(document) {
     const bytes = await response.arrayBuffer();
     const { instance } = await WebAssembly.instantiate(bytes);
 
-    const { julia_fluid_sim_step, memory, __heap_base } = instance.exports;
+    const { julia_nlayer_step_init, memory, __heap_base } = instance.exports;
 
     // base[0] offset of memory, increased by MallocArray
     let base = [__heap_base];
 
-    const sz = [300,100];
+    const imax = 101;
+    const m = 5;
     const dx = 5000;
     var ntime = 0;
 
