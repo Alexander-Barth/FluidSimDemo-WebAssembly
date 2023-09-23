@@ -38,20 +38,22 @@
     </script>
 
     <h3>2D shallow water equations implemented in Julia and compiled to WASM.</h3>
-
+    <div>
     <svg id="profile" xmlns="http://www.w3.org/2000/svg"
-         width="200" height="500" style="border:1px solid black">
+         width="200" height="400" style="border:1px solid black">
       <g id="lines">
       </g>
       <g id="markers">
-        <circle cx="150" cy="430" r="5" fill="#007bff" class="draggable" />
-        <circle cx="100" cy="350" r="5" fill="#007bff" class="draggable" />
-        <circle cx="70" cy="300" r="5" fill="#007bff" class="draggable" />
-        <circle cx="50" cy="100" r="5" fill="#007bff" class="draggable" />
+        <circle cx="200" cy="390" r="5" fill="#007bff" class="draggable" />
+        <circle cx="105" cy="350" r="5" fill="#007bff" class="draggable" />
+        <circle cx="50" cy="250" r="5" fill="#007bff" class="draggable" />
+        <circle cx="35" cy="150" r="5" fill="#007bff" class="draggable" />
+        <circle cx="25" cy="50" r="5" fill="#007bff" class="draggable" />
       </g>
     </svg>
-
-    <div><canvas id="plot" width="900" height="300" /></div>
+    <canvas id="plot" width="900" height="400" style="border:1px solid black" />
+    </div>
+    
     <p>The surface elevation as governed by the 2D shallow water equations. The area represents a water body of 500 km x 1500 km with a constant depth of 100 m. Use the mouse to change and add obstacles in the flow field.</p>
 
     <form>
@@ -70,7 +72,7 @@
         <label for="f">Coriolis parameter (s⁻¹)</label><input id="f" type="number" value="0" step="0.0001">
       </div>
       <div>
-        <label for="DeltaT">Time step (s)</label><input id="DeltaT" type="number" value="100" step="1">
+        <label for="DeltaT">Time step (s)</label><input id="DeltaT" type="number" value="28" step="1">
       </div>
     </div>
 

@@ -15,27 +15,43 @@ export async function run(document) {
 
     const imax = 101;
     const m = 5;
-    const dx = 5000;
+    const dx = 1000;
+    const dt = 28.73;
+    const grav = 9.81;
+    
     var ntime = 0;
 
-    let [mask_p, mask] = MallocArray(Int32Array,memory,base,sz);
-    let [pressure_p, pressure] = MallocArray(Float32Array,memory,base,sz);
+    // n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom
+    let [rho_p, rho] = MallocArray(Float32Array,memory,base,[m]);
+    let [P_p, P] = MallocArray(Float32Array,memory,base,[imax,m]);
+    let [h_p, h] = MallocArray(Float32Array,memory,base,[imax,m]);
+    let [hm_p, hm] = MallocArray(Float32Array,memory,base,[imax,m]);
+    let [hu_p, hu] = MallocArray(Float32Array,memory,base,[imax+1,m]);
+    let [u_p, u] = MallocArray(Float32Array,memory,base,[imax+1,m]);
+    let [z_p, z] = MallocArray(Float32Array,memory,base,[imax,m+1]);
+    let [bottom_p, bottom] = MallocArray(Float32Array,memory,base,[imax]);
 
-    let [u_p, u] = MallocArray(Float32Array,memory,base,[sz[0]+1,sz[1]]);
-    let [v_p, v] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
+    rho[0] = 1020;
+    rho[1] = 1035;
+    rho[2] = 1050;
+    rho[3] = 1065;
+    rho[4] = 1080;
 
-    let [h_p, h] = MallocArray(Float32Array,memory,base,sz);
-    let [hu_p, hu] = MallocArray(Float32Array,memory,base,[sz[0]+1,sz[1]]);
-    let [hv_p, hv] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
-
-    let [newu_p, newu] = MallocArray(Float32Array,memory,base,[sz[0]+1,sz[1]]);
-    let [newv_p, newv] = MallocArray(Float32Array,memory,base,[sz[0],sz[1]+1]);
-
+    for (let i = 0; i < imax; i++) {
+        bottom[i] = 100;
+        for (let k = 0; k < m; k++) {
+            hm[i + k*imax] = bottom[i]/m;
+        }
+    }
+        
     // canvas for plotting
     const canvas = document.getElementById("plot");
     const erase_elem = document.getElementById("erase");
     const pen_size_elem = document.getElementById("pen_size");
-    const [ctx,res] = mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz);
+    var svg = document.getElementById("profile");
+
+    var ctx = canvas.getContext("2d");
+    ctx.transform(1, 0, 0, -1, 0, canvas.height)
 
     function step(timestamp) {
         let grav = parseFloat(document.getElementById("grav").value);
@@ -44,22 +60,40 @@ export async function run(document) {
         let pmin = parseFloat(document.getElementById("pmin").value);
         let pmax = parseFloat(document.getElementById("pmax").value);
         let show_velocity = document.getElementById("show_velocity").checked;
+        let [profile_z,profile_density] = getProfile(svg);
 
+        
+        console.log(profile_density);
+
+        for (let k = 0; k < m; k++) {
+            rho[k] = profile_density[k];
+        }
+
+        
         if (!isNaN(grav) && !isNaN(f) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(DeltaT)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
 
-            const result = julia_fluid_sim_step(
-                grav,f,dx,DeltaT,ntime,
-                mask_p,h_p,hu_p,hv_p,pressure_p,u_p,v_p,newu_p,newv_p);
+            const result = julia_nlayer_step_init(
+                ntime,dx,DeltaT,grav,
+                rho_p,P_p,h_p,hm_p,hu_p,u_p,z_p,bottom_p);
+
 
             ntime += 1;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax});
+            let scalex = canvas.width/(imax-1);
+            let scaley = canvas.height/100;
+            
+            for (let k = 0; k < m; k++) {
+                ctx.beginPath();
+                ctx.moveTo(0,scaley*z[k*imax]);
 
-            if (show_velocity) {
-                quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 500});
-
+                for (let i = 0; i < imax; i++) {
+                    ctx.lineTo(scalex*i, scaley*z[i + k*imax]);
+                }
+                ctx.stroke();
             }
+            
+            //console.log("z ",h[0]);
         }
         window.requestAnimationFrame(step);
     }
@@ -67,6 +101,20 @@ export async function run(document) {
     window.requestAnimationFrame(step);
 }
 
+
+function getProfile(svg) {
+    var drags = svg.getElementsByClassName("draggable");
+
+    var z = [];
+    var density = [];
+    
+    for (var i = 0; i < drags.length; i++) {
+        z.push(parseFloat(drags[drags.length-i-1].getAttribute("cy")));
+        density.push(1020 + parseFloat(drags[drags.length-i-1].getAttribute("cx"))/5);
+    }
+
+    return [z,density];
+}
 
 //
 function makeDraggable(svg) {
