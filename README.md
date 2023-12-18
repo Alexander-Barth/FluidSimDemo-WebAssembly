@@ -29,10 +29,10 @@ Luckily, the julia programming language does not get in your way to write low-le
 * Compiler clang
 * For testing, it is useful to use JavaScript runtime node
 
-On Ubuntu 20.04, these requirements can be install by:
+On Ubuntu 22.04, these requirements can be install by:
 
 ```bash
-sudo apt install wabt clang lld node
+sudo apt install wabt clang lld nodejs
 ```
 
 To install all julia dependencies, start the 32-bit version of julia and run:
