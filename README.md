@@ -161,7 +161,7 @@ The online demo is [avialable here](https://alexander-barth.github.io/FluidSimDe
 
 The shallow water equations model is similar to the 2D Navier-Stokes equations but the implicit pressure solver is replaced by explicit for the free surface. If the time step is too large, the model can be come unstable.
 
-The online demo is [avialable here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/ShallowWater):
+The online demo is [available here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/ShallowWater):
 
 [![image](images/ShallowWater.png)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/ShallowWater)
 
