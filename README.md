@@ -181,12 +181,12 @@ The julia code is based on [SmoothedParticleHydrodynamics.jl](https://github.com
 
 ### Gray-Scott equations
 
-Two tracers u and v inteact with the following diffusion-reaction equations:
+Two tracers $u$ and $v$ inteact with the following diffusion-reaction equations:
 
 $$
 \begin{alignat*}{2}
-\frac{∂u}{∂t} &=  Dᵤ ∇²u - u v² + f (1 - u) \\
-\frac{∂v}{∂t} &= Dᵥ ∇²v + u v² - (f + k) v
+\frac{∂u}{∂t} &= D_u ∇²u - u v² + f (1 - u) \\
+\frac{∂v}{∂t} &= D_v ∇²v + u v² - (f + k) v
 \end{alignat*}
 $$
 
