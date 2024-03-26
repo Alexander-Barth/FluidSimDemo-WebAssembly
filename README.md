@@ -169,10 +169,26 @@ The online demo is [available here](https://alexander-barth.github.io/FluidSimDe
 
 ### Smoothed-particle hydrodynamics
 
-The online demo is [avialable here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/SmoothedParticleHydrodynamics/).
+The online demo is [available here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/SmoothedParticleHydrodynamics/).
 
 
 [![image](images/SmoothedParticleHydrodynamics.png)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/SmoothedParticleHydrodynamics/)
 
 
 The julia code is based on [SmoothedParticleHydrodynamics.jl](https://github.com/Alexander-Barth/SmoothedParticleHydrodynamics.jl)
+
+
+
+### Gray-Scott equations
+
+Two tracers u and v inteact with the following diffusion-reaction equations:
+
+$$
+\begin{alignat*}{2}
+\frac{∂u}{∂t} &=  Dᵤ ∇²u - u v² + f (1 - u) \\
+\frac{∂v}{∂t} &= Dᵥ ∇²v + u v² - (f + k) v
+\end{alignat*}
+$$
+
+The online demo is [available here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/GrayScott/).
+
