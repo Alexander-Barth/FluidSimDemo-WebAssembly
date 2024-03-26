@@ -125,7 +125,7 @@ n = 0
 @time model_step(Δx,Δt,Du,Dv,f,k,r,n,mask,u,v,un,vn)
 
 #u_save = copy(u)
-#@show maximum(abs.(u_save - u))
+@show maximum(abs.(u_save - u))
 
 #@time model_step(Δx,Δt,Du,Dv,f,k,r,n,u,v,un,vn)
 #@time model_step(Δx,Δt,Du,Dv,f,k,r,n,u,v,un,vn)
