@@ -35,6 +35,7 @@ export async function run(document) {
     const canvas = document.getElementById("plot");
     const erase_elem = document.getElementById("erase");
     const pen_size_elem = document.getElementById("pen_size");
+    const params = document.getElementById("params");
     const [ctx,res] = mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz);
 
     function step(timestamp) {
@@ -63,4 +64,19 @@ export async function run(document) {
     }
 
     window.requestAnimationFrame(step);
+
+    params.addEventListener("change", (event) => {
+        console.log(event);
+        let option = event.target.selectedOptions[0].value;
+        if (option != "custom") {
+            let [Du, Dv, f, k] = option.split(",").map(parseFloat);
+
+            document.getElementById("Du").value = Du;
+            document.getElementById("Dv").value = Dv;
+            document.getElementById("f").value = f;
+            document.getElementById("k").value = k;
+        }
+    });
+
 }
+

@@ -34,31 +34,6 @@
     <div>
       <canvas id="plot" width="512" height="512" />
     </div>
-    Equations
-    
-    <p>
-      <math>
-        <mrow>
-          <mfrac>
-            <mi>∂u</mi>
-            <mi>∂t</mi>
-          </mfrac>
-        </mrow>
-      </math>
-       = Dᵤ ∇²u - u v² + f (1 - u)
-    </p>
-    <p>
-      <math>
-        <mrow>
-          <mfrac>
-            <mi>∂v</mi>
-            <mi>∂t</mi>
-          </mfrac>
-        </mrow>
-      </math>
-      = Dᵥ ∇²v + u v² - (f + k) v
-    </p>
-
     The domain is 256 x 256 grid point with a spatial resolution
     of Δx = 1 and a time step Δt = 1. At the boundary u and v are set to
     zero.
@@ -71,6 +46,25 @@
         <label for="erase">Erase mode</label>
         <input type="checkbox" id="erase" value="erase">
       </div>
+      <div>
+        <label for="params">Case</label>
+        <select id="params">
+          <!-- Du, Dv, f, k -->
+          <option value="custom">Custom</option>
+          <option value="0.16, 0.08, 0.035, 0.065">Bacteria 1</option>
+          <option value="0.14, 0.06, 0.035, 0.065">Bacteria 2</option>
+          <option value="0.16, 0.08, 0.060, 0.062" selected>Coral</option>
+          <option value="0.19, 0.05, 0.060, 0.062">Fingerprint</option>
+          <option value="0.10, 0.10, 0.018, 0.050">Spirals</option>
+          <option value="0.12, 0.08, 0.020, 0.050">Spirals Dense</option>
+          <option value="0.10, 0.16, 0.020, 0.050">Spirals Fast</option>
+          <option value="0.16, 0.08, 0.020, 0.055">Unstable</option>
+          <option value="0.16, 0.08, 0.050, 0.065">Worms 1</option>
+          <option value="0.16, 0.08, 0.054, 0.063">Worms 2</option>
+          <option value="0.16, 0.08, 0.035, 0.060">Zebrafish</option>
+        </select>
+      </div>
+
       <div>
         <label for="Du">Du</label><input id="Du" type="number" value="0.16" step="0.01" min="0">
       </div>
