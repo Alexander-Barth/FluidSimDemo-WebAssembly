@@ -31,6 +31,7 @@ function step!(config,mask,(u,v),(un,vn))
 
     Du_over_Δxy = Du .* invΔxy
     Dv_over_Δxy = Dv .* invΔxy
+
     @inbounds for j = 2:sz[2]-1
         for i = 2:sz[1]-1
             uv2 = u[i,j]*v[i,j]^2
