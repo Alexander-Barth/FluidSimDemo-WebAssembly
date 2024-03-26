@@ -1,7 +1,7 @@
 module GrayScott
 
-function step!(config,(u,v),(un,vn))
-    (Δx,Δt,(Du,Dv),f,k) = config
+function step!(config,mask,(u,v),(un,vn))
+    ((Δx,Δy),(invΔx,invΔy),Δt,(Du,Dv),f,k) = config
 
     sz = size(u)
     @inbounds for j = 2:sz[2]-1

@@ -112,8 +112,7 @@ function model_step(Δx,Δt,Du,Dv,f,k,r,ntime,mask,u,v,un,vn)
     invΔxy = 1 ./ Δxy
     #invΔxy =  Δxy
     config = (; Δxy,invΔxy,Δt,Duv,f,k)
-    config = (; Δx,Δt,Duv,f,k)
-    @inline GrayScott.step!(config,(u,v),(un,vn))
+    @inline GrayScott.step!(config,mask,(u,v),(un,vn))
     return 1
 end
 
