@@ -18,7 +18,7 @@ export async function run(document) {
     const dx = 1000;
     const dt = 28.73;
     const grav = 9.81;
-    
+
     var ntime = 0;
 
     // n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom
@@ -31,11 +31,12 @@ export async function run(document) {
     let [z_p, z] = MallocArray(Float32Array,memory,base,[imax,m+1]);
     let [bottom_p, bottom] = MallocArray(Float32Array,memory,base,[imax]);
 
-    rho[0] = 1020;
+/*    rho[0] = 1020;
     rho[1] = 1035;
     rho[2] = 1050;
     rho[3] = 1065;
     rho[4] = 1080;
+*/
 
     for (let i = 0; i < imax; i++) {
         bottom[i] = 100;
@@ -43,11 +44,9 @@ export async function run(document) {
             hm[i + k*imax] = bottom[i]/m;
         }
     }
-        
+
     // canvas for plotting
     const canvas = document.getElementById("plot");
-    const erase_elem = document.getElementById("erase");
-    const pen_size_elem = document.getElementById("pen_size");
     var svg = document.getElementById("profile");
 
     var ctx = canvas.getContext("2d");
@@ -57,20 +56,18 @@ export async function run(document) {
         let grav = parseFloat(document.getElementById("grav").value);
         let f = parseFloat(document.getElementById("f").value);
         let DeltaT = parseFloat(document.getElementById("DeltaT").value);
-        let pmin = parseFloat(document.getElementById("pmin").value);
-        let pmax = parseFloat(document.getElementById("pmax").value);
         let show_velocity = document.getElementById("show_velocity").checked;
         let [profile_z,profile_density] = getProfile(svg);
 
-        
+
         console.log(profile_density);
 
         for (let k = 0; k < m; k++) {
             rho[k] = profile_density[k];
         }
 
-        
-        if (!isNaN(grav) && !isNaN(f) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(DeltaT)) {
+
+        if (!isNaN(grav) && !isNaN(f) && !isNaN(DeltaT)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
 
             const result = julia_nlayer_step_init(
@@ -82,7 +79,7 @@ export async function run(document) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             let scalex = canvas.width/(imax-1);
             let scaley = canvas.height/100;
-            
+
             for (let k = 0; k < m; k++) {
                 ctx.beginPath();
                 ctx.moveTo(0,scaley*z[k*imax]);
@@ -92,7 +89,7 @@ export async function run(document) {
                 }
                 ctx.stroke();
             }
-            
+
             //console.log("z ",h[0]);
         }
         window.requestAnimationFrame(step);
@@ -107,10 +104,14 @@ function getProfile(svg) {
 
     var z = [];
     var density = [];
-    
+
+    let density_min =  1020;
+    let density_max =  1060;
+    let factor = (density_max - density_min) / document.getElementById("profile").width.baseVal.value;
+
     for (var i = 0; i < drags.length; i++) {
         z.push(parseFloat(drags[drags.length-i-1].getAttribute("cy")));
-        density.push(1020 + parseFloat(drags[drags.length-i-1].getAttribute("cx"))/5);
+        density.push(density_min + parseFloat(drags[drags.length-i-1].getAttribute("cx")) * factor);
     }
 
     return [z,density];
@@ -237,7 +238,7 @@ function makeDraggable(svg) {
             ll0.setAttributeNS(null,"y1",drags[i].getAttribute("cy"));
             ll0.setAttributeNS(null,"x2",drags[i+1].getAttribute("cx"));
             ll0.setAttributeNS(null,"y2",drags[i+1].getAttribute("cy"));
-            ll0.setAttributeNS(null,"style","stroke:rgb(255,0,0);stroke-width:2")
+            ll0.setAttributeNS(null,"style","stroke:rgb(190,190,255);stroke-width:2")
             ll.appendChild(ll0);
         }
     }

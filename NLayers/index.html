@@ -37,7 +37,7 @@
       run(document);
     </script>
 
-    <h3>2D shallow water equations implemented in Julia and compiled to WASM.</h3>
+    <h3>Layered ocean model implemented in Julia and compiled to WASM.</h3>
     <div>
     <svg id="profile" xmlns="http://www.w3.org/2000/svg"
          width="200" height="400" style="border:1px solid black">
@@ -50,21 +50,23 @@
         <circle cx="35" cy="150" r="5" fill="#007bff" class="draggable" />
         <circle cx="25" cy="50" r="5" fill="#007bff" class="draggable" />
       </g>
+      <g>
+        <path style="stroke:gray;stroke-width:1;stroke-dasharray:5,10" d="m 10,0 0,400" id="grid0" />
+        <path style="stroke:gray;stroke-width:1;stroke-dasharray:5,10" d="m 100,0 0,400" id="grid0" />
+        <text x="10" y="390" id="rho0">
+          1020
+        </text>
+        <text x="100" y="390" id="rho1">
+          1080
+        </text>
+      </g>
     </svg>
     <canvas id="plot" width="900" height="400" style="border:1px solid black" />
     </div>
-    
-    <p>The surface elevation as governed by the 2D shallow water equations. The area represents a water body of 500 km x 1500 km with a constant depth of 100 m. Use the mouse to change and add obstacles in the flow field.</p>
+
+    <p>This simulation show a vertical section of a layered ocean model where every layer has the density indicated by the density profile to the left. The density must increase with depth.</p>
 
     <form>
-      <div>
-        <label for="pen_size">Pen size</label>
-        <input type="number" id="pen_size" value="10" step="1" min="1">
-      </div>
-      <div>
-        <label for="erase">Erase mode</label>
-        <input type="checkbox" id="erase" value="erase">
-      </div>
       <div>
         <label for="grav">gravity (m/s²)</label><input id="grav" type="number" value="9.81" step="0.1" min="0">
       </div>
@@ -75,29 +77,12 @@
         <label for="DeltaT">Time step (s)</label><input id="DeltaT" type="number" value="28" step="1">
       </div>
     </div>
-
-    <div>
-      <label for="pmin">Minimum elevation (m)</label><input id="pmin" type="number" value="-0.25" step="0.01">
-    </div>
-    <div>
-      <label for="pmax">Maximum elevation (m)</label><input id="pmax" type="number" value="0.25" step="0.01">
-    </div>
       <div>
         <label for="show_velocity">Show velocity</label>
         <input type="checkbox" id="show_velocity" value="show_velocity">
       </div>
 
     </form>
-<p>Thinks to try:
-  <ul>
-    <li>Draw some shapes</li>
-    <li>Increase time step (when the model becomes unstable, you need to reload the page to restart the simulation)</li>
-    <li>Change the acceleration due to gravity</li>
-    <li>Use a negative time-step</li>
-    <li>Note that the model can become unstable of the once the <a href="https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition">CFL conditions</a> are not satisfied.</li>
-    <li>A typical value of the Coriolis parameter on Earth is 0.0001 s⁻¹.
-    </ul>
-</p>
     <p>More information and the code is <a href="https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly">available here</a>.</p>
   </body>
 </html>
