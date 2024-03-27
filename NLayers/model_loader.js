@@ -19,7 +19,7 @@ export async function run(document) {
     const dt = 28.73;
     const grav = 9.81;
 
-    var ntime = 0;
+    let ntime = 0;
 
     // n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom
     let [rho_p, rho] = MallocArray(Float32Array,memory,base,[m]);
@@ -47,9 +47,9 @@ export async function run(document) {
 
     // canvas for plotting
     const canvas = document.getElementById("plot");
-    var svg = document.getElementById("profile");
+    let svg = document.getElementById("profile");
 
-    var ctx = canvas.getContext("2d");
+    let ctx = canvas.getContext("2d");
     ctx.transform(1, 0, 0, -1, 0, canvas.height)
 
     function step(timestamp) {
@@ -100,16 +100,16 @@ export async function run(document) {
 
 
 function getProfile(svg) {
-    var drags = svg.getElementsByClassName("draggable");
+    let drags = svg.getElementsByClassName("draggable");
 
-    var z = [];
-    var density = [];
+    let z = [];
+    let density = [];
 
     let density_min =  1020;
     let density_max =  1060;
     let factor = (density_max - density_min) / document.getElementById("profile").width.baseVal.value;
 
-    for (var i = 0; i < drags.length; i++) {
+    for (let i = 0; i < drags.length; i++) {
         z.push(parseFloat(drags[drags.length-i-1].getAttribute("cy")));
         density.push(density_min + parseFloat(drags[drags.length-i-1].getAttribute("cx")) * factor);
     }
@@ -130,16 +130,16 @@ function makeDraggable(svg) {
     svg.addEventListener('touchcancel', endDrag);
 
     drawlines(svg);
-    var selectedElement, offset, transform,
+    let selectedElement, offset, transform,
         bbox, minX, maxX, minY, maxY, confined;
 
-    var boundaryX1 = 10.5;
-    var boundaryX2 = 30;
-    var boundaryY1 = 2.2;
-    var boundaryY2 = 19.2;
+    let boundaryX1 = 10.5;
+    let boundaryX2 = 30;
+    let boundaryY1 = 2.2;
+    let boundaryY2 = 19.2;
 
     function getMousePosition(evt) {
-        var CTM = svg.getScreenCTM();
+        let CTM = svg.getScreenCTM();
         if (evt.touches) { evt = evt.touches[0]; }
         return {
             x: (evt.clientX - CTM.e) / CTM.a,
@@ -159,11 +159,11 @@ function makeDraggable(svg) {
             offset = getMousePosition(evt);
 
             // Make sure the first transform on the element is a translate transform
-            var transforms = selectedElement.transform.baseVal;
+            let transforms = selectedElement.transform.baseVal;
 
             if (transforms.length === 0 || transforms.getItem(0).type !== SVGTransform.SVG_TRANSFORM_TRANSLATE) {
                 // Create an transform that translates by (0, 0)
-                var translate = svg.createSVGTransform();
+                let translate = svg.createSVGTransform();
                 translate.setTranslate(0, 0);
                 selectedElement.transform.baseVal.insertItemBefore(translate, 0);
             }
@@ -190,11 +190,11 @@ function makeDraggable(svg) {
             evt.preventDefault();
 
 
-            var coord = getMousePosition(evt);
+            let coord = getMousePosition(evt);
 
             // constrait position
             // density must to monotonic
-            var prev, next;
+            let prev, next;
             prev = selectedElement.previousElementSibling;
             if (prev) {
                 coord.x = Math.min(coord.x,parseFloat(prev.getAttributeNS(null, "cx")));
@@ -207,8 +207,8 @@ function makeDraggable(svg) {
                 coord.y = Math.max(coord.y,parseFloat(next.getAttributeNS(null, "cy")));
             }
 
-            var dx = coord.x - offset.x;
-            var dy = coord.y - offset.y;
+            let dx = coord.x - offset.x;
+            let dy = coord.y - offset.y;
 
             selectedElement.setAttributeNS(null, "cx", dx);
             selectedElement.setAttributeNS(null, "cy", dy);
@@ -223,17 +223,17 @@ function makeDraggable(svg) {
 
 
     function drawlines(svg) {
-        var ll = svg.getElementById("lines");
+        let ll = svg.getElementById("lines");
         while (ll.hasChildNodes()) {
             ll.removeChild(ll.firstChild);
         }
-        var drags = svg.getElementsByClassName("draggable");
+        let drags = svg.getElementsByClassName("draggable");
 
         //console.log("drags",drags[0].getAttribute("cx"),drags[0].getAttribute("cx"));
-        var svgNS = "http://www.w3.org/2000/svg";
+        let svgNS = "http://www.w3.org/2000/svg";
 
-        for (var i = 0; i < drags.length-1; i++) {
-            var ll0 = document.createElementNS(svgNS,"line");
+        for (let i = 0; i < drags.length-1; i++) {
+            let ll0 = document.createElementNS(svgNS,"line");
             ll0.setAttributeNS(null,"x1",drags[i].getAttribute("cx"));
             ll0.setAttributeNS(null,"y1",drags[i].getAttribute("cy"));
             ll0.setAttributeNS(null,"x2",drags[i+1].getAttribute("cx"));
