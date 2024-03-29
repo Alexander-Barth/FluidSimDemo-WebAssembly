@@ -2,8 +2,9 @@ function nlayer_init!(dx,hm,h,u,rng)
     imax,m = size(h)
 
     @inbounds for k = 1:m
-        a = randn(rng,eltype(h))
-        for i = 1:size(h,1)
+        #a = randn(rng,eltype(h))
+        a = @inline rand(rng,Float32)
+        @inbounds for i = 1:imax
             x = dx * (i-1)
             h[i,k] = -20 * a * exp(-x^2 / (20*dx)^2) + hm[i,k];
         end
@@ -57,6 +58,5 @@ function nlayer_step(n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom)
             u[i,k] = u[i,k] - dt * (P[i,k]-P[i-1,k])/(rho[k]*dx)
         end
     end
-
 end
 
