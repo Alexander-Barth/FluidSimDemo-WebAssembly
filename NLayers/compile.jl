@@ -13,10 +13,10 @@ include("nlayers.jl")
 function nlayer_step_init(n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom)
     if n == 0
         rng = LinearCongruentialGenerators(42)
-        nlayer_init!(dx,hm,h,u,rng)
+        @inline nlayer_init!(dx,hm,h,u,rng)
     end
 
-    nlayer_step(n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom)
+    @inline nlayer_step(n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom)
     return 0
 end
 
