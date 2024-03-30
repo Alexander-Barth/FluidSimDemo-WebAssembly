@@ -1,3 +1,5 @@
+using Pkg
+Pkg.activate("/home/abarth/src/FluidSimDemo-WebAssembly-update/")
 include("../wasm_target.jl")
 
 include("nlayers.jl")
@@ -5,7 +7,7 @@ include("nlayers.jl")
 
 
 # assume that we use 32-bit julia
-@assert Int == Int32
+#@assert Int == Int32
 
 
 function nlayer_step_init(n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom)

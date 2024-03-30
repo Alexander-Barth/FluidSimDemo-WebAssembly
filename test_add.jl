@@ -8,5 +8,5 @@ obj = build_obj(add, Tuple{Int32,Int32})
 
 write("test_add.o", obj)
 run(`wasm-ld --no-entry --export-all -o test_add.wasm test_add.o`)
-run(`wasm2wat test_add.wasm`)
+#run(`wasm2wat test_add.wasm`)
 run(`node test_add_node.js`)
