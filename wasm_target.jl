@@ -77,13 +77,18 @@ end
 # see stack_pointer.wat
 
 
-get_stack_pointer() =
+stack_pointer() =
     Ptr{Nothing}(ccall("extern get_stack_pointer", llvmcall, Cint, ()))
-set_stack_pointer(p) =
+stack_pointer(p) =
     ccall("extern set_stack_pointer", llvmcall, Cvoid, (Cint,),Cint(p))
 
-# even unsafer than unsafe_store!
-unsafer_store!(p::Ptr{Nothing},v::T) where T = unsafe_store!(Ptr{T}(p),v)
+function push_stack(value::T) where T
+    stackptr = stack_pointer()
+    stackptr -= sizeof(Ptr)
+    unsafe_store!(Ptr{T}(stackptr),value)
+    stack_pointer(stackptr)
+    return stackptr
+end
 
 
 # simple RNG

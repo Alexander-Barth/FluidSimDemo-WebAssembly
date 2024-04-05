@@ -1,15 +1,5 @@
 include("wasm_target.jl")
 
-
-function pushstack(value)
-    stackptr = get_stack_pointer();
-    stackptr -= sizeof(Ptr)
-    unsafer_store!(stackptr,value)
-    value_p = stackptr
-    set_stack_pointer(stackptr);
-    return value_p
-end
-
 """
     saxpy(α::Float32,x::AbstractVector{T},y::AbstractVector{T})
 
@@ -30,12 +20,12 @@ function saxpy(α::Float32,x::AbstractVector{T},y::AbstractVector{T}) where T
         Ptr{Cint},
         Ptr{Cint},
         Ptr{Cint},
-    ), pushstack(n),
-          pushstack(α),
+    ), push_stack(n),
+          push_stack(α),
           pointer(x),
-          pushstack(incx),
+          push_stack(incx),
           pointer(y),
-          pushstack(incy))
+          push_stack(incy))
 
     return 0;
 end
