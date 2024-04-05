@@ -69,9 +69,6 @@ obj = build_obj(saxpy, Tuple{
 
 write("test_saxpy.o", obj)
 run(`clang --target=wasm32 --no-standard-libraries -c -o test_heap.o test_heap.c`)
-run(`wat2wasm -r -o saxpy.o saxpy.wat`)
 run(`wat2wasm -r -o stack_pointer.o stack_pointer.wat`)
-#run(`clang --target=wasm32 --no-standard-libraries -c -o saxpy.o saxpy.c`)
 run(`wasm-ld --no-entry --export-all -o test_saxpy.wasm test_saxpy.o test_heap.o  saxpy.o  stack_pointer.o blas_wasi.a`)
-#run(`wasm2wat test_saxpy.wasm`)
 run(`node test_saxpy_node.js`)
