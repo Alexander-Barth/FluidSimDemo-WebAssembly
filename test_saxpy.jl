@@ -1,50 +1,41 @@
-using Pkg; Pkg.activate("/home/abarth/src/FluidSimDemo-WebAssembly-update/")
-cd("/home/abarth/src/FluidSimDemo-WebAssembly-update/")
 include("wasm_target.jl")
 
 
+function pushstack(value)
+    stackptr = get_stack_pointer();
+    stackptr -= sizeof(Ptr)
+    unsafer_store!(stackptr,value)
+    value_p = stackptr
+    set_stack_pointer(stackptr);
+    return value_p
+end
 
 """
-    saxpy(α::Float32,x::MallocVector{T},y::MallocVector{T})
+    saxpy(α::Float32,x::AbstractVector{T},y::AbstractVector{T})
 
 Computes y .= y + α * x
 
 It should be called saxpy! but a ! cannot be used in function names in
 JavaScript.
 """
-function saxpy(α::Float32,x::MallocVector{T},y::MallocVector{T}) where T
-    x_p = pointer(x)
-    y_p = pointer(y)
-
+function saxpy(α::Float32,x::AbstractVector{T},y::AbstractVector{T}) where T
     n = length(x)
     incx = stride(x,1)
     incy = stride(y,1)
 
-    offset = get_stack_pointer();
-    offset -= sizeof(Int32)
-    unsafe_store!(Ptr{Int32}(offset),n)
-    n_p = offset
-
-    offset -= sizeof(Float32)
-    unsafe_store!(Ptr{Float32}(offset),α)
-    α_p = offset
-
-    offset -= sizeof(Int32)
-    unsafe_store!(Ptr{Int32}(offset),incx)
-    incx_p = offset
-
-    offset -= sizeof(Int32)
-    unsafe_store!(Ptr{Int32}(offset),incy)
-    incy_p = offset
-
-    set_stack_pointer(offset);
-
     ccall("extern f2c_saxpy", llvmcall, Cint, (
-        Int32,
-        Cint,
-        Ptr{Cint},Int32,
-        Ptr{Cint},Int32,
-    ), n_p, α_p, x_p, incx_p, y_p, incy_p)
+        Ptr{Cint},
+        Ptr{Cint},
+        Ptr{Cint},
+        Ptr{Cint},
+        Ptr{Cint},
+        Ptr{Cint},
+    ), pushstack(n),
+          pushstack(α),
+          pointer(x),
+          pushstack(incx),
+          pointer(y),
+          pushstack(incy))
 
     return 0;
 end
@@ -56,7 +47,6 @@ obj = build_obj(saxpy, Tuple{
 })
 
 write("test_saxpy.o", obj)
-run(`clang --target=wasm32 --no-standard-libraries -c -o test_heap.o test_heap.c`)
 run(`wat2wasm -r -o stack_pointer.o stack_pointer.wat`)
-run(`wasm-ld --no-entry --export-all -o test_saxpy.wasm test_saxpy.o test_heap.o  saxpy.o  stack_pointer.o blas_wasi.a`)
+run(`wasm-ld --no-entry --export-all -o test_saxpy.wasm test_saxpy.o saxpy.o  stack_pointer.o blas_wasi.a`)
 run(`node test_saxpy_node.js`)

@@ -1,4 +1,4 @@
-# adapted from
+# Compiler Target adapted from
 # https://seelengrab.github.io/articles/Running%20Julia%20baremetal%20on%20an%20Arduino/
 
 using GPUCompiler
@@ -77,8 +77,13 @@ end
 # see stack_pointer.wat
 
 
-get_stack_pointer() = ccall("extern get_stack_pointer", llvmcall, Cint, ())
-set_stack_pointer(p) = ccall("extern set_stack_pointer", llvmcall, Cvoid, (Cint,),p)
+get_stack_pointer() =
+    Ptr{Nothing}(ccall("extern get_stack_pointer", llvmcall, Cint, ()))
+set_stack_pointer(p) =
+    ccall("extern set_stack_pointer", llvmcall, Cvoid, (Cint,),Cint(p))
+
+# even unsafer than unsafe_store!
+unsafer_store!(p::Ptr{Nothing},v::T) where T = unsafe_store!(Ptr{T}(p),v)
 
 
 # simple RNG
