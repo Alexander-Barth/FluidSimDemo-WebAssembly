@@ -1,20 +1,8 @@
+using Pkg; Pkg.activate("/home/abarth/src/FluidSimDemo-WebAssembly-update/")
+cd("/home/abarth/src/FluidSimDemo-WebAssembly-update/")
 include("wasm_target.jl")
 
 
-get_stack_pointer() = ccall("extern get_stack_pointer", llvmcall, Cint, ())
-set_stack_pointer(p) = ccall("extern set_stack_pointer", llvmcall, Cvoid, (Cint,),p)
-
-# https://surma.dev/things/c-to-webassembly/
-
-
-# ┌───────────────┬─────────────────────┬────────────────────────┐
-# │ data          │             ← stack │ heap →                 │
-# └───────────────┴─────────────────────┴────────────────────────┘
-# 0         __data_end            __heap_base
-#
-# The stack grows downwards and the heap grows upwards.
-# LLVM uses __stack_pointer
-# see stack_pointer.wat
 
 """
     saxpy(α::Float32,x::MallocVector{T},y::MallocVector{T})

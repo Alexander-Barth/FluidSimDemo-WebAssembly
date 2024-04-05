@@ -65,6 +65,22 @@ function build_obj(@nospecialize(func), @nospecialize(types); kwargs...)
 end
 
 
+
+# https://surma.dev/things/c-to-webassembly/
+# ┌───────────────┬─────────────────────┬────────────────────────┐
+# │ data          │             ← stack │ heap →                 │
+# └───────────────┴─────────────────────┴────────────────────────┘
+# 0         __data_end            __heap_base
+#
+# The stack grows downwards and the heap grows upwards.
+# LLVM uses __stack_pointer
+# see stack_pointer.wat
+
+
+get_stack_pointer() = ccall("extern get_stack_pointer", llvmcall, Cint, ())
+set_stack_pointer(p) = ccall("extern set_stack_pointer", llvmcall, Cvoid, (Cint,),p)
+
+
 # simple RNG
 
 import Random: rand, AbstractRNG
