@@ -1,5 +1,7 @@
 include("wasm_target.jl")
 
+push_stack(a::AbstractArray) = Ptr{Nothing}(pointer(a))
+
 """
     saxpy(α::Float32,x::AbstractVector{T},y::AbstractVector{T})
 
@@ -14,17 +16,17 @@ function saxpy(α::Float32,x::AbstractVector{T},y::AbstractVector{T}) where T
     incy = stride(y,1)
 
     ccall("extern f2c_saxpy", llvmcall, Cint, (
-        Ptr{Cint},
-        Ptr{Cint},
-        Ptr{Cint},
-        Ptr{Cint},
-        Ptr{Cint},
-        Ptr{Cint},
-    ), push_stack(n),
+        Ptr{Cint}, # n
+        Ptr{Cint}, # alpha
+        Ptr{Cint}, # x
+        Ptr{Cint}, # incx
+        Ptr{Cint}, # y
+        Ptr{Cint}, # incy
+    ),  push_stack(n),
           push_stack(α),
-          pointer(x),
+          push_stack(x),
           push_stack(incx),
-          pointer(y),
+          push_stack(y),
           push_stack(incy))
 
     return 0;
@@ -38,5 +40,5 @@ obj = build_obj(saxpy, Tuple{
 
 write("test_saxpy.o", obj)
 run(`wat2wasm -r -o stack_pointer.o stack_pointer.wat`)
-run(`wasm-ld --no-entry --export-all -o test_saxpy.wasm test_saxpy.o saxpy.o  stack_pointer.o blas_wasi.a`)
+run(`wasm-ld --no-entry --export-all -o test_saxpy.wasm test_saxpy.o stack_pointer.o blas_wasi.a`)
 run(`node test_saxpy_node.js`)
