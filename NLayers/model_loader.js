@@ -1,12 +1,13 @@
 import { MallocArray, pcolor, quiver, mouse_edit_mask } from "../julia_wasm_utils.js";
 
-
 const bottom_depth = 100; // m
-const canvas_height_m = 140; // m
+const canvas_height_m = 125; // m
+
+const density_min = 1000;
+const density_max = 1100;
 
 export async function run(document) {
     makeDraggable(document.getElementById("profile"));
-
 
     const response = await fetch('model.wasm');
     const bytes = await response.arrayBuffer();
@@ -130,10 +131,6 @@ export async function run(document) {
     window.requestAnimationFrame(step);
 }
 
-
-const density_min = 1000;
-const density_max = 1100;
-
 function setProfile(svg,z,density) {
     let factor = (density_max - density_min) / document.getElementById("profile").width.baseVal.value;
 
@@ -170,26 +167,26 @@ function getProfile(svg) {
 }
 
 
-    function drawlines(svg) {
-        let ll = svg.getElementById("lines");
-        while (ll.hasChildNodes()) {
-            ll.removeChild(ll.firstChild);
-        }
-        let drags = svg.getElementsByClassName("draggable");
-
-        //console.log("drags",drags[0].getAttribute("cx"),drags[0].getAttribute("cx"));
-        let svgNS = "http://www.w3.org/2000/svg";
-
-        for (let i = 0; i < drags.length-1; i++) {
-            let ll0 = document.createElementNS(svgNS,"line");
-            ll0.setAttributeNS(null,"x1",drags[i].getAttribute("cx"));
-            ll0.setAttributeNS(null,"y1",drags[i].getAttribute("cy"));
-            ll0.setAttributeNS(null,"x2",drags[i+1].getAttribute("cx"));
-            ll0.setAttributeNS(null,"y2",drags[i+1].getAttribute("cy"));
-            ll0.setAttributeNS(null,"style","stroke:rgb(190,190,255);stroke-width:2")
-            ll.appendChild(ll0);
-        }
+function drawlines(svg) {
+    let ll = svg.getElementById("lines");
+    while (ll.hasChildNodes()) {
+        ll.removeChild(ll.firstChild);
     }
+    let drags = svg.getElementsByClassName("draggable");
+
+    //console.log("drags",drags[0].getAttribute("cx"),drags[0].getAttribute("cx"));
+    let svgNS = "http://www.w3.org/2000/svg";
+
+    for (let i = 0; i < drags.length-1; i++) {
+        let ll0 = document.createElementNS(svgNS,"line");
+        ll0.setAttributeNS(null,"x1",drags[i].getAttribute("cx"));
+        ll0.setAttributeNS(null,"y1",drags[i].getAttribute("cy"));
+        ll0.setAttributeNS(null,"x2",drags[i+1].getAttribute("cx"));
+        ll0.setAttributeNS(null,"y2",drags[i+1].getAttribute("cy"));
+        ll0.setAttributeNS(null,"style","stroke:rgb(190,190,255);stroke-width:2")
+        ll.appendChild(ll0);
+    }
+}
 
 //
 function makeDraggable(svg) {
