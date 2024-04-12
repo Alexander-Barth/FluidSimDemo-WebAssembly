@@ -1,5 +1,9 @@
 import { MallocArray, pcolor, quiver, mouse_edit_mask } from "../julia_wasm_utils.js";
 
+
+const bottom_depth = 100; // m
+const canvas_height_m = 140; // m
+
 export async function run(document) {
     makeDraggable(document.getElementById("profile"));
 
@@ -37,7 +41,7 @@ export async function run(document) {
     let [work2_p, work2] = MallocArray(Float32Array,memory,base,[m,m]);
     let [potential_matrix_p, potential_matrix] = MallocArray(Float32Array,memory,base,[m,m]);
 
-    
+
     /*
     rho[0] = 1020;
     rho[1] = 1035;
@@ -47,7 +51,7 @@ export async function run(document) {
     */
 
     for (let i = 0; i < imax; i++) {
-        bottom[i] = 100;
+        bottom[i] = bottom_depth;
         for (let k = 0; k < m; k++) {
             hm[i + k*imax] = bottom[i]/m;
         }
@@ -57,8 +61,12 @@ export async function run(document) {
     const canvas = document.getElementById("plot");
     let svg = document.getElementById("profile");
 
+    // rho[1] is the surface layers
+    setProfile(svg,[10,30,50,70,90],[1020, 1035, 1050, 1065, 1080]);
+    drawlines(svg);
+
     document.getElementById("modeindex").onchange = function() {
-        ntime = 0;        
+        ntime = 0;
     }
 
     let ctx = canvas.getContext("2d");
@@ -91,7 +99,7 @@ export async function run(document) {
                     rho_p,hm_p,h_p,u_p,
                     eigenvalues_p,eigenvectors_p,potential_matrix_p,work1_p,work2_p);
             }
-            
+
             const result = julia_nlayer_step(
                 ntime,dx,DeltaT,grav,
                 rho_p,P_p,h_p,hm_p,hu_p,u_p,z_p,bottom_p
@@ -102,12 +110,12 @@ export async function run(document) {
             if (ntime % 3 == 0) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 let scalex = canvas.width/(imax-1);
-                let scaley = canvas.height/140;
+                let scaley = canvas.height/canvas_height_m;
 
                 for (let k = 0; k < m; k++) {
                     ctx.beginPath();
                     ctx.moveTo(0,scaley*z[k*imax]);
-                    
+
                     for (let i = 0; i < imax; i++) {
                         ctx.lineTo(scalex*i, scaley*z[i + k*imax]);
                     }
@@ -123,14 +131,34 @@ export async function run(document) {
 }
 
 
+const density_min = 1000;
+const density_max = 1100;
+
+function setProfile(svg,z,density) {
+    let factor = (density_max - density_min) / document.getElementById("profile").width.baseVal.value;
+
+
+    let H = document.getElementById("profile").height.baseVal.value;
+
+    let drags = svg.getElementsByClassName("draggable");
+
+    for (let i = 0; i < drags.length; i++) {
+        let cx = (density[i] - density_min) / factor;
+        //let cy = 3*z[i];
+        let cy = H - (bottom_depth - z[i]) * H / canvas_height_m;
+
+        drags[drags.length-i-1].setAttributeNS(null, "cx", cx);
+        drags[drags.length-i-1].setAttributeNS(null, "cy", cy);
+    }
+
+}
+
 function getProfile(svg) {
     let drags = svg.getElementsByClassName("draggable");
 
     let z = [];
     let density = [];
 
-    let density_min =  1020;
-    let density_max =  1060;
     let factor = (density_max - density_min) / document.getElementById("profile").width.baseVal.value;
 
     for (let i = 0; i < drags.length; i++) {
@@ -140,6 +168,28 @@ function getProfile(svg) {
 
     return [z,density];
 }
+
+
+    function drawlines(svg) {
+        let ll = svg.getElementById("lines");
+        while (ll.hasChildNodes()) {
+            ll.removeChild(ll.firstChild);
+        }
+        let drags = svg.getElementsByClassName("draggable");
+
+        //console.log("drags",drags[0].getAttribute("cx"),drags[0].getAttribute("cx"));
+        let svgNS = "http://www.w3.org/2000/svg";
+
+        for (let i = 0; i < drags.length-1; i++) {
+            let ll0 = document.createElementNS(svgNS,"line");
+            ll0.setAttributeNS(null,"x1",drags[i].getAttribute("cx"));
+            ll0.setAttributeNS(null,"y1",drags[i].getAttribute("cy"));
+            ll0.setAttributeNS(null,"x2",drags[i+1].getAttribute("cx"));
+            ll0.setAttributeNS(null,"y2",drags[i+1].getAttribute("cy"));
+            ll0.setAttributeNS(null,"style","stroke:rgb(190,190,255);stroke-width:2")
+            ll.appendChild(ll0);
+        }
+    }
 
 //
 function makeDraggable(svg) {
@@ -234,7 +284,7 @@ function makeDraggable(svg) {
             let dx = coord.x - offset.x;
             let dy = coord.y - offset.y;
 
-            selectedElement.setAttributeNS(null, "cx", dx);
+            selectedElement.setAttributeNS(null, "cx", Math.max(dx,0));
             //selectedElement.setAttributeNS(null, "cy", dy);
 
 
@@ -246,26 +296,6 @@ function makeDraggable(svg) {
     }
 
 
-    function drawlines(svg) {
-        let ll = svg.getElementById("lines");
-        while (ll.hasChildNodes()) {
-            ll.removeChild(ll.firstChild);
-        }
-        let drags = svg.getElementsByClassName("draggable");
-
-        //console.log("drags",drags[0].getAttribute("cx"),drags[0].getAttribute("cx"));
-        let svgNS = "http://www.w3.org/2000/svg";
-
-        for (let i = 0; i < drags.length-1; i++) {
-            let ll0 = document.createElementNS(svgNS,"line");
-            ll0.setAttributeNS(null,"x1",drags[i].getAttribute("cx"));
-            ll0.setAttributeNS(null,"y1",drags[i].getAttribute("cy"));
-            ll0.setAttributeNS(null,"x2",drags[i+1].getAttribute("cx"));
-            ll0.setAttributeNS(null,"y2",drags[i+1].getAttribute("cy"));
-            ll0.setAttributeNS(null,"style","stroke:rgb(190,190,255);stroke-width:2")
-            ll.appendChild(ll0);
-        }
-    }
 
     function endDrag(evt) {
         console.log("foo");
