@@ -35,11 +35,12 @@ export function MallocArray2(typearray,memory,base,size,elsize4) {
 
 
 
-function rgb(r, g, b){
+export function rgb(r, g, b){
     return `rgb(${r}, ${g}, ${b})`
 }
 
-function clamp(num, min, max) {
+
+export function clamp(num, min, max) {
     return Math.min(Math.max(num, min), max);
 }
 

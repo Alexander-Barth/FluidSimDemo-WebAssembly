@@ -1,4 +1,4 @@
-import { MallocArray, pcolor, quiver, mouse_edit_mask } from "../julia_wasm_utils.js";
+import { MallocArray, pcolor, quiver, mouse_edit_mask, clamp, turbo_colormap, rgb } from "../julia_wasm_utils.js";
 
 const bottom_depth = 100; // m
 const canvas_height_m = 125; // m
@@ -19,7 +19,7 @@ export async function run(document) {
     let base = [__heap_base];
 
     const imax = 101;
-    const m = 5;
+    const m = 10;
     const dx = 1000;
     const dt = 28.73;
     const grav = 9.81;
@@ -28,6 +28,8 @@ export async function run(document) {
 
     // n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom
     let [rho_p, rho] = MallocArray(Float32Array,memory,base,[m]);
+    let [z0_p, z0] = MallocArray(Float32Array,memory,base,[m]);
+
     let [P_p, P] = MallocArray(Float32Array,memory,base,[imax,m]);
     let [h_p, h] = MallocArray(Float32Array,memory,base,[imax,m]);
     let [hm_p, hm] = MallocArray(Float32Array,memory,base,[imax,m]);
@@ -58,12 +60,20 @@ export async function run(document) {
         }
     }
 
+    let rho_min = 1020;
+    let rho_max = 1080;
+    for (let k = 0; k < m; k++) {
+        rho[k] = rho_min + k * (rho_max-rho_min)/(m-1);
+        z0[k] = (k + 0.5) * bottom_depth/m;
+    }
     // canvas for plotting
     const canvas = document.getElementById("plot");
     let svg = document.getElementById("profile");
+    let cmap = turbo_colormap;
 
+    document.getElementById("modeindex").max = m;
     // rho[1] is the surface layers
-    setProfile(svg,[10,30,50,70,90],[1020, 1035, 1050, 1065, 1080]);
+    setProfile(svg,z0,rho);
     drawlines(svg);
 
     document.getElementById("modeindex").onchange = function() {
@@ -79,10 +89,11 @@ export async function run(document) {
         let f = parseFloat(document.getElementById("f").value);
         let DeltaT = parseFloat(document.getElementById("DeltaT").value);
         let show_velocity = document.getElementById("show_velocity").checked;
+        let nplot = parseInt(document.getElementById("nplot").value);
         let [profile_z,profile_density] = getProfile(svg);
 
 
-        console.log(profile_density);
+        //console.log(profile_density);
 
         for (let k = 0; k < m; k++) {
             rho[k] = profile_density[k];
@@ -101,53 +112,87 @@ export async function run(document) {
                     eigenvalues_p,eigenvectors_p,potential_matrix_p,work1_p,work2_p);
             }
 
-            const result = julia_nlayer_step(
-                ntime,dx,DeltaT,grav,
-                rho_p,P_p,h_p,hm_p,hu_p,u_p,z_p,bottom_p
-            );
+            let startTime =  performance.now();
+            for (let iii = 0; iii < nplot; iii++) {
+                const result = julia_nlayer_step(
+                    ntime,dx,DeltaT,grav,
+                    rho_p,P_p,h_p,hm_p,hu_p,u_p,z_p,bottom_p
+                );
+                ntime += 1;
+            }
+            let endTime = performance.now()
+            //console.log("time delta", endTime - startTime);
 
-            ntime += 1;
 
-            if (ntime % 3 == 0) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                let scalex = canvas.width/(imax-1);
-                let scaley = canvas.height/canvas_height_m;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let scalex = canvas.width/(imax-1);
+            let scaley = canvas.height/canvas_height_m;
+            let pmin = 0.4 * bottom_depth/m;
+            let pmax = 1.5 * bottom_depth/m;
 
-                for (let k = 0; k < m; k++) {
+            for (let k = 0; k < m; k++) {
+
+                for (let i = 0; i < imax-1; i++) {
+                    let pp = h[i + k*imax];
+                    let ind = Math.floor(255 * clamp((pp - pmin) / (pmax-pmin),0,1));
+                    let color = cmap[ind];
+                    ctx.fillStyle = rgb(255*color[0],255*color[1],255*color[2]);
+
+                    //ctx.fillStyle = '#f00';
                     ctx.beginPath();
-                    ctx.moveTo(0,scaley*z[k*imax]);
-
-                    for (let i = 0; i < imax; i++) {
-                        ctx.lineTo(scalex*i, scaley*z[i + k*imax]);
-                    }
-                    ctx.stroke();
+                    ctx.moveTo(scalex*i, scaley*z[i + k*imax]);
+                    ctx.lineTo(scalex*(i+1), scaley*z[i + k*imax]);
+                    ctx.lineTo(scalex*(i+1), scaley*z[i + (k+1)*imax]);
+                    ctx.lineTo(scalex*i, scaley*z[i + (k+1)*imax]);
+                    ctx.closePath();
+                    ctx.fill();
                 }
             }
+
+            for (let k = 0; k < m; k++) {
+                ctx.beginPath();
+                ctx.moveTo(0,scaley*z[k*imax]);
+
+                for (let i = 0; i < imax; i++) {
+                    ctx.lineTo(scalex*i, scaley*z[i + k*imax]);
+                }
+                ctx.stroke();
+            }
+
             //console.log("z ",h[0]);
         }
         window.requestAnimationFrame(step);
     }
-
     window.requestAnimationFrame(step);
 }
 
 function setProfile(svg,z,density) {
     let factor = (density_max - density_min) / document.getElementById("profile").width.baseVal.value;
-
-
     let H = document.getElementById("profile").height.baseVal.value;
+    let markers = document.getElementById("markers");
+    let svgNS = "http://www.w3.org/2000/svg";
 
-    let drags = svg.getElementsByClassName("draggable");
+    markers.innerHTML = "";
 
-    for (let i = 0; i < drags.length; i++) {
+
+    //let drags = svg.getElementsByClassName("draggable");
+
+    for (let i = 0; i < z.length; i++) {
         let cx = (density[i] - density_min) / factor;
         //let cy = 3*z[i];
         let cy = H - (bottom_depth - z[i]) * H / canvas_height_m;
 
-        drags[i].setAttributeNS(null, "cx", cx);
-        drags[i].setAttributeNS(null, "cy", cy);
-    }
+        //drags[i].setAttributeNS(null, "cx", cx);
+        //drags[i].setAttributeNS(null, "cy", cy);
 
+        let drag = document.createElementNS(svgNS,"circle");
+        drag.setAttributeNS(null, "cx", cx);
+        drag.setAttributeNS(null, "cy", cy);
+        drag.setAttributeNS(null, "r", 5);
+        drag.setAttributeNS(null, "fill", "#007bff");
+        drag.setAttributeNS(null, "class", "draggable");
+        markers.appendChild(drag);
+    }
 }
 
 function getProfile(svg) {

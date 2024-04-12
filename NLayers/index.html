@@ -44,11 +44,6 @@
       <g id="lines">
       </g>
       <g id="markers">
-        <circle cx="200" cy="390" r="5" fill="#007bff" class="draggable" />
-        <circle cx="105" cy="350" r="5" fill="#007bff" class="draggable" />
-        <circle cx="50" cy="250" r="5" fill="#007bff" class="draggable" />
-        <circle cx="35" cy="150" r="5" fill="#007bff" class="draggable" />
-        <circle cx="25" cy="50" r="5" fill="#007bff" class="draggable" />
       </g>
       <g>
         <path style="stroke:gray;stroke-width:1;stroke-dasharray:5,10" d="m 10,0 0,400" id="grid0" />
@@ -69,7 +64,7 @@
     <form>
       <div>
         <label for="modeindex">Initial perturbation mode (0 for random pert.)</label>
-        <input id="modeindex" type="number" value="0" step="1" min="0" max="5">
+        <input id="modeindex" type="number" value="1" step="1" min="0" max="5">
       </div>
       <div>
         <label for="grav">gravity (m/s²)</label><input id="grav" type="number" value="9.81" step="0.1" min="0">
@@ -79,6 +74,9 @@
       </div>
       <div>
         <label for="DeltaT">Time step (s)</label><input id="DeltaT" type="number" value="28" step="1">
+      </div>
+      <div>
+        <label for="nplot">Plot every n time steps</label><input id="nplot" type="number" value="1" step="1">
       </div>
     </div>
       <div style="display: none">
