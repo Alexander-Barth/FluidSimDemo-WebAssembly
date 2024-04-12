@@ -29,16 +29,16 @@ where G is the identity matrix expect at
     G[j,i] = -sin(θ)
 
 """
-@inline function givens_rotation_matrix!(SG,Sprime,i,j,θ)
+@inline function givens_rotation_matrix!(SG,Sprime,i,j,cosθ,sinθ)
     n = size(Sprime,1)
     @inbounds SG .= Sprime
     @inbounds for pi = 1:n
          Si = Sprime[pi,i]
          Sj = Sprime[pi,j]
-         SG[pi,i] += Si*(cos(θ)-1)
-         SG[pi,i] += -Sj*sin(θ)
-         SG[pi,j] += Sj*(cos(θ)-1)
-         SG[pi,j] += Si*sin(θ)
+         SG[pi,i] += Si*(cosθ-1)
+         SG[pi,i] += -Sj*sinθ
+         SG[pi,j] += Sj*(cosθ-1)
+         SG[pi,j] += Si*sinθ
     end
     return SG
 end
@@ -53,7 +53,8 @@ end
         @inbounds U[i,i] = 1
     end
 
-     while true
+    # WASM to does seem to support breaking out of while-loops
+    @inbounds for iiiiii = 1:(2*n^2)
          (pivot_i, pivot_j, pivot) = find_pivot(Sprime)
 
 #        @show pivot
@@ -61,12 +62,23 @@ end
             break
         end
 
-         θ = @inbounds atan(2*Sprime[pivot_i,pivot_j]/(Sprime[pivot_j,pivot_j] - Sprime[pivot_i,pivot_i] )) / 2
+         Sij = Sprime[pivot_i,pivot_j] # pivot
+         Sii = Sprime[pivot_i,pivot_i]
+         Sjj = Sprime[pivot_j,pivot_j]
+
+         y = (Sjj-Sii)/2
+
+         d = abs(y) + √(Sij^2+y^2)
+         r = sqrt(Sij^2+d^2)
+
+         cosθ = d/r
+         sinθ = Sij/r * sign(y)
+
 
          # update Sprime and U
-         givens_rotation_matrix!(SG,Sprime,pivot_i,pivot_j,θ)
-         givens_rotation_matrix!(Sprime,SG',pivot_i,pivot_j,θ)
-         givens_rotation_matrix!(U,U,pivot_i,pivot_j,θ)
+         givens_rotation_matrix!(SG,Sprime,pivot_i,pivot_j,cosθ,sinθ)
+         givens_rotation_matrix!(Sprime,SG',pivot_i,pivot_j,cosθ,sinθ)
+         givens_rotation_matrix!(U,U,pivot_i,pivot_j,cosθ,sinθ)
      end
 
     # Sprime is now (almost) a diagonal matrix

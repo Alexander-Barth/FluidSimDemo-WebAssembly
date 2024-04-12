@@ -6,9 +6,9 @@ export async function run(document) {
 
     const response = await fetch('model.wasm');
     const bytes = await response.arrayBuffer();
-    const { instance } = await WebAssembly.instantiate(bytes);
+    const { instance } = await WebAssembly.instantiate(bytes,{});
 
-    const { julia_nlayer_step_init, memory, __heap_base } = instance.exports;
+    const { julia_nlayer_step, julia_nlayer_init, memory, __heap_base } = instance.exports;
 
     // base[0] offset of memory, increased by MallocArray
     let base = [__heap_base];
@@ -31,12 +31,20 @@ export async function run(document) {
     let [z_p, z] = MallocArray(Float32Array,memory,base,[imax,m+1]);
     let [bottom_p, bottom] = MallocArray(Float32Array,memory,base,[imax]);
 
-/*    rho[0] = 1020;
+    let [eigenvalues_p, eigenvalues] = MallocArray(Float32Array,memory,base,[m]);
+    let [eigenvectors_p, eigenvectors] = MallocArray(Float32Array,memory,base,[m,m]);
+    let [work1_p, work1] = MallocArray(Float32Array,memory,base,[m,m]);
+    let [work2_p, work2] = MallocArray(Float32Array,memory,base,[m,m]);
+    let [potential_matrix_p, potential_matrix] = MallocArray(Float32Array,memory,base,[m,m]);
+
+    
+    /*
+    rho[0] = 1020;
     rho[1] = 1035;
     rho[2] = 1050;
     rho[3] = 1065;
     rho[4] = 1080;
-*/
+    */
 
     for (let i = 0; i < imax; i++) {
         bottom[i] = 100;
@@ -49,10 +57,15 @@ export async function run(document) {
     const canvas = document.getElementById("plot");
     let svg = document.getElementById("profile");
 
+    document.getElementById("modeindex").onchange = function() {
+        ntime = 0;        
+    }
+
     let ctx = canvas.getContext("2d");
     ctx.transform(1, 0, 0, -1, 0, canvas.height)
 
     function step(timestamp) {
+        let modeindex = parseInt(document.getElementById("modeindex").value);
         let grav = parseFloat(document.getElementById("grav").value);
         let f = parseFloat(document.getElementById("f").value);
         let DeltaT = parseFloat(document.getElementById("DeltaT").value);
@@ -70,26 +83,37 @@ export async function run(document) {
         if (!isNaN(grav) && !isNaN(f) && !isNaN(DeltaT)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
 
-            const result = julia_nlayer_step_init(
-                ntime,dx,DeltaT,grav,
-                rho_p,P_p,h_p,hm_p,hu_p,u_p,z_p,bottom_p);
+            //let modeindex = 3;
 
+            if (ntime == 0) {
+                julia_nlayer_init(
+                    dx,modeindex,
+                    rho_p,hm_p,h_p,u_p,
+                    eigenvalues_p,eigenvectors_p,potential_matrix_p,work1_p,work2_p);
+            }
+            
+            const result = julia_nlayer_step(
+                ntime,dx,DeltaT,grav,
+                rho_p,P_p,h_p,hm_p,hu_p,u_p,z_p,bottom_p
+            );
 
             ntime += 1;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            let scalex = canvas.width/(imax-1);
-            let scaley = canvas.height/100;
 
-            for (let k = 0; k < m; k++) {
-                ctx.beginPath();
-                ctx.moveTo(0,scaley*z[k*imax]);
+            if (ntime % 3 == 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let scalex = canvas.width/(imax-1);
+                let scaley = canvas.height/140;
 
-                for (let i = 0; i < imax; i++) {
-                    ctx.lineTo(scalex*i, scaley*z[i + k*imax]);
+                for (let k = 0; k < m; k++) {
+                    ctx.beginPath();
+                    ctx.moveTo(0,scaley*z[k*imax]);
+                    
+                    for (let i = 0; i < imax; i++) {
+                        ctx.lineTo(scalex*i, scaley*z[i + k*imax]);
+                    }
+                    ctx.stroke();
                 }
-                ctx.stroke();
             }
-
             //console.log("z ",h[0]);
         }
         window.requestAnimationFrame(step);
@@ -211,7 +235,7 @@ function makeDraggable(svg) {
             let dy = coord.y - offset.y;
 
             selectedElement.setAttributeNS(null, "cx", dx);
-            selectedElement.setAttributeNS(null, "cy", dy);
+            //selectedElement.setAttributeNS(null, "cy", dy);
 
 
 

@@ -10,34 +10,21 @@ include("nlayers.jl")
 @assert Int == Int32
 
 
-function nlayer_step_init(n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom)
-    if n == 0
-        rng = LinearCongruentialGenerators(42)
-        @inline nlayer_init!(dx,hm,h,u,rng)
-    end
+function nlayer_init(dx,modeindex,rho,hm,h,u,
+                     eigenvalues,eigenvectors,potential_matrix,work1,work2,
+                     )
 
-    @inline nlayer_step(n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom)
+    rng = LinearCongruentialGenerators(42)
+    tol = 1e-5
+    @inline nlayer_init!(
+        dx,modeindex,hm,h,u,rho,
+        eigenvalues,eigenvectors,potential_matrix,tol,work1,work2,
+        rng)
     return 0
 end
 
-#function nlayer_modes(A,work,eigenvalues)
-function nlayer_modes(A)
-    # info = Ref(Int32(0))
-    # @ccall ssyev(Ref('N')::Ptr{Cchar},
-    #       Ref('U')::Ptr{Cchar},
-    #       Ref(size(A,2))::Ptr{Cint},
-    #       pointer(A)::Ptr{Cfloat},
-    #       Ref(size(A,1))::Ptr{Cint},
-    #       pointer(eigenvalues)::Ptr{Cfloat},
-    #       pointer(work)::Ptr{Cfloat},
-    #       length(work)::Ptr{Cint},
-    #       info::Ptr{Cint})::Ptr{Cvoid}
-    # return info[]
 
-    @ccall memset(pointer(A)::Ptr{Cint},1::Cint,5::Culong)::Ptr{Cvoid}
-end
-
-obj = build_obj(nlayer_step_init, Tuple{
+obj = build_obj(nlayer_step, Tuple{
     Int32,   # n
     Float32, # dx
     Float32, # dt
@@ -55,21 +42,22 @@ obj = build_obj(nlayer_step_init, Tuple{
 
 write("model.o", obj)
 
-
-obj = build_obj(nlayer_modes, Tuple{
-    MallocVector{Int32},
-
-#    MallocMatrix{Float32}, # A
-#    MallocVector{Float32}, # work
-#    MallocMatrix{Float32}, # eigenvalues
+obj = build_obj(nlayer_init, Tuple{
+    Float32, # dx
+    Int32, # modeindex
+    MallocVector{Float32}, # rho,
+    MallocMatrix{Float32}, # hm
+    MallocMatrix{Float32}, # h
+    MallocMatrix{Float32}, # u
+    MallocVector{Float32}, # eigenvalues
+    MallocMatrix{Float32}, # eigenvectors
+    MallocMatrix{Float32}, # potential_matrix
+    MallocMatrix{Float32}, # work1
+    MallocMatrix{Float32}, # work2
 })
 
-write("nlayer_modes.o", obj)
+write("nlayer_init.o", obj)
 
-
-
-
-# heap base: 66560
 
 # size of the total memory
 mem = 65536*16*2
@@ -77,4 +65,4 @@ mem = 65536*16*2
 # the linker needs memset
 run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o ../memset.c`)
 
-run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm memset.o model.o nlayer_modes.o`)
+run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm memset.o nlayer_init.o model.o`)

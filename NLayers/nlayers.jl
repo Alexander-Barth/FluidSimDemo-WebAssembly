@@ -1,6 +1,9 @@
 
+include("jacobi_eigendecomposition.jl")
 
-function nlayer_init!(dx,hm,h,u,rng)
+
+# every layer is perturbed indepentenly
+@inline function nlayer_init!(dx,hm,h,u,rng)
     imax,m = size(h)
 
     @inbounds for k = 1:m
@@ -15,6 +18,71 @@ function nlayer_init!(dx,hm,h,u,rng)
     @inbounds u .= 0
     return nothing
 end
+
+
+function nlayer_init!(dx,modeindex,hm,h,u,rho,
+                      eigenvalues,eigenvectors,potential_matrix,tol,work1,work2,
+                      rng)
+
+    #nlayer_init!(dx,hm,h,u,rng)
+    if modeindex == 0
+        # every layer is perturbed indepentenly
+        nlayer_init!(dx,hm,h,u,rng)
+        return nothing
+    end
+    nlayer_modes!(eigenvalues,eigenvectors,potential_matrix,rho,hm,tol,work1,work2)
+
+    a = 20 * sign(@inbounds eigenvectors[1,modeindex])
+    @inbounds for k = 1:size(h,2)
+        for i = 1:size(h,1)
+             x = dx * (i-1)
+             h[i,k] = a * exp(-x^2 / (20*dx)^2) * eigenvectors[k,modeindex] + hm[i,k];
+         end
+    end
+    @inbounds u .= 0
+    return nothing
+end
+
+
+@inline function nlayer_pot!(potential_matrix,rho,hm)
+    m = length(rho)
+    # compute
+    # diagm(Δρ_per_layer) * M
+    # where
+    # Δρ_per_layer = [rho[1],(rho[2:end]-rho[1:end-1])...]
+    # M = UpperTriangular(ones(m,m))
+
+    @inbounds for j = 1:m
+        for i = 1:m
+            if i == 1
+                Δρ = rho[1] # - density of air (~0)
+            else
+                Δρ = rho[m] - rho[m-1]
+            end
+            potential_matrix[i,j] = Δρ * (i <= j)
+        end
+    end
+
+    # integrate over depth i
+    # M' * diagm(Δρ_per_layer) * M
+    @inbounds for j = 1:m
+        for i = 2:m
+            potential_matrix[i,j] += potential_matrix[i-1,j]
+        end
+    end
+
+    @inbounds for j = 1:m
+        for i = 1:m
+            potential_matrix[i,j] *= hm[1,i] # drop g
+        end
+    end
+end
+
+@inline function nlayer_modes!(eigenvalues,eigenvectors,potential_matrix,rho,hm,tol,work1,work2)
+    nlayer_pot!(potential_matrix,rho,hm)
+    jacobi_eigendecomposition!(potential_matrix,tol,eigenvectors,eigenvalues,work1,work2)
+end
+
 
 function nlayer_step(n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom)
     imax,m = size(h)
