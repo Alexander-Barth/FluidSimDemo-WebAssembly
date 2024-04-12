@@ -147,8 +147,8 @@ function setProfile(svg,z,density) {
         //let cy = 3*z[i];
         let cy = H - (bottom_depth - z[i]) * H / canvas_height_m;
 
-        drags[drags.length-i-1].setAttributeNS(null, "cx", cx);
-        drags[drags.length-i-1].setAttributeNS(null, "cy", cy);
+        drags[i].setAttributeNS(null, "cx", cx);
+        drags[i].setAttributeNS(null, "cy", cy);
     }
 
 }
@@ -162,8 +162,8 @@ function getProfile(svg) {
     let factor = (density_max - density_min) / document.getElementById("profile").width.baseVal.value;
 
     for (let i = 0; i < drags.length; i++) {
-        z.push(parseFloat(drags[drags.length-i-1].getAttribute("cy")));
-        density.push(density_min + parseFloat(drags[drags.length-i-1].getAttribute("cx")) * factor);
+        z.push(parseFloat(drags[i].getAttribute("cy")));
+        density.push(density_min + parseFloat(drags[i].getAttribute("cx")) * factor);
     }
 
     return [z,density];
@@ -271,14 +271,14 @@ function makeDraggable(svg) {
             let prev, next;
             prev = selectedElement.previousElementSibling;
             if (prev) {
-                coord.x = Math.min(coord.x,parseFloat(prev.getAttributeNS(null, "cx")));
-                coord.y = Math.min(coord.y,parseFloat(prev.getAttributeNS(null, "cy")));
+                coord.x = Math.max(coord.x,parseFloat(prev.getAttributeNS(null, "cx")));
+                coord.y = Math.max(coord.y,parseFloat(prev.getAttributeNS(null, "cy")));
             }
 
             next = selectedElement.nextElementSibling;
             if (next) {
-                coord.x = Math.max(coord.x,parseFloat(next.getAttributeNS(null, "cx")));
-                coord.y = Math.max(coord.y,parseFloat(next.getAttributeNS(null, "cy")));
+                coord.x = Math.min(coord.x,parseFloat(next.getAttributeNS(null, "cx")));
+                coord.y = Math.min(coord.y,parseFloat(next.getAttributeNS(null, "cy")));
             }
 
             let dx = coord.x - offset.x;
@@ -286,8 +286,6 @@ function makeDraggable(svg) {
 
             selectedElement.setAttributeNS(null, "cx", Math.max(dx,0));
             //selectedElement.setAttributeNS(null, "cy", dy);
-
-
 
             drawlines(svg);
         }
