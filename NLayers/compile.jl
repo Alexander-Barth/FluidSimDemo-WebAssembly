@@ -20,7 +20,6 @@ function nlayer_init(dx,modeindex,rho,hm,h,u,
         dx,modeindex,hm,h,u,rho,
         eigenvalues,eigenvectors,potential_matrix,tol,work1,work2,
         rng)
-    return 0
 end
 
 
