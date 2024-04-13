@@ -141,8 +141,8 @@ export async function run(document) {
                     //ctx.fillStyle = '#f00';
                     ctx.beginPath();
                     ctx.moveTo(scalex*i, scaley*z[i + k*imax]);
-                    ctx.lineTo(scalex*(i+1), scaley*z[i + k*imax]);
-                    ctx.lineTo(scalex*(i+1), scaley*z[i + (k+1)*imax]);
+                    ctx.lineTo(scalex*(i+1), scaley*z[i+1 + k*imax]);
+                    ctx.lineTo(scalex*(i+1), scaley*z[i+1 + (k+1)*imax]);
                     ctx.lineTo(scalex*i, scaley*z[i + (k+1)*imax]);
                     ctx.closePath();
                     ctx.fill();
