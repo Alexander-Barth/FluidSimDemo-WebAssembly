@@ -341,23 +341,20 @@ function makeDraggable(svg,axis_density) {
             // constrait position
             // density must to monotonic
             let prev, next;
+
+            let cx = coord.x - offset.x;
+
             prev = selectedElement.previousElementSibling;
             if (prev) {
-                coord.x = Math.max(coord.x,parseFloat(prev.getAttributeNS(null, "cx")));
-                //coord.y = Math.max(coord.y,parseFloat(prev.getAttributeNS(null, "cy")));
+                cx = Math.max(cx,parseFloat(prev.getAttributeNS(null, "cx")));
             }
 
             next = selectedElement.nextElementSibling;
             if (next) {
-                coord.x = Math.min(coord.x,parseFloat(next.getAttributeNS(null, "cx")));
-                //coord.y = Math.min(coord.y,parseFloat(next.getAttributeNS(null, "cy")));
+                cx = Math.min(cx,parseFloat(next.getAttributeNS(null, "cx")));
             }
 
-            let dx = coord.x - offset.x;
-            //let dy = coord.y - offset.y;
-
-            selectedElement.setAttributeNS(null, "cx", Math.max(dx,0));
-            //selectedElement.setAttributeNS(null, "cy", dy);
+            selectedElement.setAttributeNS(null, "cx", Math.max(cx,0));
 
             drawlines(axis_density);
             restart = true;
