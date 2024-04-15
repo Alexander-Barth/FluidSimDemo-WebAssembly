@@ -181,6 +181,8 @@ The julia code is based on [SmoothedParticleHydrodynamics.jl](https://github.com
 
 ### Gray-Scott equations
 
+![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/de977fc6-24a1-45ab-b4e0-878acf3815c1)
+
 Two tracers $u$ and $v$ inteact with the following diffusion-reaction equations:
 
 $$
