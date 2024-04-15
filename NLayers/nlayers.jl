@@ -51,13 +51,13 @@ end
     # where
     # Δρ_per_layer = [rho[1],(rho[2:end]-rho[1:end-1])...]
     # M = UpperTriangular(ones(m,m))
-
+    # diagm(Δρ_per_layer) * M
     @inbounds for j = 1:m
         for i = 1:m
             if i == 1
                 Δρ = rho[1] # - density of air (~0)
             else
-                Δρ = rho[m] - rho[m-1]
+                Δρ = rho[i] - rho[i-1]
             end
             potential_matrix[i,j] = Δρ * (i <= j)
         end
