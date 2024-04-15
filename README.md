@@ -206,7 +206,7 @@ $$
 \end{alignat*}
 $$
 
-where we have ommit the non-linear terms. $h_{m,k}$ is the mean thickness of layer $k$ and the Montgomery potential $P_k$ is determined using:
+where we have ommit the non-linear terms and the Coriolis force. $h_{m,k}$ is the mean thickness of layer $k$ and the Montgomery potential $P_k$ is determined using:
 
 $$\frac{P_{k+1} - P_{k}}{ρ_{k+1} - ρ_{k}} = g z$$
 

@@ -140,7 +140,7 @@ export async function run(document) {
             }
 
             let startTime =  performance.now();
-            for (let iii = 0; iii < nplot; iii++) {
+            for (let iplot = 0; iplot < nplot; iplot++) {
                 const result = julia_nlayer_step(
                     ntime,dx,DeltaT,grav,
                     rho_p,P_p,h_p,hm_p,hu_p,u_p,z_p,bottom_p

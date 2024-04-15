@@ -71,7 +71,7 @@
     <canvas id="plot" width="900" height="400" style="border:1px solid black" />
     </div>
 
-    <p>This simulation shows a vertical section of a layered ocean model where every layer has the density indicated by the density profile to the left (blue). The density must increase with depth. Mode 1 is the barotropic mode, mode 2, the first baroclinic mode and so on. By changing the initial perturbation, the model is restarted. The vertical structure of the mode is shown in organge.</p>
+    <p>This simulation shows a vertical section of a layered ocean model where every layer has the density indicated by the density profile to the left (blue, kg/m³). The density must increase with depth. Mode 1 is the barotropic mode, mode 2, the first baroclinic mode and so on. By changing the initial perturbation, the model is restarted. The vertical structure of the <a href="https://en.wikipedia.org/wiki/Normal_mode">normal mode</a> is shown in orange.</p>
 
     <form>
       <div>
@@ -102,6 +102,7 @@
     <li>Change initial perturbation to the first baroclinic mode (mode = 2)</li>
     <li>Increase the plotting time step</li>
     <li>Change change the density by dragging the blue circle in the density profile</li>
+    <li>Configuration: the water column 100 m deep, the domain 10 km long bounded by two coastal walls.
   </ul>
 </p>
 
@@ -109,5 +110,5 @@
   </body>
 </html>
 
-<!--  LocalWords:  WASM px CFL
+<!--  LocalWords:  WASM px CFL barotropic baroclinic
  -->
