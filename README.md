@@ -194,7 +194,9 @@ The online demo is [available here](https://alexander-barth.github.io/FluidSimDe
 
 ### Layered ocean model
 
-In a layered ocean model the ocean is represented by a series of $m$ layers each with a constant density 
+![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/ef539002-4088-4b6c-8ca5-fb6efc78ce29)
+
+In a layered ocean model, the ocean is represented by a series of $m$ layers each with a constant density 
 $ρ_k$ ($k= 1,...,m$). The thickness ($h_k$) and the velocity ($u_k$) for a 1D vertical section is given by:
 
 $$
@@ -204,15 +206,11 @@ $$
 \end{alignat*}
 $$
 
-where we have ommit the non-linear terms. $h_{m,k}$ is the mean thickness of layer $k$
+where we have ommit the non-linear terms. $h_{m,k}$ is the mean thickness of layer $k$ and the Montgomery potential $P_k$ is determined using:
 
-Montgomery potential $P_k$:
 $$\frac{P_{k+1} - P_{k}}{ρ_{k+1} - ρ_{k}} = g z$$
 
-where p is the pressure, ρ the density, g the acceleration due to gravity and z the vertical coordinate at the surface 
-the Montgomery potential P is given by:
-
+where p is the pressure, ρ the density, g the acceleration due to gravity and z the vertical coordinate. At the surface  the Montgomery potential P is given by:
 $$P_1 = g z_1 ρ_1$$
 
-
-https://alexander-barth.github.io/FluidSimDemo-WebAssembly/NLayers/
+The online demo is [available here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/NLayers/).
