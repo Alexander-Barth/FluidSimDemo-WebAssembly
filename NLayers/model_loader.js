@@ -73,7 +73,14 @@ export async function run(document) {
 
     document.getElementById("modeindex").max = m;
     // rho[1] is the surface layers
-    setProfile(svg,z0,rho);
+    let axis = {
+        figure: svg,
+        elem: svg.getElementById("density"),
+        min: density_min,
+        max: density_max
+    }
+
+    setProfile(axis,z0,rho);
     drawlines(svg);
 
     document.getElementById("modeindex").onchange = function() {
@@ -90,7 +97,7 @@ export async function run(document) {
         let DeltaT = parseFloat(document.getElementById("DeltaT").value);
         let show_velocity = document.getElementById("show_velocity").checked;
         let nplot = parseInt(document.getElementById("nplot").value);
-        let [profile_z,profile_density] = getProfile(svg);
+        let [profile_z,profile_density] = getProfile(axis);
 
 
         //console.log(profile_density);
@@ -166,19 +173,18 @@ export async function run(document) {
     window.requestAnimationFrame(step);
 }
 
-function setProfile(svg,z,density) {
-    let factor = (density_max - density_min) / document.getElementById("profile").width.baseVal.value;
-    let H = document.getElementById("profile").height.baseVal.value;
-    let markers = document.getElementById("markers");
+function setProfile(axis,z,density) {
+    let svg = axis.figure;
+    let factor = (axis.max - axis.min) / svg.width.baseVal.value;
+    let H = svg.height.baseVal.value;
+    let markers = axis.elem.getElementsByClassName("markers")[0];
     let svgNS = "http://www.w3.org/2000/svg";
 
     markers.innerHTML = "";
 
 
-    //let drags = svg.getElementsByClassName("draggable");
-
     for (let i = 0; i < z.length; i++) {
-        let cx = (density[i] - density_min) / factor;
+        let cx = (density[i] - axis.min) / factor;
         //let cy = 3*z[i];
         let cy = H - (bottom_depth - z[i]) * H / canvas_height_m;
 
@@ -195,17 +201,18 @@ function setProfile(svg,z,density) {
     }
 }
 
-function getProfile(svg) {
-    let drags = svg.getElementsByClassName("draggable");
+function getProfile(axis) {
+    let svg = axis.figure;
+    let drags = svg.getElementById("density").getElementsByClassName("markers")[0].children;
 
     let z = [];
     let density = [];
 
-    let factor = (density_max - density_min) / document.getElementById("profile").width.baseVal.value;
+    let factor = (axis.max - axis.min) / document.getElementById("profile").width.baseVal.value;
 
     for (let i = 0; i < drags.length; i++) {
         z.push(parseFloat(drags[i].getAttribute("cy")));
-        density.push(density_min + parseFloat(drags[i].getAttribute("cx")) * factor);
+        density.push(axis.min + parseFloat(drags[i].getAttribute("cx")) * factor);
     }
 
     return [z,density];
@@ -213,7 +220,8 @@ function getProfile(svg) {
 
 
 function drawlines(svg) {
-    let ll = svg.getElementById("lines");
+    let ll = svg.getElementById("density").getElementsByClassName("lines")[0];
+
     while (ll.hasChildNodes()) {
         ll.removeChild(ll.firstChild);
     }
