@@ -1,7 +1,6 @@
 [deps]
 FluidSimDemo = "413075f5-a476-4ea7-bb3e-c053e85577fa"
 GPUCompiler = "61eb1bfa-7361-4325-ad38-22787b887f55"
-LLVM = "929cbde3-209d-540e-8aea-75f648917ca0"
 SmoothedParticleHydrodynamics = "0e947886-cfe6-4b54-a7de-1ae1ad1ec6c7"
 SpatialHashing = "e2e8a281-5b48-4fd6-b542-65e07fde0794"
 StaticTools = "86c06d3c-3f03-46de-9781-57580aa96d0a"
