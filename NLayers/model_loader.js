@@ -3,11 +3,11 @@ import { MallocArray, pcolor, quiver, mouse_edit_mask, clamp, turbo_colormap, rg
 const bottom_depth = 100; // m
 const canvas_height_m = 125; // m
 
-const density_min = 1000;
-const density_max = 1100;
+const density_min = 1015;
+const density_max = 1035;
+let restart = true;
 
 export async function run(document) {
-    makeDraggable(document.getElementById("profile"));
 
     const response = await fetch('model.wasm');
     const bytes = await response.arrayBuffer();
@@ -61,7 +61,7 @@ export async function run(document) {
     }
 
     let rho_min = 1020;
-    let rho_max = 1080;
+    let rho_max = 1030;
     for (let k = 0; k < m; k++) {
         rho[k] = rho_min + k * (rho_max-rho_min)/(m-1);
         z0[k] = (k + 0.5) * bottom_depth/m;
@@ -73,15 +73,23 @@ export async function run(document) {
 
     document.getElementById("modeindex").max = m;
     // rho[1] is the surface layers
-    let axis = {
+    let axis_density = {
         figure: svg,
         elem: svg.getElementById("density"),
         min: density_min,
         max: density_max
     }
 
-    setProfile(axis,z0,rho);
-    drawlines(svg);
+    let axis_mode = {
+        figure: svg,
+        elem: svg.getElementById("mode"),
+        min: -2,
+        max: 2
+    }
+
+    setProfile(axis_density,z0,rho,{color: "#007bff", markersize: 5});
+    makeDraggable(svg,axis_density);
+    drawlines(axis_density);
 
     document.getElementById("modeindex").onchange = function() {
         ntime = 0;
@@ -97,10 +105,8 @@ export async function run(document) {
         let DeltaT = parseFloat(document.getElementById("DeltaT").value);
         let show_velocity = document.getElementById("show_velocity").checked;
         let nplot = parseInt(document.getElementById("nplot").value);
-        let [profile_z,profile_density] = getProfile(axis);
 
-
-        //console.log(profile_density);
+        let [profile_z,profile_density] = getProfile(axis_density);
 
         for (let k = 0; k < m; k++) {
             rho[k] = profile_density[k];
@@ -112,11 +118,25 @@ export async function run(document) {
 
             //let modeindex = 3;
 
-            if (ntime == 0) {
+            if (ntime == 0 || restart) {
                 julia_nlayer_init(
                     dx,modeindex,
                     rho_p,hm_p,h_p,u_p,
                     eigenvalues_p,eigenvectors_p,potential_matrix_p,work1_p,work2_p);
+
+                if (modeindex != 0) {
+                    let mode = Array(m);
+                    for (let k = 0; k < m; k++) {
+                        mode[k] = eigenvectors[k + m*(modeindex-1)];
+                    }
+                    console.log(profile_density);
+                    console.log("mode ",mode);
+
+                    setProfile(axis_mode,z0,mode,{color: "#d97c26", markersize: 0});
+                    drawlines(axis_mode,{color: "#d97c26"});
+                }
+
+                restart = false;
             }
 
             let startTime =  performance.now();
@@ -173,7 +193,7 @@ export async function run(document) {
     window.requestAnimationFrame(step);
 }
 
-function setProfile(axis,z,density) {
+function setProfile(axis,z,density,{color = "#007bff", markersize = 5} = {}) {
     let svg = axis.figure;
     let factor = (axis.max - axis.min) / svg.width.baseVal.value;
     let H = svg.height.baseVal.value;
@@ -194,8 +214,8 @@ function setProfile(axis,z,density) {
         let drag = document.createElementNS(svgNS,"circle");
         drag.setAttributeNS(null, "cx", cx);
         drag.setAttributeNS(null, "cy", cy);
-        drag.setAttributeNS(null, "r", 5);
-        drag.setAttributeNS(null, "fill", "#007bff");
+        drag.setAttributeNS(null, "r", markersize);
+        drag.setAttributeNS(null, "fill", color);
         drag.setAttributeNS(null, "class", "draggable");
         markers.appendChild(drag);
     }
@@ -203,12 +223,12 @@ function setProfile(axis,z,density) {
 
 function getProfile(axis) {
     let svg = axis.figure;
-    let drags = svg.getElementById("density").getElementsByClassName("markers")[0].children;
+    let drags = axis.elem.getElementsByClassName("markers")[0].children;
 
     let z = [];
     let density = [];
 
-    let factor = (axis.max - axis.min) / document.getElementById("profile").width.baseVal.value;
+    let factor = (axis.max - axis.min) / axis.figure.width.baseVal.value;
 
     for (let i = 0; i < drags.length; i++) {
         z.push(parseFloat(drags[i].getAttribute("cy")));
@@ -219,13 +239,15 @@ function getProfile(axis) {
 }
 
 
-function drawlines(svg) {
-    let ll = svg.getElementById("density").getElementsByClassName("lines")[0];
+function drawlines(axis,{color = "rgb(190,190,255)"} = {}) {
+    let svg = axis.figure;
+    let ll = axis.elem.getElementsByClassName("lines")[0];
 
     while (ll.hasChildNodes()) {
         ll.removeChild(ll.firstChild);
     }
-    let drags = svg.getElementsByClassName("draggable");
+
+    let drags = axis.elem.getElementsByClassName("markers")[0].children;
 
     //console.log("drags",drags[0].getAttribute("cx"),drags[0].getAttribute("cx"));
     let svgNS = "http://www.w3.org/2000/svg";
@@ -236,13 +258,13 @@ function drawlines(svg) {
         ll0.setAttributeNS(null,"y1",drags[i].getAttribute("cy"));
         ll0.setAttributeNS(null,"x2",drags[i+1].getAttribute("cx"));
         ll0.setAttributeNS(null,"y2",drags[i+1].getAttribute("cy"));
-        ll0.setAttributeNS(null,"style","stroke:rgb(190,190,255);stroke-width:2")
+        ll0.setAttributeNS(null,"style","stroke:" + color + ";stroke-width:2")
         ll.appendChild(ll0);
     }
 }
 
 //
-function makeDraggable(svg) {
+function makeDraggable(svg,axis_density) {
     svg.addEventListener('mousedown', startDrag);
     svg.addEventListener('mousemove', drag);
     svg.addEventListener('mouseup', endDrag);
@@ -253,7 +275,7 @@ function makeDraggable(svg) {
     svg.addEventListener('touchleave', endDrag);
     svg.addEventListener('touchcancel', endDrag);
 
-    drawlines(svg);
+    drawlines(axis_density);
     let selectedElement, offset, transform,
         bbox, minX, maxX, minY, maxY, confined;
 
@@ -322,22 +344,23 @@ function makeDraggable(svg) {
             prev = selectedElement.previousElementSibling;
             if (prev) {
                 coord.x = Math.max(coord.x,parseFloat(prev.getAttributeNS(null, "cx")));
-                coord.y = Math.max(coord.y,parseFloat(prev.getAttributeNS(null, "cy")));
+                //coord.y = Math.max(coord.y,parseFloat(prev.getAttributeNS(null, "cy")));
             }
 
             next = selectedElement.nextElementSibling;
             if (next) {
                 coord.x = Math.min(coord.x,parseFloat(next.getAttributeNS(null, "cx")));
-                coord.y = Math.min(coord.y,parseFloat(next.getAttributeNS(null, "cy")));
+                //coord.y = Math.min(coord.y,parseFloat(next.getAttributeNS(null, "cy")));
             }
 
             let dx = coord.x - offset.x;
-            let dy = coord.y - offset.y;
+            //let dy = coord.y - offset.y;
 
             selectedElement.setAttributeNS(null, "cx", Math.max(dx,0));
             //selectedElement.setAttributeNS(null, "cy", dy);
 
-            drawlines(svg);
+            drawlines(axis_density);
+            restart = true;
         }
 
 
@@ -347,9 +370,7 @@ function makeDraggable(svg) {
 
     function endDrag(evt) {
         console.log("foo");
-        drawlines(svg);
-
-
+        drawlines(axis_density);
         selectedElement = false;
     }
 }

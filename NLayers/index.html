@@ -46,22 +46,32 @@
         </g>
         <g class="markers">
         </g>
+        <g>
+          <g transform="translate(50 0)">
+            <path style="stroke:gray;stroke-width:1;stroke-dasharray:5,10" d="m 0,0 0,400" id="grid0" />
+            <text x="-20" y="400" id="rho0">
+              1020
+            </text>
+          </g>
+          <g transform="translate(150 0)">
+            <path style="stroke:gray;stroke-width:1;stroke-dasharray:5,10" d="m 0,0 0,400" id="grid0" />
+            <text x="-20" y="400" id="rho1">
+              1030
+            </text>
+          </g>
+        </g>
       </g>
-      <g>
-        <path style="stroke:gray;stroke-width:1;stroke-dasharray:5,10" d="m 10,0 0,400" id="grid0" />
-        <path style="stroke:gray;stroke-width:1;stroke-dasharray:5,10" d="m 100,0 0,400" id="grid0" />
-        <text x="10" y="390" id="rho0">
-          1020
-        </text>
-        <text x="100" y="390" id="rho1">
-          1080
-        </text>
+      <g id="mode">
+        <g class="lines">
+        </g>
+        <g class="markers">
+        </g>
       </g>
     </svg>
     <canvas id="plot" width="900" height="400" style="border:1px solid black" />
     </div>
 
-    <p>This simulation show a vertical section of a layered ocean model where every layer has the density indicated by the density profile to the left. The density must increase with depth. Mode 1 is the barotropic mode, mode 2, the first baroclinic mode and so on. By changing the initial perturbation, the model is restarted.</p>
+    <p>This simulation shows a vertical section of a layered ocean model where every layer has the density indicated by the density profile to the left (blue). The density must increase with depth. Mode 1 is the barotropic mode, mode 2, the first baroclinic mode and so on. By changing the initial perturbation, the model is restarted. The vertical structure of the mode is shown in organge.</p>
 
     <form>
       <div>
@@ -85,9 +95,17 @@
         <label for="show_velocity">Show velocity</label>
         <input type="checkbox" id="show_velocity" value="show_velocity">
       </div>
+</form>
 
-    </form>
-    <p>More information and the code is <a href="https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly">available here</a>.</p>
+<p>Thinks to try:
+  <ul>
+    <li>Change initial perturbation to the first baroclinic mode (mode = 2)</li>
+    <li>Increase the plotting time step</li>
+    <li>Change change the density by dragging the blue circle in the density profile</li>
+  </ul>
+</p>
+
+    <p>More information and the code is available at: <a href="https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly">https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly</a>.</p>
   </body>
 </html>
 
