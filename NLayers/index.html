@@ -25,10 +25,22 @@
     }
 
     .static {
-    cursor: not-allowed;
+      cursor: not-allowed;
     }
+
     .draggable {
-    cursor: move;
+      cursor: move;
+    }
+
+    #plot {
+       width: 100%;
+    }
+
+    @media screen and (min-width: 900px) {
+    #plot {
+       width: 900px;
+       height: 400px;
+    }
     }
   </style>
   <body>
@@ -47,14 +59,21 @@
         <g class="markers">
         </g>
         <g>
+          <g transform="translate(100 0)">
+            <path style="stroke:orange;stroke-width:1;stroke-dasharray:5,10" d="m 0,0 0,400" />
+            <text x="-5" y="20" id="m0" style="stroke:orange">
+              0
+            </text>
+          </g>
+
           <g transform="translate(50 0)">
-            <path style="stroke:gray;stroke-width:1;stroke-dasharray:5,10" d="m 0,0 0,400" id="grid0" />
+            <path style="stroke:#007bff;stroke-width:1;stroke-dasharray:5,10" d="m 0,0 0,400"  />
             <text x="-20" y="400" id="rho0">
               1020
             </text>
           </g>
           <g transform="translate(150 0)">
-            <path style="stroke:gray;stroke-width:1;stroke-dasharray:5,10" d="m 0,0 0,400" id="grid0" />
+            <path style="stroke:#007bff;stroke-width:1;stroke-dasharray:5,10" d="m 0,0 0,400"  />
             <text x="-20" y="400" id="rho1">
               1030
             </text>

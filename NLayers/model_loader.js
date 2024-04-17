@@ -19,7 +19,7 @@ export async function run(document) {
     let base = [__heap_base];
 
     const imax = 101;
-    const m = 10;
+    const m = 8;
     const dx = 1000;
     const dt = 28.73;
     const grav = 9.81;
@@ -129,8 +129,8 @@ export async function run(document) {
                     for (let k = 0; k < m; k++) {
                         mode[k] = eigenvectors[k + m*(modeindex-1)];
                     }
-                    console.log(profile_density);
-                    console.log("mode ",mode);
+                    //console.log(profile_density);
+                    //console.log("mode ",mode);
 
                     setProfile(axis_mode,z0,mode,{color: "#d97c26", markersize: 0});
                     drawlines(axis_mode,{color: "#d97c26"});
@@ -366,7 +366,7 @@ function makeDraggable(svg,axis_density) {
 
 
     function endDrag(evt) {
-        console.log("foo");
+        //console.log("foo");
         drawlines(axis_density);
         selectedElement = false;
     }
