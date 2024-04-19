@@ -212,10 +212,8 @@ where we have ommit the non-linear terms and the Coriolis force. $h_{m,k}$ is th
 
 $$\frac{P_{k+1} - P_{k}}{ρ_{k+1} - ρ_{k}} = g z$$
 
-See Chapter 12 "Layered Models" of Geophysical Fluid Dynamics: Physical and Numerical Aspects, Benoit Cushman-Roisin, Jean-Marie Beckers, Academic Press, 2011.
-
-
-where p is the pressure, ρ the density, g the acceleration due to gravity and z the vertical coordinate. At the surface  the Montgomery potential P is given by:
+where p is the pressure, ρ the density, g the acceleration due to gravity and z the vertical coordinate. At the surface, the Montgomery potential P is given by:
 $$P_1 = g z_1 ρ_1$$
 
+See chapter 12 "Layered Models" of Geophysical Fluid Dynamics: Physical and Numerical Aspects, Benoit Cushman-Roisin, Jean-Marie Beckers, Academic Press, 2011 for more information.
 The online demo is [available here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/NLayers/).
