@@ -181,7 +181,7 @@ The julia code is based on [SmoothedParticleHydrodynamics.jl](https://github.com
 
 ### Gray-Scott equations
 
-![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/de977fc6-24a1-45ab-b4e0-878acf3815c1)
+[![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/de977fc6-24a1-45ab-b4e0-878acf3815c1)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/GrayScott/)
 
 Two tracers $u$ and $v$ inteact with the following diffusion-reaction equations:
 
@@ -196,7 +196,7 @@ The online demo is [available here](https://alexander-barth.github.io/FluidSimDe
 
 ### Layered ocean model
 
-![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/ef539002-4088-4b6c-8ca5-fb6efc78ce29)
+[![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/ef539002-4088-4b6c-8ca5-fb6efc78ce29)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/NLayers/)
 
 In a layered ocean model, the ocean is represented by a series of $m$ layers each with a constant density 
 $ρ_k$ ($k= 1,...,m$). The thickness ($h_k$) and the velocity ($u_k$) for a 1D vertical section is given by:
