@@ -1,4 +1,4 @@
-import { MallocArray, pcolor, quiver, mouse_edit_mask, clamp, turbo_colormap, rgb, color } from "../julia_wasm_utils.js";
+import { MallocArray, pcolor, quiver, mouse_edit_mask, turbo_colormap, color } from "../julia_wasm_utils.js";
 
 
 
@@ -175,10 +175,7 @@ export async function run(document) {
             for (let k = 0; k < m; k++) {
 
                 for (let i = 0; i < imax-1; i++) {
-                    let pp = h[i + k*imax];
-                    let ind = Math.floor(255 * clamp((pp - hmin) / (hmax-hmin),0,1));
-                    let color = cmap[ind];
-                    ctx.fillStyle = rgb(255*color[0],255*color[1],255*color[2]);
+                    ctx.fillStyle = color(h[i + k*imax],hmin,hmax,{cmap: cmap});
 
                     //ctx.fillStyle = '#f00';
                     ctx.beginPath();
