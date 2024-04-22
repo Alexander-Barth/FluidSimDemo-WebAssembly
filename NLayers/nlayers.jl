@@ -20,7 +20,9 @@ include("jacobi_eigendecomposition.jl")
 end
 
 
-function nlayer_init!(dx,modeindex,hm,h,u,rho,
+function nlayer_init!(dx,modeindex,
+                      pert_amplitude, pert_width,
+                      hm,h,u,rho,
                       eigenvalues,eigenvectors,potential_matrix,tol,work1,work2,
                       rng)
 
@@ -32,11 +34,11 @@ function nlayer_init!(dx,modeindex,hm,h,u,rho,
     end
     nlayer_modes!(eigenvalues,eigenvectors,potential_matrix,rho,hm,tol,work1,work2)
 
-    a = 20 * sign(@inbounds eigenvectors[1,modeindex])
+    a = pert_amplitude * sign(@inbounds eigenvectors[1,modeindex])
     @inbounds for k = 1:size(h,2)
         for i = 1:size(h,1)
              x = dx * (i-1)
-             h[i,k] = a * exp(-x^2 / (20*dx)^2) * eigenvectors[k,modeindex] + hm[i,k];
+             h[i,k] = a * exp(-x^2 / (pert_width)^2) * eigenvectors[k,modeindex] + hm[i,k];
          end
     end
     @inbounds u .= 0
@@ -129,4 +131,3 @@ function nlayer_step(n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom)
         end
     end
 end
-

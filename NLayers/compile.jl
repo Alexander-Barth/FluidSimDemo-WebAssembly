@@ -6,14 +6,18 @@ include("nlayers.jl")
 @assert Int == Int32
 
 
-function nlayer_init(dx,modeindex,rho,hm,h,u,
+function nlayer_init(dx,modeindex,
+                     pert_amplitude, pert_width,
+                     rho,hm,h,u,
                      eigenvalues,eigenvectors,potential_matrix,work1,work2,
                      )
 
     rng = LinearCongruentialGenerators(42)
     tol = 1e-5
     @inline nlayer_init!(
-        dx,modeindex,hm,h,u,rho,
+        dx,modeindex,
+        pert_amplitude, pert_width,
+        hm,h,u,rho,
         eigenvalues,eigenvectors,potential_matrix,tol,work1,work2,
         rng)
 end
@@ -40,6 +44,8 @@ write("model.o", obj)
 obj = build_obj(nlayer_init, Tuple{
     Float32, # dx
     Int32, # modeindex
+    Float32, # pert_amplitude
+    Float32, # pert_width
     MallocVector{Float32}, # rho,
     MallocMatrix{Float32}, # hm
     MallocMatrix{Float32}, # h

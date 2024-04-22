@@ -1,10 +1,13 @@
-import { MallocArray, pcolor, quiver, mouse_edit_mask, clamp, turbo_colormap, rgb } from "../julia_wasm_utils.js";
+import { MallocArray, pcolor, quiver, mouse_edit_mask, clamp, turbo_colormap, rgb, color } from "../julia_wasm_utils.js";
 
-const bottom_depth = 100; // m
-const canvas_height_m = 125; // m
 
-const density_min = 1015;
-const density_max = 1035;
+
+let params = new URLSearchParams(document.location.search);
+const bottom_depth = parseFloat(params.get("bottom_depth") || 100); // m
+const canvas_height_m = parseFloat(params.get("canvas_height_m") || 125); // m
+
+const density_min = parseFloat(params.get("density_min") || 1015); // kg/m³
+const density_max = parseFloat(params.get("density_max") || 1035); // kg/m³
 let restart = true;
 
 export async function run(document) {
@@ -18,11 +21,24 @@ export async function run(document) {
     // base[0] offset of memory, increased by MallocArray
     let base = [__heap_base];
 
-    const imax = 101;
-    const m = 8;
-    const dx = 1000;
-    const dt = 28.73;
-    const grav = 9.81;
+    let params = new URLSearchParams(document.location.search);
+    const imax = parseInt(params.get("imax") || 101);
+    const m = parseInt(params.get("m") || 8);
+    const dx = parseFloat(params.get("dx") || 1000);
+    const dt = parseFloat(params.get("dt") || 28.73);
+    const grav = parseFloat(params.get("grav") || 9.81);
+    const modeindex = parseInt(params.get("modeindex") || 1);
+    const nplot = parseInt(params.get("nplot") || 1);
+    const pert_amplitude = parseFloat(params.get("pert_amplitude") || 20);
+    const pert_width = parseFloat(params.get("pert_width") || (20*dx));
+    const hmin = parseFloat(params.get("hmin") || 0.4 * bottom_depth/m);
+    const hmax = parseFloat(params.get("hmax") || 1.5 * bottom_depth/m);
+
+
+    document.getElementById("modeindex").value = modeindex;
+    document.getElementById("grav").value = grav;
+    document.getElementById("DeltaT").value = dt;
+    document.getElementById("nplot").value = nplot;
 
     let ntime = 0;
 
@@ -121,6 +137,7 @@ export async function run(document) {
             if (ntime == 0 || restart) {
                 julia_nlayer_init(
                     dx,modeindex,
+                    pert_amplitude, pert_width,
                     rho_p,hm_p,h_p,u_p,
                     eigenvalues_p,eigenvectors_p,potential_matrix_p,work1_p,work2_p);
 
@@ -154,14 +171,12 @@ export async function run(document) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             let scalex = canvas.width/(imax-1);
             let scaley = canvas.height/canvas_height_m;
-            let pmin = 0.4 * bottom_depth/m;
-            let pmax = 1.5 * bottom_depth/m;
 
             for (let k = 0; k < m; k++) {
 
                 for (let i = 0; i < imax-1; i++) {
                     let pp = h[i + k*imax];
-                    let ind = Math.floor(255 * clamp((pp - pmin) / (pmax-pmin),0,1));
+                    let ind = Math.floor(255 * clamp((pp - hmin) / (hmax-hmin),0,1));
                     let color = cmap[ind];
                     ctx.fillStyle = rgb(255*color[0],255*color[1],255*color[2]);
 
