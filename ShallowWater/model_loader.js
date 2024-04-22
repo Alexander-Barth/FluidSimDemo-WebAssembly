@@ -10,8 +10,15 @@ export async function run(document) {
     // base[0] offset of memory, increased by MallocArray
     let base = [__heap_base];
 
-    const sz = [300,100];
-    const dx = 5000;
+    let params = new URLSearchParams(document.location.search);
+    const imax = parseInt(params.get("imax") || 300);
+    const jmax = parseInt(params.get("jmax") || 100);
+    const colormap = params.get("colormap") || "turbo";
+    const dx = parseFloat(params.get("dx") || 5000); // m
+
+    document.getElementById("colormap").value = colormap;
+
+    const sz = [imax,jmax];
     var ntime = 0;
 
     let [mask_p, mask] = MallocArray(Int32Array,memory,base,sz);
@@ -40,6 +47,7 @@ export async function run(document) {
         let pmin = parseFloat(document.getElementById("pmin").value);
         let pmax = parseFloat(document.getElementById("pmax").value);
         let show_velocity = document.getElementById("show_velocity").checked;
+        let colormap = document.getElementById("colormap").value;
 
         if (!isNaN(grav) && !isNaN(f) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(DeltaT)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
@@ -49,8 +57,9 @@ export async function run(document) {
                 mask_p,h_p,hu_p,hv_p,pressure_p,u_p,v_p,newu_p,newv_p);
 
             ntime += 1;
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax});
+            pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax, cmap: colormap});
 
             if (show_velocity) {
                 quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 500});

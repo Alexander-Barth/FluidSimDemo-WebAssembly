@@ -1,4 +1,4 @@
-import { MallocArray, pcolor, quiver, mouse_edit_mask, turbo_colormap, color } from "../julia_wasm_utils.js";
+import { MallocArray, pcolor, quiver, mouse_edit_mask, colormaps, color } from "../julia_wasm_utils.js";
 
 
 
@@ -33,12 +33,13 @@ export async function run(document) {
     const pert_width = parseFloat(params.get("pert_width") || (20*dx));
     const hmin = parseFloat(params.get("hmin") || 0.4 * bottom_depth/m);
     const hmax = parseFloat(params.get("hmax") || 1.5 * bottom_depth/m);
-
+    const colormap = params.get("colormap") || "turbo";
 
     document.getElementById("modeindex").value = modeindex;
     document.getElementById("grav").value = grav;
     document.getElementById("DeltaT").value = dt;
     document.getElementById("nplot").value = nplot;
+    document.getElementById("colormap").value = colormap;
 
     let ntime = 0;
 
@@ -85,7 +86,6 @@ export async function run(document) {
     // canvas for plotting
     const canvas = document.getElementById("plot");
     let svg = document.getElementById("profile");
-    let cmap = turbo_colormap;
 
     document.getElementById("modeindex").max = m;
     // rho[1] is the surface layers
@@ -121,6 +121,8 @@ export async function run(document) {
         let DeltaT = parseFloat(document.getElementById("DeltaT").value);
         let show_velocity = document.getElementById("show_velocity").checked;
         let nplot = parseInt(document.getElementById("nplot").value);
+        let colormap = document.getElementById("colormap").value;
+
 
         let [profile_z,profile_density] = getProfile(axis_density);
 
@@ -169,6 +171,7 @@ export async function run(document) {
 
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let cmap = colormaps[colormap];
             let scalex = canvas.width/(imax-1);
             let scaley = canvas.height/canvas_height_m;
 

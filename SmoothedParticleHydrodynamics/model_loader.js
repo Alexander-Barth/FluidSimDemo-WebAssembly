@@ -1,4 +1,4 @@
-import { MallocArray, MallocArray2, pcolor, quiver, mouse_edit_mask, color } from "../julia_wasm_utils.js";
+import { MallocArray, MallocArray2, pcolor, quiver, mouse_edit_mask, color, colormaps } from "../julia_wasm_utils.js";
 
 export async function run(document) {
     const response = await fetch('model.wasm');
@@ -10,12 +10,27 @@ export async function run(document) {
     // base[0] offset of memory, increased by MallocArray
     let base = [__heap_base];
 
-    const sz = [300,100];
-    const dx = 5000;
+    let params = new URLSearchParams(document.location.search);
+    const imax = parseInt(params.get("imax") || 300);
+    const jmax = parseInt(params.get("jmax") || 100);
+    const dx = parseFloat(params.get("dx") || 5000);
+    const colormap = params.get("colormap") || "turbo";
+    const nparticles = parseInt(params.get("nparticles") || 1219);
+    const scale = parseFloat(params.get("scale") || 0.6);
+    const grav = parseFloat(params.get("grav") || 9.81);
+    const dt = parseFloat(params.get("dt") || 0.0007);
+    const nplot = parseInt(params.get("nplot") || 1);
+    const pmin = parseFloat(params.get("pmin") || -600000);
+    const pmax = parseFloat(params.get("pmax") || -599196);
+
+    document.getElementById("colormap").value = colormap;
+    document.getElementById("grav").value = grav;
+    document.getElementById("DeltaT").value = dt;
+    document.getElementById("pmin").value = pmin;
+    document.getElementById("pmax").value = pmax;
+
+    const sz = [imax,jmax];
     var ntime = 0;
-    const nparticles = 1219
-    //let scale = 0.2;
-    let scale = 0.6;
 
     const sz_table = [76,57];
 
@@ -48,51 +63,57 @@ export async function run(document) {
         let pmin = parseFloat(document.getElementById("pmin").value);
         let pmax = parseFloat(document.getElementById("pmax").value);
         let show_velocity = document.getElementById("show_velocity").checked;
+        let colormap = document.getElementById("colormap").value;
+
+
+        let cmap = colormaps[colormap];
 
         if (!isNaN(grav) && !isNaN(f) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(DeltaT) && (pmax > pmin)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
 
             const start = performance.now();
-            const result = julia_model_step(
-                grav,f,dx,DeltaT,ntime,sz_table[0],sz_table[1],
-                mask_p,particles_p,
-                table_p,
-                num_particles_p,
-                visited_p
-            );
+
+            for (let iplot = 0; iplot < nplot; iplot++) {
+                const result = julia_model_step(
+                    grav,f,dx,DeltaT,ntime,sz_table[0],sz_table[1],
+                    mask_p,particles_p,
+                    table_p,
+                    num_particles_p,
+                    visited_p
+                );
+
+                ntime += 1;
+            }
+
             const end = performance.now();
             //console.log(`Execution time: ${end - start} ms. result ${result}`);
 
-            ntime += 1;
 
-            if ((ntime % 10) == 0) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                let pminc = +Infinity;
-                let pmaxc = -Infinity;
-                for (let i = 0; i < nparticles; i++) {
-                    let p = particles[partsize * i + iscalar];
-                    if (p > pmaxc) pmaxc = p;
-                    if (p < pminc) pminc = p;
-                }
+            let pminc = +Infinity;
+            let pmaxc = -Infinity;
+            for (let i = 0; i < nparticles; i++) {
+                let p = particles[partsize * i + iscalar];
+                if (p > pmaxc) pmaxc = p;
+                if (p < pminc) pminc = p;
+            }
 
-                console.log("pmax",pmaxc,pminc);
+            console.log("pmax",pmaxc,pminc);
 
-                for (let i = 0; i < nparticles; i++) {
-                    let x = scale * particles[partsize * i + ix];
-                    let y = scale * particles[partsize * i + iy];
-                    let radius = 2;
+            for (let i = 0; i < nparticles; i++) {
+                let x = scale * particles[partsize * i + ix];
+                let y = scale * particles[partsize * i + iy];
+                let radius = 2;
 
-                    ctx.fillStyle = color(particles[partsize * i + iscalar],pmin,pmax);
-                    ctx.beginPath();
-                    ctx.arc(x, y, radius, 0, 2 * Math.PI);
-                    ctx.fill();
-                }
+                ctx.fillStyle = color(particles[partsize * i + iscalar],pmin,pmax,{cmap: cmap});
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                ctx.fill();
+            }
 
-                if (show_velocity) {
-                    //quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 500});
-
-                }
+            if (show_velocity) {
+                //quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 500});
             }
         }
 

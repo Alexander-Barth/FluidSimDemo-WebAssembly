@@ -10,8 +10,15 @@ export async function run(document) {
     // base[0] offset of memory, increased by MallocArray
     let base = [__heap_base];
 
-    const sz = [256,256];
-    const dx = 1;
+    let params = new URLSearchParams(document.location.search);
+    const imax = parseInt(params.get("imax") || 256);
+    const jmax = parseInt(params.get("jmax") || 256);
+    const dx = parseFloat(params.get("dx") || 1);
+    const colormap = params.get("colormap") || "turbo";
+
+    document.getElementById("colormap").value = colormap;
+
+    const sz = [imax,jmax];
     const r = 20;
     var ntime = 0;
 
@@ -35,7 +42,7 @@ export async function run(document) {
     const canvas = document.getElementById("plot");
     const erase_elem = document.getElementById("erase");
     const pen_size_elem = document.getElementById("pen_size");
-    const params = document.getElementById("params");
+    const coefficients = document.getElementById("coefficients");
     const [ctx,res] = mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz);
 
     function step(timestamp) {
@@ -47,6 +54,7 @@ export async function run(document) {
         let pmin = parseFloat(document.getElementById("pmin").value);
         let pmax = parseFloat(document.getElementById("pmax").value);
         let nplot = 20;
+        let colormap = document.getElementById("colormap").value;
 
         if (!isNaN(Du) && !isNaN(Dv) && !isNaN(f) && !isNaN(k) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(DeltaT)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
@@ -60,14 +68,14 @@ export async function run(document) {
             }
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            pcolor(ctx,sz,res,u,mask,{pmin: pmin, pmax: pmax});
+            pcolor(ctx,sz,res,u,mask,{pmin: pmin, pmax: pmax, cmap: colormap});
         }
         window.requestAnimationFrame(step);
     }
 
     window.requestAnimationFrame(step);
 
-    params.addEventListener("change", (event) => {
+    coefficients.addEventListener("change", (event) => {
         console.log(event);
         let option = event.target.selectedOptions[0].value;
         if (option != "custom") {

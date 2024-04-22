@@ -47,8 +47,8 @@
         <input type="checkbox" id="erase" value="erase">
       </div>
       <div>
-        <label for="params">Case</label>
-        <select id="params">
+        <label for="coefficients">Case</label>
+        <select id="coefficients">
           <!-- Du, Dv, f, k -->
           <option value="custom">Custom</option>
           <option value="0.16, 0.08, 0.035, 0.065">Bacteria 1</option>
@@ -88,7 +88,13 @@
     <div>
       <label for="pmax">Maximum u</label><input id="pmax" type="number" value="1.2" step="0.01">
     </div>
-
+    <div>
+      <label for="colormap">Colormap</label>
+      <select id="colormap">
+        <option value="turbo">turbo</option>
+        <option value="viridis">viridis</option>
+      </select>
+    </div>
     </form>
 <p>Thinks to try:
   <ul>

@@ -60,10 +60,17 @@
     <div>
       <label for="pmax">Maximum elevation (m)</label><input id="pmax" type="number" value="0.25" step="0.01">
     </div>
-      <div>
-        <label for="show_velocity">Show velocity</label>
-        <input type="checkbox" id="show_velocity" value="show_velocity">
-      </div>
+    <div>
+      <label for="colormap">Colormap</label>
+      <select id="colormap">
+        <option value="turbo">turbo</option>
+        <option value="viridis">viridis</option>
+      </select>
+    </div>
+    <div>
+      <label for="show_velocity">Show velocity</label>
+      <input type="checkbox" id="show_velocity" value="show_velocity">
+    </div>
 
     </form>
 <p>Thinks to try:

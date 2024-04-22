@@ -10,7 +10,14 @@ export async function run(document) {
     // base[0] offset of memory, increased by MallocArray
     let base = [__heap_base];
 
-    const sz = [300,100];
+    let params = new URLSearchParams(document.location.search);
+    const imax = parseInt(params.get("imax") || 300);
+    const jmax = parseInt(params.get("jmax") || 100);
+    const colormap = params.get("colormap") || "turbo";
+
+    document.getElementById("colormap").value = colormap;
+
+    const sz = [imax,jmax];
     const rho = 1000.;
     const dx = 0.01;
     var ntime = 0;
@@ -38,6 +45,7 @@ export async function run(document) {
         let iter_pressure = parseInt(document.getElementById("iter_pressure").value);
         let overrelaxation = parseFloat(document.getElementById("overrelaxation").value);
         let show_velocity = document.getElementById("show_velocity").checked;
+        let colormap = document.getElementById("colormap").value;
 
         if (!isNaN(u0) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(iter_pressure) && !isNaN(iter_pressure)) {
 
@@ -46,7 +54,7 @@ export async function run(document) {
 
             ntime += 1;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax});
+            pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax, cmap: colormap});
 
             if (show_velocity) {
                 quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 2.5});
