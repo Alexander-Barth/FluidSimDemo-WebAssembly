@@ -13,13 +13,27 @@ export async function run(document) {
     let params = new URLSearchParams(document.location.search);
     const imax = parseInt(params.get("imax") || 300);
     const jmax = parseInt(params.get("jmax") || 100);
-    const colormap = params.get("colormap") || "turbo";
+    let colormap = params.get("colormap") || "turbo";
+    let u0 = parseFloat(params.get("u0") || 2);
+    let iter_pressure = parseInt(params.get("iter_pressure") || 40);
+    let overrelaxation = parseFloat(params.get("overrelaxation") || 1.9);
+    let DeltaT = parseFloat(params.get("DeltaT") || 0.015);
+    let dx = parseFloat(params.get("dx") || 0.01);
+    let rho = parseFloat(params.get("rho") || 1000);
+    let pmin = parseFloat(params.get("pmin") || -4000);
+    let pmax = parseFloat(params.get("pmax") || 2000);
+    let show_velocity = (params.get("pmax") || "false") == "true"
 
+    document.getElementById("u0").value = u0;
+    document.getElementById("DeltaT").value = DeltaT;
+    document.getElementById("iter_pressure").value = iter_pressure;
+    document.getElementById("overrelaxation").value = overrelaxation;
     document.getElementById("colormap").value = colormap;
+    document.getElementById("pmin").value = pmin;
+    document.getElementById("pmax").value = pmax;
+    document.getElementById("show_velocity").checked = show_velocity;
 
     const sz = [imax,jmax];
-    const rho = 1000.;
-    const dx = 0.01;
     var ntime = 0;
 
     let [mask_p, mask] = MallocArray(Int32Array,memory,base,sz);

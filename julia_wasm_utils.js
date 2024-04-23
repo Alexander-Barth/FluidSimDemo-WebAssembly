@@ -126,7 +126,7 @@ export function mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz) {
     var ctx = canvas.getContext("2d");
     ctx.transform(1, 0, 0, -1, 0, canvas.height)
     // resolution for the plot
-    let res = canvas.width/sz[0];
+    let res = Math.min(canvas.width/sz[0],canvas.height/sz[1]);
 
     canvas.addEventListener("mousedown", handle_mouse);
     canvas.addEventListener("mousemove", handle_mouse);
