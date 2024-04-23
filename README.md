@@ -178,22 +178,6 @@ The online demo is [available here](https://alexander-barth.github.io/FluidSimDe
 The julia code is based on [SmoothedParticleHydrodynamics.jl](https://github.com/Alexander-Barth/SmoothedParticleHydrodynamics.jl)
 
 
-
-### Gray-Scott equations
-
-[![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/de977fc6-24a1-45ab-b4e0-878acf3815c1)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/GrayScott/)
-
-Two tracers $u$ and $v$ inteact with the following diffusion-reaction equations:
-
-$$
-\begin{alignat*}{2}
-\frac{∂u}{∂t} &= D_u ∇²u - u v² + f (1 - u) \\
-\frac{∂v}{∂t} &= D_v ∇²v + u v² - (f + k) v
-\end{alignat*}
-$$
-
-The online demo is [available here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/GrayScott/).
-
 ### Layered ocean model
 
 [![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/ef539002-4088-4b6c-8ca5-fb6efc78ce29)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/NLayers/)
@@ -217,3 +201,19 @@ $$P_1 = g z_1 ρ_1$$
 
 See chapter 12 "Layered Models" of Geophysical Fluid Dynamics: Physical and Numerical Aspects, Benoit Cushman-Roisin, Jean-Marie Beckers, Academic Press, 2011 for more information.
 The online demo is [available here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/NLayers/).
+
+
+### Gray-Scott equations
+
+[![image](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/assets/9881475/de977fc6-24a1-45ab-b4e0-878acf3815c1)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/GrayScott/)
+
+Two tracers $u$ and $v$ inteact with the following diffusion-reaction equations:
+
+$$
+\begin{alignat*}{2}
+\frac{∂u}{∂t} &= D_u ∇²u - u v² + f (1 - u) \\
+\frac{∂v}{∂t} &= D_v ∇²v + u v² - (f + k) v
+\end{alignat*}
+$$
+
+The online demo is [available here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/GrayScott/).
