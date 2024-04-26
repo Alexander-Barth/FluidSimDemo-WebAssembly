@@ -4,7 +4,7 @@ import { MallocArray, pcolor, quiver, mouse_edit_mask, colormaps, color } from "
 
 let params = new URLSearchParams(document.location.search);
 const bottom_depth = parseFloat(params.get("bottom_depth") || 100); // m
-const canvas_height_m = parseFloat(params.get("canvas_height_m") || 125); // m
+const canvas_height_m = parseFloat(params.get("canvas_height_m") || 1.25 * bottom_depth); // m
 
 const density_min = parseFloat(params.get("density_min") || 1015); // kg/m³
 const density_max = parseFloat(params.get("density_max") || 1035); // kg/m³
@@ -40,6 +40,10 @@ export async function run(document) {
     document.getElementById("dt").value = dt;
     document.getElementById("nplot").value = nplot;
     document.getElementById("colormap").value = colormap;
+    document.getElementById("bottom_depth").innerHTML = bottom_depth; // m
+    document.getElementById("xmax").innerHTML = (imax * dx)/1000; // km
+    document.getElementById("hmin").value = hmin;
+    document.getElementById("hmax").value = hmax;
 
     let ntime = 0;
 
@@ -127,6 +131,8 @@ export async function run(document) {
         let velocity_show = document.getElementById("velocity_show").checked;
         let nplot = parseInt(document.getElementById("nplot").value);
         let colormap = document.getElementById("colormap").value;
+        let hmin = parseFloat(document.getElementById("hmin").value);
+        let hmax = parseFloat(document.getElementById("hmax").value);
 
 
         let [profile_z,profile_density] = getProfile(axis_density);

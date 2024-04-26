@@ -115,6 +115,12 @@
         <label for="nplot">Plot every n time steps</label><input id="nplot" type="number" value="1" step="1">
       </div>
       <div>
+        <label for="hmin">Minimum layer thickness (m)</label><input id="hmin" type="number">
+      </div>
+      <div>
+        <label for="hmax">Maximum layer thickness (m)</label><input id="hmax" type="number">
+      </div>
+      <div>
         <label for="colormap">Colormap</label>
         <select id="colormap">
           <option value="turbo">turbo</option>
@@ -128,12 +134,12 @@
       </div>
 </form>
 
-<p>Thinks to try:
+<p>Things to try:
   <ul>
     <li>Change initial perturbation to the first baroclinic mode (mode = 2)</li>
     <li>Increase the plotting time step</li>
     <li>Change change the density by dragging the blue circle in the density profile</li>
-    <li>Configuration: the water column 100 m deep, the domain 10 km long bounded by two coastal walls.
+    <li>Configuration: the water column is <span id="bottom_depth"></span> m deep, the domain <span id="xmax"></span> km long bounded by two coastal walls.
   </ul>
 </p>
 
