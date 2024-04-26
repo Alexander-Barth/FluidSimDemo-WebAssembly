@@ -22,7 +22,7 @@ export async function run(document) {
     let rho = parseFloat(params.get("rho") || 1000);
     let pmin = parseFloat(params.get("pmin") || -4000);
     let pmax = parseFloat(params.get("pmax") || 2000);
-    let show_velocity = (params.get("pmax") || "false") == "true"
+    let velocity_show = (params.get("pmax") || "false") == "true"
 
     document.getElementById("u0").value = u0;
     document.getElementById("dt").value = dt;
@@ -31,7 +31,7 @@ export async function run(document) {
     document.getElementById("colormap").value = colormap;
     document.getElementById("pmin").value = pmin;
     document.getElementById("pmax").value = pmax;
-    document.getElementById("show_velocity").checked = show_velocity;
+    document.getElementById("velocity_show").checked = velocity_show;
 
     const sz = [imax,jmax];
     var ntime = 0;
@@ -58,7 +58,7 @@ export async function run(document) {
         let pmax = parseFloat(document.getElementById("pmax").value);
         let iter_pressure = parseInt(document.getElementById("iter_pressure").value);
         let overrelaxation = parseFloat(document.getElementById("overrelaxation").value);
-        let show_velocity = document.getElementById("show_velocity").checked;
+        let velocity_show = document.getElementById("velocity_show").checked;
         let colormap = document.getElementById("colormap").value;
 
         if (!isNaN(u0) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(iter_pressure) && !isNaN(iter_pressure)) {
@@ -70,7 +70,7 @@ export async function run(document) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax, cmap: colormap});
 
-            if (show_velocity) {
+            if (velocity_show) {
                 quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 2.5});
 
             }

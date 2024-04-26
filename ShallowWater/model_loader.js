@@ -24,7 +24,7 @@ export async function run(document) {
     let hmin = parseFloat(params.get("hmin") || -0.25);
     let velocity_scale = parseFloat(params.get("velocity_scale") || 500);
     let velocity_subsample = parseInt(params.get("velocity_subsample") || 5);
-    let show_velocity = params.get("show_velocity") == "true";
+    let velocity_show = params.get("velocity_show") == "true";
     let velocity_min = parseFloat(params.get("velocity_min") || 0);
 
     document.getElementById("colormap").value = colormap;
@@ -37,7 +37,7 @@ export async function run(document) {
     document.getElementById("xmax").innerHTML = (imax * dx)/1000; // km
     document.getElementById("ymax").innerHTML = (jmax * dx)/1000; // km
     document.getElementById("zmax").innerHTML = bottom_depth; // m
-    document.getElementById("show_velocity").checked = show_velocity;
+    document.getElementById("velocity_show").checked = velocity_show;
 
     const sz = [imax,jmax];
     var ntime = 0;
@@ -70,7 +70,7 @@ export async function run(document) {
         let dt = parseFloat(document.getElementById("dt").value);
         let hmin = parseFloat(document.getElementById("hmin").value);
         let hmax = parseFloat(document.getElementById("hmax").value);
-        let show_velocity = document.getElementById("show_velocity").checked;
+        let velocity_show = document.getElementById("velocity_show").checked;
         let colormap = document.getElementById("colormap").value;
 
         if (!isNaN(grav) && !isNaN(f) && !isNaN(hmin) && !isNaN(hmax) && !isNaN(dt)) {
@@ -85,7 +85,7 @@ export async function run(document) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             pcolor(ctx,sz,res,pressure,mask,{pmin: hmin, pmax: hmax, cmap: colormap});
 
-            if (show_velocity) {
+            if (velocity_show) {
                 quiver(ctx,sz,res,u,v,mask,{
                     subsample: velocity_subsample,
                     scale: velocity_scale,

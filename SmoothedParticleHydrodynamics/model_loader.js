@@ -62,7 +62,7 @@ export async function run(document) {
         let dt = parseFloat(document.getElementById("dt").value);
         let pmin = parseFloat(document.getElementById("pmin").value);
         let pmax = parseFloat(document.getElementById("pmax").value);
-        let show_velocity = document.getElementById("show_velocity").checked;
+        let velocity_show = document.getElementById("velocity_show").checked;
         let colormap = document.getElementById("colormap").value;
 
 
@@ -112,7 +112,7 @@ export async function run(document) {
                 ctx.fill();
             }
 
-            if (show_velocity) {
+            if (velocity_show) {
                 //quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 500});
             }
         }

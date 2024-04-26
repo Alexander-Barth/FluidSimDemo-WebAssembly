@@ -124,7 +124,7 @@ export async function run(document) {
         let grav = parseFloat(document.getElementById("grav").value);
         let f = parseFloat(document.getElementById("f").value);
         let dt = parseFloat(document.getElementById("dt").value);
-        let show_velocity = document.getElementById("show_velocity").checked;
+        let velocity_show = document.getElementById("velocity_show").checked;
         let nplot = parseInt(document.getElementById("nplot").value);
         let colormap = document.getElementById("colormap").value;
 
