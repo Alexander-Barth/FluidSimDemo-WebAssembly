@@ -37,7 +37,7 @@ export async function run(document) {
 
     document.getElementById("modeindex").value = modeindex;
     document.getElementById("grav").value = grav;
-    document.getElementById("DeltaT").value = dt;
+    document.getElementById("dt").value = dt;
     document.getElementById("nplot").value = nplot;
     document.getElementById("colormap").value = colormap;
 
@@ -123,7 +123,7 @@ export async function run(document) {
         let modeindex = parseInt(document.getElementById("modeindex").value);
         let grav = parseFloat(document.getElementById("grav").value);
         let f = parseFloat(document.getElementById("f").value);
-        let DeltaT = parseFloat(document.getElementById("DeltaT").value);
+        let dt = parseFloat(document.getElementById("dt").value);
         let show_velocity = document.getElementById("show_velocity").checked;
         let nplot = parseInt(document.getElementById("nplot").value);
         let colormap = document.getElementById("colormap").value;
@@ -136,7 +136,7 @@ export async function run(document) {
         }
 
 
-        if (!isNaN(grav) && !isNaN(f) && !isNaN(DeltaT)) {
+        if (!isNaN(grav) && !isNaN(f) && !isNaN(dt)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
 
             //let modeindex = 3;
@@ -166,7 +166,7 @@ export async function run(document) {
             let startTime =  performance.now();
             for (let iplot = 0; iplot < nplot; iplot++) {
                 const result = julia_nlayer_step(
-                    ntime,dx,DeltaT,grav,
+                    ntime,dx,dt,grav,
                     rho_p,P_p,h_p,hm_p,hu_p,u_p,z_p,bottom_p
                 );
                 ntime += 1;

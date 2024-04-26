@@ -66,25 +66,30 @@ export function pcolor(ctx,sz,res,pressure,mask,{pmin=null, pmax=null, cmap=turb
     }
 }
 
-export function quiver(ctx,sz,res,u,v,mask,{subsample = 1, scale = 1, a = 0.7, b = 0.2} = {}) {
+export function quiver(ctx,sz,res,u,v,mask,{subsample = 1, scale = 1, a = 0.7, b = 0.2, min = 0} = {}) {
     for (let i=0; i < sz[0]; i+=subsample) {
         for (let j=0; j < sz[1]; j+=subsample) {
             let ij = i + sz[0] * j;
             if (mask[ij] == 1) {
-                let um = scale * 0.5 * (u[i + (sz[0]+1) * j] + u[i+1 + (sz[0]+1) * j]);
-                let vm = scale * 0.5 * (v[i + sz[0] * j] + v[i + sz[0] * (j+1)]);
-                let x0 = res*(i+0.5);
-                let y0 = res*(j+0.5);
-                ctx.beginPath();
-                ctx.moveTo(x0, y0);
-                ctx.lineTo(x0 + um, y0 + vm);
-                ctx.stroke();
+                let uij = 0.5 * (u[i + (sz[0]+1) * j] + u[i+1 + (sz[0]+1) * j]);
+                let vij = 0.5 * (v[i + sz[0] * j]     + v[i + sz[0] * (j+1)]);
 
-                ctx.beginPath();
-                ctx.moveTo(x0 + a*um - b*vm, y0  + a*vm + b*um);
-                ctx.lineTo(x0 + um, y0 + vm);
-                ctx.lineTo(x0 + a*um + b*vm, y0  + a*vm - b*um);
-                ctx.stroke();
+                if (uij*uij + vij*vij >= min*min) {
+                    let um = scale * uij;
+                    let vm = scale * vij;
+                    let x0 = res*(i+0.5);
+                    let y0 = res*(j+0.5);
+                    ctx.beginPath();
+                    ctx.moveTo(x0, y0);
+                    ctx.lineTo(x0 + um, y0 + vm);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(x0 + a*um - b*vm, y0  + a*vm + b*um);
+                    ctx.lineTo(x0 + um, y0 + vm);
+                    ctx.lineTo(x0 + a*um + b*vm, y0  + a*vm - b*um);
+                    ctx.stroke();
+                }
             }
         }
     }
