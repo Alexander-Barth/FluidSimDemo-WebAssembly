@@ -50,19 +50,19 @@ export async function run(document) {
         let Dv = parseFloat(document.getElementById("Dv").value);
         let f = parseFloat(document.getElementById("f").value);
         let k = parseFloat(document.getElementById("k").value);
-        let DeltaT = parseFloat(document.getElementById("DeltaT").value);
+        let dt = parseFloat(document.getElementById("dt").value);
         let pmin = parseFloat(document.getElementById("pmin").value);
         let pmax = parseFloat(document.getElementById("pmax").value);
         let nplot = 20;
         let colormap = document.getElementById("colormap").value;
 
-        if (!isNaN(Du) && !isNaN(Dv) && !isNaN(f) && !isNaN(k) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(DeltaT)) {
+        if (!isNaN(Du) && !isNaN(Dv) && !isNaN(f) && !isNaN(k) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(dt)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
 
 
             for (let iplot = 0; iplot < nplot; iplot++) {
                 const result = julia_model_step(
-                    dx,DeltaT,Du,Dv,f,k,r,ntime,mask_p,u_p,v_p,un_p,vn_p);
+                    dx,dt,Du,Dv,f,k,r,ntime,mask_p,u_p,v_p,un_p,vn_p);
 
                 ntime += 1;
             }

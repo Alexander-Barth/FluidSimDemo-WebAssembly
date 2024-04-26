@@ -17,7 +17,7 @@ export async function run(document) {
     let u0 = parseFloat(params.get("u0") || 2);
     let iter_pressure = parseInt(params.get("iter_pressure") || 40);
     let overrelaxation = parseFloat(params.get("overrelaxation") || 1.9);
-    let DeltaT = parseFloat(params.get("DeltaT") || 0.015);
+    let dt = parseFloat(params.get("dt") || 0.015);
     let dx = parseFloat(params.get("dx") || 0.01);
     let rho = parseFloat(params.get("rho") || 1000);
     let pmin = parseFloat(params.get("pmin") || -4000);
@@ -25,7 +25,7 @@ export async function run(document) {
     let show_velocity = (params.get("pmax") || "false") == "true"
 
     document.getElementById("u0").value = u0;
-    document.getElementById("DeltaT").value = DeltaT;
+    document.getElementById("dt").value = dt;
     document.getElementById("iter_pressure").value = iter_pressure;
     document.getElementById("overrelaxation").value = overrelaxation;
     document.getElementById("colormap").value = colormap;
@@ -53,7 +53,7 @@ export async function run(document) {
 
     function step(timestamp) {
         let u0 = parseFloat(document.getElementById("u0").value);
-        let DeltaT = parseFloat(document.getElementById("DeltaT").value);
+        let dt = parseFloat(document.getElementById("dt").value);
         let pmin = parseFloat(document.getElementById("pmin").value);
         let pmax = parseFloat(document.getElementById("pmax").value);
         let iter_pressure = parseInt(document.getElementById("iter_pressure").value);
@@ -63,7 +63,7 @@ export async function run(document) {
 
         if (!isNaN(u0) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(iter_pressure) && !isNaN(iter_pressure)) {
 
-            const result = julia_fluid_sim_step(u0,dx,DeltaT,rho,overrelaxation,iter_pressure,ntime,
+            const result = julia_fluid_sim_step(u0,dx,dt,rho,overrelaxation,iter_pressure,ntime,
                                                 mask_p,pressure_p,u_p,v_p,newu_p,newv_p);
 
             ntime += 1;

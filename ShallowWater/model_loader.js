@@ -19,7 +19,7 @@ export async function run(document) {
     let grav = parseFloat(params.get("grav") || 9.81);
     let beta = parseFloat(params.get("beta") || 0);
     let f = parseFloat(params.get("f") || 0);
-    let DeltaT = parseFloat(params.get("DeltaT") || 100);
+    let dt = parseFloat(params.get("dt") || 100);
     let hmax = parseFloat(params.get("hmax") || 0.25);
     let hmin = parseFloat(params.get("hmin") || -0.25);
     let velocity_scale = parseFloat(params.get("velocity_scale") || 500);
@@ -31,7 +31,7 @@ export async function run(document) {
     document.getElementById("grav").value = grav;
     document.getElementById("f").value = f;
     document.getElementById("beta").value = beta;
-    document.getElementById("DeltaT").value = DeltaT;
+    document.getElementById("dt").value = dt;
     document.getElementById("hmax").value = hmax;
     document.getElementById("hmin").value = hmin;
     document.getElementById("xmax").innerHTML = (imax * dx)/1000; // km
@@ -67,16 +67,16 @@ export async function run(document) {
         let grav = parseFloat(document.getElementById("grav").value);
         let f = parseFloat(document.getElementById("f").value);
         let beta = parseFloat(document.getElementById("beta").value);
-        let DeltaT = parseFloat(document.getElementById("DeltaT").value);
+        let dt = parseFloat(document.getElementById("dt").value);
         let hmin = parseFloat(document.getElementById("hmin").value);
         let hmax = parseFloat(document.getElementById("hmax").value);
         let show_velocity = document.getElementById("show_velocity").checked;
         let colormap = document.getElementById("colormap").value;
 
-        if (!isNaN(grav) && !isNaN(f) && !isNaN(hmin) && !isNaN(hmax) && !isNaN(DeltaT)) {
+        if (!isNaN(grav) && !isNaN(f) && !isNaN(hmin) && !isNaN(hmax) && !isNaN(dt)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
             const result = julia_fluid_sim_step(
-                grav,bottom_depth,f,beta,dx,DeltaT,ntime,
+                grav,bottom_depth,f,beta,dx,dt,ntime,
                 mask_p,fCoriolis_p,h_p,hu_p,hv_p,pressure_p,u_p,v_p,newu_p,newv_p);
             //console.log("beta ",beta,fCoriolis[0]);
 

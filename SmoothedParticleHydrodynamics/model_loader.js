@@ -25,7 +25,7 @@ export async function run(document) {
 
     document.getElementById("colormap").value = colormap;
     document.getElementById("grav").value = grav;
-    document.getElementById("DeltaT").value = dt;
+    document.getElementById("dt").value = dt;
     document.getElementById("pmin").value = pmin;
     document.getElementById("pmax").value = pmax;
 
@@ -59,7 +59,7 @@ export async function run(document) {
     function step(timestamp) {
         let grav = parseFloat(document.getElementById("grav").value);
         let f = parseFloat(document.getElementById("f").value);
-        let DeltaT = parseFloat(document.getElementById("DeltaT").value);
+        let dt = parseFloat(document.getElementById("dt").value);
         let pmin = parseFloat(document.getElementById("pmin").value);
         let pmax = parseFloat(document.getElementById("pmax").value);
         let show_velocity = document.getElementById("show_velocity").checked;
@@ -68,14 +68,14 @@ export async function run(document) {
 
         let cmap = colormaps[colormap];
 
-        if (!isNaN(grav) && !isNaN(f) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(DeltaT) && (pmax > pmin)) {
+        if (!isNaN(grav) && !isNaN(f) && !isNaN(pmin) && !isNaN(pmax) && !isNaN(dt) && (pmax > pmin)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
 
             const start = performance.now();
 
             for (let iplot = 0; iplot < nplot; iplot++) {
                 const result = julia_model_step(
-                    grav,f,dx,DeltaT,ntime,sz_table[0],sz_table[1],
+                    grav,f,dx,dt,ntime,sz_table[0],sz_table[1],
                     mask_p,particles_p,
                     table_p,
                     num_particles_p,
