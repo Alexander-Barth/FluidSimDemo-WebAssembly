@@ -29,7 +29,7 @@ export async function run(document) {
     const grav = parseFloat(params.get("grav") || 9.81);
     const modeindex = parseInt(params.get("modeindex") || 1);
     const nplot = parseInt(params.get("nplot") || 1);
-    const pert_amplitude = parseFloat(params.get("pert_amplitude") || 20);
+    const pert_amplitude = parseFloat(params.get("pert_amplitude") || (40/Math.sqrt(m)));
     const pert_width = parseFloat(params.get("pert_width") || (20*dx));
     const hmin = parseFloat(params.get("hmin") || 0.4 * bottom_depth/m);
     const hmax = parseFloat(params.get("hmax") || 1.5 * bottom_depth/m);
@@ -80,7 +80,12 @@ export async function run(document) {
     let rho_min = 1020;
     let rho_max = 1030;
     for (let k = 0; k < m; k++) {
-        rho[k] = rho_min + k * (rho_max-rho_min)/(m-1);
+        if (m > 1) {
+            rho[k] = rho_min + k * (rho_max-rho_min)/(m-1);
+        }
+        else {
+            rho[k] = (rho_max+rho_min)/2
+        }
         z0[k] = (k + 0.5) * bottom_depth/m;
     }
     // canvas for plotting
