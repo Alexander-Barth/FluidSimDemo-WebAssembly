@@ -146,9 +146,8 @@ by the caller.
 
 As a final example we take a simple 2D fluid simulation solving the inviscid and incompressible Navier-Stokes equations.
 It is based on the [compact implementation](https://github.com/matthias-research/pages/blob/master/tenMinutePhysics/17-fluidSim.html) of
-Matthias Müller reimplemented in Julia:
-
-https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/test_fluid_sim.jl
+Matthias Müller reimplemented in Julia: 
+[FluidSimDemo.jl](https://github.com/Alexander-Barth/FluidSimDemo.jl)
 
 The generated WASM binary assumes that a `memset` function exists. Lukily, this function is simple enought that we can provide a [C-implementation](https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly/blob/main/memset.c) that can be compiled to wasm with `clang`.
 
