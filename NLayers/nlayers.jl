@@ -87,7 +87,12 @@ end
 
 
 function nlayer_step(n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom)
-    imax,m = size(h)
+    __nlayer_step(n,dx,dt,g,rho,P,h,hm,(hu,),(u,),z,bottom)
+end
+
+function __nlayer_step(n,dx,dt,g,rho,P,h,hm,huv,uv,z,bottom)
+    m = size(h)[end]
+    sz = size(k)[1:end-1]
 
     @inbounds for k = 1:m
         for i = 2:imax
