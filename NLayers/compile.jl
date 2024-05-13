@@ -8,7 +8,7 @@ include("nlayers.jl")
 
 function nlayer_init(dx,modeindex,
                      pert_amplitude, pert_width,
-                     rho,hm,h,u,
+                     rho,hm,h,u,v,
                      eigenvalues,eigenvectors,potential_matrix,work1,work2,
                      )
 
@@ -17,9 +17,10 @@ function nlayer_init(dx,modeindex,
     @inline nlayer_init!(
         dx,modeindex,
         pert_amplitude, pert_width,
-        hm,h,u,rho,
+        hm,h,u,v,rho,
         eigenvalues,eigenvectors,potential_matrix,tol,work1,work2,
         rng)
+
 end
 
 
@@ -28,12 +29,14 @@ obj = build_obj(nlayer_step, Tuple{
     Float32, # dx
     Float32, # dt
     Float32, # g
+    Float32, # f
     MallocVector{Float32}, # rho
     MallocMatrix{Float32}, # P
     MallocMatrix{Float32}, # h
     MallocMatrix{Float32}, # hm
     MallocMatrix{Float32}, # hu
     MallocMatrix{Float32}, # u
+    MallocMatrix{Float32}, # v
     MallocMatrix{Float32}, # z
     MallocVector{Float32}, # bottom
 })
@@ -50,6 +53,7 @@ obj = build_obj(nlayer_init, Tuple{
     MallocMatrix{Float32}, # hm
     MallocMatrix{Float32}, # h
     MallocMatrix{Float32}, # u
+    MallocMatrix{Float32}, # v
     MallocVector{Float32}, # eigenvalues
     MallocMatrix{Float32}, # eigenvectors
     MallocMatrix{Float32}, # potential_matrix

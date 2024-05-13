@@ -27,6 +27,7 @@ export async function run(document) {
     const dx = parseFloat(params.get("dx") || 1000);
     const dt = parseFloat(params.get("dt") || 28.73);
     const grav = parseFloat(params.get("grav") || 9.81);
+    const f = parseFloat(params.get("f") || 0);
     const modeindex = parseInt(params.get("modeindex") || 1);
     const nplot = parseInt(params.get("nplot") || 1);
     const pert_amplitude = parseFloat(params.get("pert_amplitude") || (40/Math.sqrt(m)));
@@ -37,6 +38,7 @@ export async function run(document) {
 
     document.getElementById("modeindex").value = modeindex;
     document.getElementById("grav").value = grav;
+    document.getElementById("f").value = f;
     document.getElementById("dt").value = dt;
     document.getElementById("nplot").value = nplot;
     document.getElementById("colormap").value = colormap;
@@ -56,6 +58,7 @@ export async function run(document) {
     let [hm_p, hm] = MallocArray(Float32Array,memory,base,[imax,m]);
     let [hu_p, hu] = MallocArray(Float32Array,memory,base,[imax+1,m]);
     let [u_p, u] = MallocArray(Float32Array,memory,base,[imax+1,m]);
+    let [v_p, v] = MallocArray(Float32Array,memory,base,[imax+1,m]);
     let [z_p, z] = MallocArray(Float32Array,memory,base,[imax,m+1]);
     let [bottom_p, bottom] = MallocArray(Float32Array,memory,base,[imax]);
 
@@ -151,7 +154,7 @@ export async function run(document) {
                 julia_nlayer_init(
                     dx,modeindex,
                     pert_amplitude, pert_width,
-                    rho_p,hm_p,h_p,u_p,
+                    rho_p,hm_p,h_p,u_p,v_p,
                     eigenvalues_p,eigenvectors_p,potential_matrix_p,work1_p,work2_p);
 
                 if (modeindex != 0) {
@@ -172,8 +175,8 @@ export async function run(document) {
             let startTime =  performance.now();
             for (let iplot = 0; iplot < nplot; iplot++) {
                 const result = julia_nlayer_step(
-                    ntime,dx,dt,grav,
-                    rho_p,P_p,h_p,hm_p,hu_p,u_p,z_p,bottom_p
+                    ntime,dx,dt,grav,f,
+                    rho_p,P_p,h_p,hm_p,hu_p,u_p,v_p,z_p,bottom_p
                 );
                 ntime += 1;
             }

@@ -22,7 +22,7 @@ end
 
 function nlayer_init!(dx,modeindex,
                       pert_amplitude, pert_width,
-                      hm,h,u,rho,
+                      hm,h,u,v,rho,
                       eigenvalues,eigenvectors,potential_matrix,tol,work1,work2,
                       rng)
 
@@ -42,6 +42,7 @@ function nlayer_init!(dx,modeindex,
          end
     end
     @inbounds u .= 0
+    @inbounds v .= 0
     return nothing
 end
 
@@ -86,15 +87,22 @@ end
 end
 
 
-function nlayer_step(n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom)
+function nlayer_step(n,dx,dt,g,fCoriolis,rho,P,h,hm,hu,u,v,z,bottom)
     imax,m = size(h)
+#    T = eltype(u)
 
     @inbounds for k = 1:m
         for i = 2:imax
             #hu[i,k] = (h[i-1,k]+h[i,k]) * u[i,k]/2;
             hu[i,k] = (hm[i-1,k]+hm[i,k]) * u[i,k]/2;
         end
+
+#        hu1 = zero(T)
         for i = 1:imax
+#            hu0 = (i == 1 ? 0 : (hm[i-1,k]+hm[i,k]) * u[i,k]/2)
+#            hu0 = hu1
+#            hu1 = (i == imax ? 0 : (hm[i,k]+hm[i+1,k]) * u[i+1,k]/2)
+#            h[i,k] = h[i,k] - dt * (hu1 - hu0)/dx;
             h[i,k] = h[i,k] - dt * (hu[i+1,k] - hu[i,k])/dx;
         end
     end
@@ -128,6 +136,24 @@ function nlayer_step(n,dx,dt,g,rho,P,h,hm,hu,u,z,bottom)
     @inbounds for k = 1:m
         for i = 2:imax
             u[i,k] = u[i,k] - dt * (P[i,k]-P[i-1,k])/(rho[k]*dx)
+        end
+    end
+
+
+    # update velocities based on Coriolis force
+    @inbounds for s = 0:1
+        if mod(n+s,2) == 0
+            for k = 1:m
+                for i = 2:imax
+                    u[i,k] = u[i,k] + fCoriolis*v[i,k]*dt
+                end
+            end
+        else
+            for k = 1:m
+                for i = 2:imax
+                    v[i,k] = v[i,k] - fCoriolis*u[i,k]*dt
+                end
+            end
         end
     end
 end
@@ -213,8 +239,5 @@ function __nlayer_step(n,dxy::NTuple{N},dt,g,fCoriolis,rho,P,h,hm,huv,uv,z,botto
         #         end
         #     end
         # end
-    end
-end
-        
     end
 end
