@@ -187,7 +187,7 @@ $ρ_k$ ($k= 1,...,m$) where $k=1$ represents the surface layer. The thickness ($
 $$
 \begin{alignat*}{2}
 \frac{∂h_k}{∂t} &= - \frac{∂}{∂x}  (h_{m,k} u) \\
-\frac{∂u_k}{∂t} - f v &= - \frac{1}{ρ_k} \frac{∂P_{k}}{∂x}
+\frac{∂u_k}{∂t} - f v &= - \frac{1}{ρ_k} \frac{∂P_{k}}{∂x} \\
 \frac{∂v_k}{∂t} + f u &= - \frac{1}{ρ_k} \frac{∂P_{k}}{∂y}
 \end{alignat*}
 $$
