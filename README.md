@@ -196,7 +196,7 @@ where $f$ is the Coriolis parameter. We have ommit the non-linear terms and assu
 
 $$\frac{P_{k+1} - P_{k}}{ρ_{k+1} - ρ_{k}} = g z_{k+1}$$
 
-where p is the pressure, ρ the density, g the acceleration due to gravity and z the vertical coordinate. At the surface, the Montgomery potential P is given by:
+where $p$ is the pressure, $ρ$ the density, $g$ the acceleration due to gravity and $z$ the vertical coordinate. At the surface, the Montgomery potential P is given by:
 
 $$P_1 = g z_1 ρ_1$$
 
@@ -206,7 +206,7 @@ $$
 z_k = z_{k+1} + h_k
 $$
 
-Then we can compute the Montgomery potential P going downwards (for $k = 2...m$)
+Then we can compute the Montgomery potential $P$ going downwards (for $k = 2...m$)
 
 $$
 P_{k+1} = P_k + (ρ_{k+1}-ρ_{k})  g z_{k+1}
