@@ -193,12 +193,23 @@ $$
 
 where we have ommit the non-linear terms and the Coriolis force. $h_{m,k}$ is the mean thickness of layer $k$ and the Montgomery potential $P_k$ is determined using:
 
-$$\frac{P_{k+1} - P_{k}}{ρ_{k+1} - ρ_{k}} = g z$$
+$$\frac{P_{k+1} - P_{k}}{ρ_{k+1} - ρ_{k}} = g z_{k+1}$$
 
 where p is the pressure, ρ the density, g the acceleration due to gravity and z the vertical coordinate. At the surface, the Montgomery potential P is given by:
 $$P_1 = g z_1 ρ_1$$
 
+At the surface $z$ is zero ($z_{m+1} == 0$). By adding the depth of every layer going downwards we have (for $k$ = $m$...1)
+
+$$
+z_k = z_{k+1} + h_k
+$$
+
 See chapter 12 "Layered Models" of Geophysical Fluid Dynamics: Physical and Numerical Aspects, Benoit Cushman-Roisin, Jean-Marie Beckers, Academic Press, 2011 for more information.
+
+
+
+
+
 The online demo is [available here](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/NLayers/).
 
 
