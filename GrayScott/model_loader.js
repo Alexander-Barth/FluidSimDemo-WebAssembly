@@ -68,7 +68,11 @@ export async function run(document) {
             }
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            pcolor(ctx,sz,res,u,mask,{pmin: pmin, pmax: pmax, cmap: colormap});
+            pcolor(ctx,sz,res,u,{
+                pmin: pmin, pmax: pmax,
+                cmap: colormap,
+                mask: mask,
+            });
         }
         window.requestAnimationFrame(step);
     }

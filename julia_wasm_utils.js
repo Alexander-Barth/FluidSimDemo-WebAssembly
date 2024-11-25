@@ -45,7 +45,13 @@ export function clamp(num, min, max) {
 }
 
 // origin of context should be lower-left
-export function pcolor(ctx,sz,res,pressure,mask,{pmin=null, pmax=null, cmap=turbo_colormap} = {}) {
+export function pcolor(ctx,sz,res,pressure,{
+    pmin=null,
+    pmax=null,
+    cmap=turbo_colormap,
+    mask = null
+} = {}) {
+
     if (typeof cmap === 'string' || cmap instanceof String) {
         cmap = colormaps[cmap];
     }
@@ -53,7 +59,7 @@ export function pcolor(ctx,sz,res,pressure,mask,{pmin=null, pmax=null, cmap=turb
     for (let i=0; i < sz[0]; i++) {
         for (let j=0; j < sz[1]; j++) {
             let ij = i + sz[0] * j;
-            if (mask[ij] == 1) {
+            if ((mask == null) || (mask[ij] == 1)) {
                 let ind = Math.floor(255 * clamp((pressure[ij] - pmin) / (pmax-pmin),0,1));
                 let color = cmap[ind];
                 ctx.fillStyle = rgb(255*color[0],255*color[1],255*color[2]);

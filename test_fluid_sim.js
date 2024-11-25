@@ -68,7 +68,12 @@ export async function run(document) {
 
             ntime += 1;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            pcolor(ctx,sz,res,pressure,mask,{pmin: pmin, pmax: pmax, cmap: colormap});
+            pcolor(ctx,sz,res,pressure,{
+                pmin: pmin,
+                pmax: pmax,
+                cmap: colormap,
+                mask: mask});
+
 
             if (velocity_show) {
                 quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 2.5});
