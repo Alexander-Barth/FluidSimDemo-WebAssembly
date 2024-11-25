@@ -105,7 +105,9 @@ export function ticks(min,max,n) {
 
 
 // origin of context should be lower-left
-export function pcolor(ctx,sz,res,pressure,{
+export function pcolor(ctx,sz,pressure,{
+    resx = 1,
+    resy = 1,
     pmin = null,
     pmax = null,
     cmap = turbo_colormap,
@@ -116,7 +118,7 @@ export function pcolor(ctx,sz,res,pressure,{
         cmap = colormaps[cmap];
     }
 
-    ctx.save()
+    ctx.save();
 
     for (let i=0; i < sz[0]; i++) {
         for (let j=0; j < sz[1]; j++) {
@@ -129,7 +131,7 @@ export function pcolor(ctx,sz,res,pressure,{
             else {
                 ctx.fillStyle = rgb(255,255,255);
             }
-            ctx.fillRect(res*i, res*j, res, res);
+            ctx.fillRect(resx*i, resy*j, resx, resy);
         }
     }
 
@@ -179,19 +181,39 @@ export class Axis {
         this.clim = [-1,1];
 
     }
-    pcolor(sz,scalar,options) {
-        let resx = this.width / (this.xlim[1]-this.xlim[0]);
-        let resy = this.height / (this.ylim[1]-this.ylim[0]);
 
+    get resx() {
+        return this.width / (this.xlim[1]-this.xlim[0]);
+    }
+
+    get resy() {
+        return this.height / (this.ylim[1]-this.ylim[0]);
+    }
+
+
+    pcolor(sz,scalar,options) {
         options.pmin = this.clim[0];
         options.pmax = this.clim[1];
+        options.resx = this.resx;
+        options.resy = this.resy;
 
         this.ctx.save();
         this.ctx.translate(this.x, this.y);
-        this.ctx.scale(resx,resy);
-        pcolor(this.ctx,sz,1,scalar,options);
+        pcolor(this.ctx,sz,scalar,options);
         this.ctx.restore();
     }
+
+    quiver(sz,u,v,options) {
+        //options.resx = this.resx;
+        //options.resy = this.resy;
+
+        this.ctx.save();
+        this.ctx.translate(this.x, this.y);
+        this.ctx.scale(this.resx,this.resy);
+        quiver(this.ctx,sz,u,v,options);
+        this.ctx.restore();
+    }
+
     draw_axes() {
         this.ctx.save();
         this.ctx.translate(this.x, this.y);

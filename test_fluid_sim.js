@@ -58,8 +58,8 @@ export async function run(document) {
     let cb_height = 300 - 2*cb_padding;
     const cb_pressure = new Float32Array(cb_height);
     let ax = new Axis(ctx,0,0,canvas.width-100,canvas.height);
-    ax.xlim = [0,canvas.width];
-    ax.ylim = [0,canvas.height];
+    ax.xlim = [0,sz[0]];
+    ax.ylim = [0,sz[1]];
 
     let cb_ax = new Axis(ctx,canvas.width-100+10,cb_padding,cb_width,cb_height);
     cb_ax.xlim = [0,1];
@@ -82,11 +82,9 @@ export async function run(document) {
 
             ntime += 1;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            pcolor(ctx,sz,res,pressure,{
-                pmin: pmin,
-                pmax: pmax,
-                cmap: colormap,
-                mask: mask});
+
+            ax.clim = [pmin,pmax];
+            ax.pcolor(sz,pressure,{cmap: colormap, mask: mask});
 
             if (velocity_show) {
                 quiver(ctx,sz,res,u,v,{
