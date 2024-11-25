@@ -139,7 +139,12 @@ export function pcolor(ctx,sz,pressure,{
 }
 
 export function quiver(ctx,sz,res,u,v,{
+    resx = 1,
+    resy = 1,
     subsample = 1, scale = 1, a = 0.7, b = 0.2, min = 0, mask = null} = {}) {
+
+    ctx.save();
+
     for (let i=0; i < sz[0]; i+=subsample) {
         for (let j=0; j < sz[1]; j+=subsample) {
             let ij = i + sz[0] * j;
@@ -150,8 +155,8 @@ export function quiver(ctx,sz,res,u,v,{
                 if (uij*uij + vij*vij >= min*min) {
                     let um = scale * uij;
                     let vm = scale * vij;
-                    let x0 = res*(i+0.5);
-                    let y0 = res*(j+0.5);
+                    let x0 = resx*(i+0.5);
+                    let y0 = resy*(j+0.5);
                     ctx.beginPath();
                     ctx.moveTo(x0, y0);
                     ctx.lineTo(x0 + um, y0 + vm);
@@ -166,6 +171,7 @@ export function quiver(ctx,sz,res,u,v,{
             }
         }
     }
+    ctx.restore();
 }
 
 export class Axis {
