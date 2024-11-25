@@ -183,7 +183,9 @@ function combine_lim(lim1,lim2) {
 }
 
 export class Axis {
-    constructor(ctx,x,y,width,height) {
+    constructor(canvas,x,y,width,height) {
+        let ctx = canvas.getContext("2d");
+        this.canvas = canvas;
         this.ctx = ctx;
         this.x = x;
         this.y = y;
@@ -270,12 +272,25 @@ export class Axis {
         this._xticks = v;
     }
 
+    clear() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.items = [];
+    }
+
     pcolor(sz,scalar,options) {
+        let crange;
         options.x = options.x || [0,sz[0]];
         options.y = options.y || [0,sz[1]];
         this.cmap = options.cmap || "turbo";
 
-        let item = {x: options.x, y: options.y, c: range(scalar)};
+        if (options.pmin !== undefined && options.pmax !== undefined) {
+            crange = [options.pmin,options.pmax];
+        }
+        else {
+            crange = range(scalar);
+        }
+
+        let item = {x: options.x, y: options.y, c: crange};
         this.items.push(item);
 
         options.pmin = this.clim[0];
@@ -284,6 +299,8 @@ export class Axis {
         options.resy = this.resy * (options.y[1]-options.y[0])/sz[1];
 
         this.ctx.save();
+        //this.ctx.scale(1, -1);
+        this.ctx.transform(1, 0, 0, -1, 0, this.canvas.height)
         this.ctx.translate(this.x, this.y);
         pcolor(this.ctx,sz,scalar,options);
         this.ctx.restore();
@@ -295,6 +312,7 @@ export class Axis {
         options.resy = this.resy;
 
         this.ctx.save();
+        this.ctx.transform(1, 0, 0, -1, 0, this.canvas.height)
         this.ctx.translate(this.x, this.y);
         quiver(this.ctx,sz,u,v,options);
         this.ctx.restore();
@@ -302,6 +320,7 @@ export class Axis {
 
     draw_axes() {
         this.ctx.save();
+        this.ctx.transform(1, 0, 0, -1, 0, this.canvas.height)
         this.ctx.translate(this.x, this.y);
         this.ctx.lineWidth = 1;
 
@@ -331,63 +350,70 @@ export class Axis {
     }
 
     colorbar(cb_ax) {
-        const cb_pressure = new Float32Array(cb_ax.height);
+        const cb_data = new Float32Array(cb_ax.height);
         let clim = this.clim;
-
-        for (let i = 0; i < cb_pressure.length; i++) {
-            cb_pressure[i] = clim[0] + i * (clim[1]-clim[0])/(cb_pressure.length-1)
+        if (clim[0] > clim[1]) {
+            return
         }
 
-        cb_ax.pcolor([1,cb_pressure.length],cb_pressure,{
+        for (let i = 0; i < cb_data.length; i++) {
+            cb_data[i] = clim[0] + i * (clim[1]-clim[0])/(cb_data.length-1)
+        }
+
+        cb_ax.items = [];
+        cb_ax.ylim = clim;
+        cb_ax.pcolor([1,cb_data.length],cb_data,{
             x: [0,1],
-            y: [clim[0],clim[1]],
+            y: clim,
             cmap: this.cmap});
         cb_ax.xticks = [];
         cb_ax.draw_axes();
     }
-}
 
 
-export function mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz) {
-    var mouse_button_down = false;
+    mouse_edit_mask(erase_elem,pen_size_elem,mask,sz) {
+        let mouse_button_down = false;
+        let ax = this;
 
-    function handle_mouse(e) {
-        var flags = e.buttons !== undefined ? e.buttons : e.which;
-        mouse_button_down = (flags & 1) === 1;
+        function handle_mouse(e) {
+            var flags = e.buttons !== undefined ? e.buttons : e.which;
 
-        // y-axis is up
-        var rect = e.target.getBoundingClientRect();
-        var x = e.clientX - rect.left;   // x position within the element
-        var y = rect.bottom - e.clientY; // y position within the element
+            mouse_button_down = (flags & 1) === 1;
 
-        if (!mouse_button_down) {
-            return
-        }
+            if (!mouse_button_down) {
+                return
+            }
 
-        let erase = erase_elem.checked;
-        let pen_size = parseFloat(pen_size_elem.value);
+            let resx = ax.resx;
+            let resy = ax.resy;
 
-        // do not change boundary walls
-        for (let i=1; i < sz[0]; i++) {
-            for (let j=1; j < sz[1]-1; j++) {
-                let dx = (res*i - x);
-                let dy = (res*j - y);
-                if (dx*dx + dy*dy < pen_size*pen_size) {
-                    let ij = i + sz[0] * j;
-                    mask[i + sz[0] * j] = erase;
+            // y-axis is up
+            var rect = e.target.getBoundingClientRect();
+            var x = e.clientX - rect.left;   // x position within the element
+            var y = rect.bottom - e.clientY; // y position within the element
+            //var y = e.clientY - rect.top; // y position within the element
+
+            let erase = erase_elem.checked;
+            let pen_size = parseFloat(pen_size_elem.value);
+
+            // do not change boundary walls
+            for (let i=1; i < sz[0]; i++) {
+                for (let j=1; j < sz[1]-1; j++) {
+                    let dx = (resx*i - x);
+                    let dy = (resy*j - y);
+                    if (dx*dx + dy*dy < pen_size*pen_size) {
+                        let ij = i + sz[0] * j;
+                        mask[i + sz[0] * j] = erase;
+                    }
                 }
             }
+
         }
 
+        this.canvas.addEventListener("mousedown", handle_mouse);
+        this.canvas.addEventListener("mousemove", handle_mouse);
+        this.canvas.addEventListener("mouseup", handle_mouse);
     }
-
-    var ctx = canvas.getContext("2d");
-    ctx.transform(1, 0, 0, -1, 0, canvas.height)
-
-    canvas.addEventListener("mousedown", handle_mouse);
-    canvas.addEventListener("mousemove", handle_mouse);
-    canvas.addEventListener("mouseup", handle_mouse);
-    return ctx
 }
 
 

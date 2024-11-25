@@ -1,4 +1,4 @@
-import { MallocArray, pcolor, quiver, mouse_edit_mask, Axis } from "./julia_wasm_utils.js";
+import { MallocArray, pcolor, quiver, Axis } from "./julia_wasm_utils.js";
 
 export async function run(document) {
     const response = await fetch('test_fluid_sim.wasm');
@@ -49,17 +49,16 @@ export async function run(document) {
     const canvas = document.getElementById("plot");
     const erase_elem = document.getElementById("erase");
     const pen_size_elem = document.getElementById("pen_size");
-    const ctx = mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz);
-
-
 
     let colorbar_width = 100;
     let cb_padding = 20;
     let cb_width = 20;
     let cb_height = canvas.height - 2*cb_padding;
-    const cb_pressure = new Float32Array(cb_height);
-    let ax = new Axis(ctx,0,0,canvas.width-colorbar_width,canvas.height);
-    let cb_ax = new Axis(ctx,canvas.width-colorbar_width+10,cb_padding,cb_width,cb_height);
+
+    let ax = new Axis(canvas,0,0,canvas.width-colorbar_width,canvas.height);
+    ax.mouse_edit_mask(erase_elem,pen_size_elem,mask,sz);
+
+    let cb_ax = new Axis(canvas,canvas.width-colorbar_width+10,cb_padding,cb_width,cb_height);
 
     function step(timestamp) {
         let u0 = parseFloat(document.getElementById("u0").value);
@@ -77,8 +76,8 @@ export async function run(document) {
                                                 mask_p,pressure_p,u_p,v_p,newu_p,newv_p);
 
             ntime += 1;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+            ax.ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ax.items = [];
             ax.clim = [pmin,pmax];
             ax.pcolor(sz,pressure,{cmap: colormap, mask: mask});
 

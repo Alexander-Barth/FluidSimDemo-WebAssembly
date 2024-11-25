@@ -1,4 +1,4 @@
-import { MallocArray, MallocArray2, pcolor, quiver, mouse_edit_mask, color, colormaps } from "../julia_wasm_utils.js";
+import { MallocArray, MallocArray2, pcolor, quiver, Axis, color, colormaps } from "../julia_wasm_utils.js";
 
 export async function run(document) {
     const response = await fetch('model.wasm');
@@ -45,7 +45,16 @@ export async function run(document) {
     const canvas = document.getElementById("plot");
     const erase_elem = document.getElementById("erase");
     const pen_size_elem = document.getElementById("pen_size");
-    const [ctx,res] = mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz);
+
+    let colorbar_width = 100;
+    let cb_padding = 20;
+    let cb_width = 20;
+    let cb_height = canvas.height - 2*cb_padding;
+
+    let ax = new Axis(canvas,0,0,canvas.width-colorbar_width,canvas.height);
+    let cb_ax = new Axis(canvas,canvas.width-colorbar_width+10,cb_padding,cb_width,cb_height);
+
+    let ctx = ax.ctx;
 
     const ipressure = 7;
     const idensity = 6;
@@ -90,6 +99,8 @@ export async function run(document) {
 
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save()
+            ctx.transform(1, 0, 0, -1, 0, canvas.height);
 
             let pminc = +Infinity;
             let pmaxc = -Infinity;
@@ -115,6 +126,12 @@ export async function run(document) {
             if (velocity_show) {
                 //quiver(ctx,sz,res,u,v,{subsample: 5, scale: 500, mask: mask});
             }
+            ctx.restore();
+
+            ax.clim = [pmin,pmax];
+            ax.cmap = cmap;
+            ax.colorbar(cb_ax);
+
         }
 
         window.requestAnimationFrame(step);

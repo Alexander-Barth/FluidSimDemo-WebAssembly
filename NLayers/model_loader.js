@@ -1,4 +1,4 @@
-import { MallocArray, pcolor, quiver, mouse_edit_mask, colormaps, color } from "../julia_wasm_utils.js";
+import { MallocArray, pcolor, quiver, colormaps, color, Axis } from "../julia_wasm_utils.js";
 
 
 
@@ -123,8 +123,18 @@ export async function run(document) {
         ntime = 0;
     }
 
-    let ctx = canvas.getContext("2d");
-    ctx.transform(1, 0, 0, -1, 0, canvas.height)
+    let colorbar_width = 100;
+    let cb_padding = 20;
+    let cb_width = 20;
+    let cb_height = canvas.height - 2*cb_padding;
+
+    let ax = new Axis(canvas,0,0,canvas.width-colorbar_width,canvas.height);
+    ax.xlim = [0,imax-1];
+    ax.ylim = [0,canvas_height_m];
+
+    let cb_ax = new Axis(canvas,canvas.width-colorbar_width+10,cb_padding,cb_width,cb_height);
+
+    let ctx = ax.ctx;
 
     function step(timestamp) {
         let modeindex = parseInt(document.getElementById("modeindex").value);
@@ -145,7 +155,7 @@ export async function run(document) {
         }
 
 
-        if (!isNaN(grav) && !isNaN(f) && !isNaN(dt)) {
+        if (!isNaN(grav) && !isNaN(f) && !isNaN(dt) && (hmin < hmax)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
 
             //let modeindex = 3;
@@ -185,9 +195,11 @@ export async function run(document) {
 
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save()
+            ctx.transform(1, 0, 0, -1, 0, canvas.height);
             let cmap = colormaps[colormap];
-            let scalex = canvas.width/(imax-1);
-            let scaley = canvas.height/canvas_height_m;
+            let scalex = ax.resx;
+            let scaley = ax.resy;
 
             for (let k = 0; k < m; k++) {
 
@@ -214,6 +226,12 @@ export async function run(document) {
                 }
                 ctx.stroke();
             }
+
+            ctx.restore();
+
+            ax.clim = [hmin,hmax];
+            ax.cmap = cmap;
+            ax.colorbar(cb_ax);
 
             //console.log("z ",h[0]);
         }

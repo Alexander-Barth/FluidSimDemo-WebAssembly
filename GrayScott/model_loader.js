@@ -1,4 +1,4 @@
-import { MallocArray, pcolor, quiver, mouse_edit_mask } from "../julia_wasm_utils.js";
+import { MallocArray, pcolor, quiver, Axis } from "../julia_wasm_utils.js";
 
 export async function run(document) {
     const response = await fetch('model.wasm');
@@ -43,7 +43,16 @@ export async function run(document) {
     const erase_elem = document.getElementById("erase");
     const pen_size_elem = document.getElementById("pen_size");
     const coefficients = document.getElementById("coefficients");
-    const [ctx,res] = mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz);
+
+    let colorbar_width = 100;
+    let cb_padding = 20;
+    let cb_width = 20;
+    let cb_height = canvas.height - 2*cb_padding;
+
+    let ax = new Axis(canvas,0,0,canvas.width-colorbar_width,canvas.height);
+    ax.mouse_edit_mask(erase_elem,pen_size_elem,mask,sz);
+
+    let cb_ax = new Axis(canvas,canvas.width-colorbar_width+10,cb_padding,cb_width,cb_height);
 
     function step(timestamp) {
         let Du = parseFloat(document.getElementById("Du").value);
@@ -67,12 +76,14 @@ export async function run(document) {
                 ntime += 1;
             }
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            pcolor(ctx,sz,res,u,{
-                pmin: pmin, pmax: pmax,
+            ax.clear();
+            ax.clim = [pmin,pmax];
+            ax.pcolor(sz,u,{
                 cmap: colormap,
                 mask: mask,
             });
+
+            ax.colorbar(cb_ax);
         }
         window.requestAnimationFrame(step);
     }
