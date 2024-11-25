@@ -46,9 +46,9 @@ export function clamp(num, min, max) {
 
 // origin of context should be lower-left
 export function pcolor(ctx,sz,res,pressure,{
-    pmin=null,
-    pmax=null,
-    cmap=turbo_colormap,
+    pmin = null,
+    pmax = null,
+    cmap = turbo_colormap,
     mask = null
 } = {}) {
 
