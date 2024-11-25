@@ -138,7 +138,7 @@ export function pcolor(ctx,sz,pressure,{
     ctx.restore();
 }
 
-export function quiver(ctx,sz,res,u,v,{
+export function quiver(ctx,sz,u,v,{
     resx = 1,
     resy = 1,
     subsample = 1, scale = 1, a = 0.7, b = 0.2, min = 0, mask = null} = {}) {
@@ -210,12 +210,12 @@ export class Axis {
     }
 
     quiver(sz,u,v,options) {
-        //options.resx = this.resx;
-        //options.resy = this.resy;
+        options.resx = this.resx;
+        options.resy = this.resy;
 
         this.ctx.save();
         this.ctx.translate(this.x, this.y);
-        this.ctx.scale(this.resx,this.resy);
+        //this.ctx.scale(this.resx,this.resy);
         quiver(this.ctx,sz,u,v,options);
         this.ctx.restore();
     }

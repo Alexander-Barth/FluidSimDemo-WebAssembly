@@ -87,13 +87,7 @@ export async function run(document) {
             ax.pcolor(sz,pressure,{cmap: colormap, mask: mask});
 
             if (velocity_show) {
-                // ax.quiver(sz,u,v,{
-                //     subsample: 5,
-                //     scale: 2.5,
-                //     mask: mask});
-                quiver(ctx,sz,res,u,v,{
-                    resx: res,
-                    resy: res,
+                ax.quiver(sz,u,v,{
                     subsample: 5,
                     scale: 2.5,
                     mask: mask});
