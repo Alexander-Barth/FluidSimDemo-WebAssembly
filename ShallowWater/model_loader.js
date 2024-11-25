@@ -82,7 +82,7 @@ export async function run(document) {
         let velocity_show = document.getElementById("velocity_show").checked;
         let colormap = document.getElementById("colormap").value;
 
-        if (!isNaN(grav) && !isNaN(f) && !isNaN(hmin) && !isNaN(hmax) && !isNaN(dt)) {
+        if (!isNaN(grav) && !isNaN(f) && !isNaN(hmin) && !isNaN(hmax) && !isNaN(dt) && (hmin < hmax)) {
             //console.log("p ",pressure[140 + sz[0] * 40]);
             const result = julia_fluid_sim_step(
                 grav,bottom_depth,f,beta,dx,dt,ntime,

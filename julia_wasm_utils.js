@@ -57,7 +57,8 @@ export function ticks(min,max,n) {
     // transform dt in "scientific notation"
     // dt = sdt * 10^log10(base)
 
-    let base = Math.pow(10.0,Math.floor(Math.log10(dt)) );
+    let nexp = Math.floor(Math.log10(dt));
+    let base = Math.pow(10,nexp);
     let sdt = dt/base;
 
     // pefered increments
@@ -93,7 +94,9 @@ export function ticks(min,max,n) {
     let t = Array(nt);
 
     for(let i=0; i<nt;i++) {
-        t[i] = t0 + i*dt;
+        //t[i] = t0 + i*dt;
+        // reduce rounding errors
+        t[i] = Math.round((t0 + i*dt + Number.EPSILON)/base)*base;
         if (Math.abs(t[i]) < 1e-14) {
             t[i]=0;
         }
