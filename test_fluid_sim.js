@@ -74,10 +74,11 @@ export async function run(document) {
                 cmap: colormap,
                 mask: mask});
 
-
             if (velocity_show) {
-                quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 2.5});
-
+                quiver(ctx,sz,res,u,v,{
+                    subsample: 5,
+                    scale: 2.5,
+                    mask: mask});
             }
         }
         window.requestAnimationFrame(step);

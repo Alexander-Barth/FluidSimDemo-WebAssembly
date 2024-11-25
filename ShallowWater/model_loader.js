@@ -90,10 +90,11 @@ export async function run(document) {
             });
 
             if (velocity_show) {
-                quiver(ctx,sz,res,u,v,mask,{
+                quiver(ctx,sz,res,u,v,{
                     subsample: velocity_subsample,
                     scale: velocity_scale,
-                    min: velocity_min
+                    min: velocity_min,
+                    mask: mask
                 });
 
             }

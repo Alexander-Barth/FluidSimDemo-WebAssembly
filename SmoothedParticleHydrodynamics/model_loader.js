@@ -113,7 +113,7 @@ export async function run(document) {
             }
 
             if (velocity_show) {
-                //quiver(ctx,sz,res,u,v,mask,{subsample: 5, scale: 500});
+                //quiver(ctx,sz,res,u,v,{subsample: 5, scale: 500, mask: mask});
             }
         }
 

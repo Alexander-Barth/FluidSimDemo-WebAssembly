@@ -72,11 +72,12 @@ export function pcolor(ctx,sz,res,pressure,{
     }
 }
 
-export function quiver(ctx,sz,res,u,v,mask,{subsample = 1, scale = 1, a = 0.7, b = 0.2, min = 0} = {}) {
+export function quiver(ctx,sz,res,u,v,{
+    subsample = 1, scale = 1, a = 0.7, b = 0.2, min = 0, mask = null} = {}) {
     for (let i=0; i < sz[0]; i+=subsample) {
         for (let j=0; j < sz[1]; j+=subsample) {
             let ij = i + sz[0] * j;
-            if (mask[ij] == 1) {
+            if ((mask == null) || (mask[ij] == 1)) {
                 let uij = 0.5 * (u[i + (sz[0]+1) * j] + u[i+1 + (sz[0]+1) * j]);
                 let vij = 0.5 * (v[i + sz[0] * j]     + v[i + sz[0] * (j+1)]);
 
