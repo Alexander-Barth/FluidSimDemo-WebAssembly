@@ -44,6 +44,66 @@ export function clamp(num, min, max) {
     return Math.min(Math.max(num, min), max);
 }
 
+
+export function ticks(min,max,n) {
+  // a least 2 ticks
+    if (n<2) {
+        n = 2;
+    }
+
+    let range = max-min;
+    let dt = range/n;
+
+    // transform dt in "scientific notation"
+    // dt = sdt * 10^log10(base)
+
+    let base = Math.pow(10.0,Math.floor(Math.log10(dt)) );
+    let sdt = dt/base;
+
+    // pefered increments
+
+    if (sdt <= 1.5) {
+        sdt = 1;
+    }
+    else if (sdt < 2.5) {
+        sdt = 2;
+    }
+    else if (sdt <= 4.) {
+        sdt = 3;
+    }
+    else if (sdt <= 7.) {
+        sdt = 5;
+    }
+    else {
+        sdt = 10;
+    }
+
+    dt = sdt * base;
+
+    // the first label will be:  ceil(min/dt)*dt
+    // the last label will be: floor(max/dt)*dt
+
+    let t0 = Math.ceil(min/dt)*dt;
+
+    // the difference between first and last label
+    // gives the number of labels
+
+    let nt = Math.floor(max/dt) - Math.ceil(min/dt) + 1;
+
+    let t = Array(nt);
+
+    for(let i=0; i<nt;i++) {
+        t[i] = t0 + i*dt;
+        if (Math.abs(t[i]) < 1e-14) {
+            t[i]=0;
+        }
+  }
+
+  return t;
+
+}
+
+
 // origin of context should be lower-left
 export function pcolor(ctx,sz,res,pressure,{
     pmin = null,
@@ -55,6 +115,8 @@ export function pcolor(ctx,sz,res,pressure,{
     if (typeof cmap === 'string' || cmap instanceof String) {
         cmap = colormaps[cmap];
     }
+
+    ctx.save()
 
     for (let i=0; i < sz[0]; i++) {
         for (let j=0; j < sz[1]; j++) {
@@ -70,6 +132,8 @@ export function pcolor(ctx,sz,res,pressure,{
             ctx.fillRect(res*i, res*j, res, res);
         }
     }
+
+    ctx.restore();
 }
 
 export function quiver(ctx,sz,res,u,v,{
@@ -101,6 +165,75 @@ export function quiver(ctx,sz,res,u,v,{
         }
     }
 }
+
+export class Axis {
+    constructor(ctx,x,y,width,height) {
+        this.ctx = ctx;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+
+        this.xlim = [-1,1];
+        this.ylim = [-1,1];
+        this.clim = [-1,1];
+
+    }
+    pcolor(sz,scalar,options) {
+        let resx = this.width / (this.xlim[1]-this.xlim[0]);
+        let resy = this.height / (this.ylim[1]-this.ylim[0]);
+
+        options.pmin = this.clim[0];
+        options.pmax = this.clim[1];
+
+        this.ctx.save();
+        this.ctx.translate(this.x, this.y);
+        this.ctx.scale(resx,resy);
+        pcolor(this.ctx,sz,1,scalar,options);
+        this.ctx.restore();
+    }
+    draw_axes() {
+        this.ctx.save();
+        this.ctx.translate(this.x, this.y);
+        this.ctx.lineWidth = 1;
+
+        this.ctx.beginPath();
+        this.ctx.rect(0, 0, this.width, this.height);
+        this.ctx.stroke();
+
+        this.ctx.scale(1, -1);
+
+        let ticks_fontsize = 12; // px
+        let ticks_min_space = 5; // px
+        let ticks_max_number = 6;
+        let ticks_font = "sans-serif";
+        let yticks_len = 5;
+        let text_gap = 5;
+
+        let yticks = ticks(this.clim[0],this.clim[1],Math.min(
+            this.height / (ticks_min_space+ticks_fontsize),
+            ticks_max_number
+        ));
+        this.ctx.textBaseline = 'middle';
+        this.ctx.font = `${ticks_fontsize}px ${ticks_font}`;
+
+        for (let i = 0; i < yticks.length; i++) {
+            let y = -this.height * (yticks[i]-this.clim[0])/(this.clim[1]-this.clim[0]);
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.width - yticks_len, y);
+            this.ctx.lineTo(this.width, y);
+            this.ctx.stroke();
+
+            this.ctx.fillText(yticks[i], this.width + text_gap, y);
+        }
+        this.ctx.restore();
+    }
+
+    draw() {
+
+    }
+}
+
 
 export function mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz) {
     var mouse_button_down = false;
@@ -138,7 +271,10 @@ export function mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz) {
     var ctx = canvas.getContext("2d");
     ctx.transform(1, 0, 0, -1, 0, canvas.height)
     // resolution for the plot
-    let res = Math.min(canvas.width/sz[0],canvas.height/sz[1]);
+
+    let colorbar_ax_width = 100;
+    let res = Math.min((canvas.width-colorbar_ax_width)/sz[0],canvas.height/sz[1]);
+    console.log("res ",res);
 
     canvas.addEventListener("mousedown", handle_mouse);
     canvas.addEventListener("mousemove", handle_mouse);

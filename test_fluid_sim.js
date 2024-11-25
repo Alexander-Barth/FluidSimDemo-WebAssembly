@@ -1,4 +1,4 @@
-import { MallocArray, pcolor, quiver, mouse_edit_mask } from "./julia_wasm_utils.js";
+import { MallocArray, pcolor, quiver, mouse_edit_mask, ticks, Axis } from "./julia_wasm_utils.js";
 
 export async function run(document) {
     const response = await fetch('test_fluid_sim.wasm');
@@ -51,6 +51,20 @@ export async function run(document) {
     const pen_size_elem = document.getElementById("pen_size");
     const [ctx,res] = mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz);
 
+
+
+    let cb_padding = 20;
+    let cb_width = 20;
+    let cb_height = 300 - 2*cb_padding;
+    const cb_pressure = new Float32Array(cb_height);
+    let ax = new Axis(ctx,0,0,canvas.width-100,canvas.height);
+    ax.xlim = [0,canvas.width];
+    ax.ylim = [0,canvas.height];
+
+    let cb_ax = new Axis(ctx,canvas.width-100+10,cb_padding,cb_width,cb_height);
+    cb_ax.xlim = [0,1];
+    cb_ax.ylim = [0,cb_pressure.length];
+
     function step(timestamp) {
         let u0 = parseFloat(document.getElementById("u0").value);
         let dt = parseFloat(document.getElementById("dt").value);
@@ -80,6 +94,17 @@ export async function run(document) {
                     scale: 2.5,
                     mask: mask});
             }
+
+            for (let i = 0; i < cb_pressure.length; i++) {
+                cb_pressure[i] = pmin + i * (pmax-pmin)/(cb_pressure.length-1)
+            }
+
+            cb_ax.clim = [pmin,pmax];
+            cb_ax.pcolor([1,cb_pressure.length],cb_pressure,{
+                cmap: colormap});
+            cb_ax.draw_axes();
+
+
         }
         window.requestAnimationFrame(step);
     }
