@@ -266,6 +266,7 @@ export class Axis {
     pcolor(sz,scalar,options) {
         options.x = options.x || [0,sz[0]];
         options.y = options.y || [0,sz[1]];
+        this.cmap = options.cmap || "turbo";
 
         let item = {x: options.x, y: options.y, c: range(scalar)};
         this.items.push(item);
@@ -329,8 +330,20 @@ export class Axis {
         this.ctx.restore();
     }
 
-    draw() {
+    colorbar(cb_ax) {
+        const cb_pressure = new Float32Array(cb_ax.height);
+        let clim = this.clim;
 
+        for (let i = 0; i < cb_pressure.length; i++) {
+            cb_pressure[i] = clim[0] + i * (clim[1]-clim[0])/(cb_pressure.length-1)
+        }
+
+        cb_ax.pcolor([1,cb_pressure.length],cb_pressure,{
+            x: [0,1],
+            y: [clim[0],clim[1]],
+            cmap: this.cmap});
+        cb_ax.xticks = [];
+        cb_ax.draw_axes();
     }
 }
 
