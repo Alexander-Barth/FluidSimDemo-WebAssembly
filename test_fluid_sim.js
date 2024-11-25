@@ -1,4 +1,4 @@
-import { MallocArray, pcolor, quiver, mouse_edit_mask, ticks, Axis } from "./julia_wasm_utils.js";
+import { MallocArray, pcolor, quiver, mouse_edit_mask, Axis } from "./julia_wasm_utils.js";
 
 export async function run(document) {
     const response = await fetch('test_fluid_sim.wasm');
