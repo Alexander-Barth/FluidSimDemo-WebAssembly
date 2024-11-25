@@ -56,7 +56,7 @@ export async function run(document) {
     let colorbar_width = 100;
     let cb_padding = 20;
     let cb_width = 20;
-    let cb_height = 300 - 2*cb_padding;
+    let cb_height = canvas.height - 2*cb_padding;
     const cb_pressure = new Float32Array(cb_height);
     let ax = new Axis(ctx,0,0,canvas.width-colorbar_width,canvas.height);
     let cb_ax = new Axis(ctx,canvas.width-colorbar_width+10,cb_padding,cb_width,cb_height);
