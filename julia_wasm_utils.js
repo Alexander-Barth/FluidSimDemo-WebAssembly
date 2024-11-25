@@ -174,6 +174,14 @@ export function quiver(ctx,sz,u,v,{
     ctx.restore();
 }
 
+function range(data) {
+    return [Math.min(...data),Math.max(...data)];
+}
+
+function combine_lim(lim1,lim2) {
+    return [Math.min(lim1[0],lim2[0]),Math.max(lim1[1],lim2[1])];
+}
+
 export class Axis {
     constructor(ctx,x,y,width,height) {
         this.ctx = ctx;
@@ -182,10 +190,18 @@ export class Axis {
         this.width = width;
         this.height = height;
 
-        this.xlim = [-1,1];
-        this.ylim = [-1,1];
-        this.clim = [-1,1];
+        this._xlim = [Infinity,-Infinity];
+        this._ylim = [Infinity,-Infinity];
+        this._clim = [Infinity,-Infinity];
 
+        this.xticks_automatic = true;
+        this.yticks_automatic = true;
+
+        this.xlim_automatic = true;
+        this.ylim_automatic = true;
+        this.clim_automatic = true;
+
+        this.items = [];
     }
 
     get resx() {
@@ -196,17 +212,74 @@ export class Axis {
         return this.height / (this.ylim[1]-this.ylim[0]);
     }
 
+    limite(prop) {
+        let r = [Infinity,-Infinity]
+        for (const item of this.items) {
+            if (item[prop]) {
+                r = combine_lim(r,item[prop])
+            }
+        }
+        return r;
+    }
+
+    get xlim() {
+        if (this.xlim_automatic)
+            return this.limite("x")
+        else
+            return this._xlim;
+    }
+
+    set xlim(v) {
+        this.xlim_automatic = false;
+        this._xlim = v;
+    }
+
+    get ylim() {
+        if (this.ylim_automatic)
+            return this.limite("y")
+        else
+            return this._ylim;
+    }
+
+    set ylim(v) {
+        this.ylim_automatic = false;
+        this._ylim = v;
+    }
+
+    get clim() {
+        if (this.clim_automatic)
+            return this.limite("c")
+        else
+            return this._clim;
+    }
+
+    set clim(v) {
+        this.clim_automatic = false;
+        this._clim = v;
+    }
+
+    set xticks(v) {
+        this.xticks_automatic = false;
+        this._xticks = v;
+    }
 
     pcolor(sz,scalar,options) {
+        options.x = options.x || [0,sz[0]];
+        options.y = options.y || [0,sz[1]];
+
+        let item = {x: options.x, y: options.y, c: range(scalar)};
+        this.items.push(item);
+
         options.pmin = this.clim[0];
         options.pmax = this.clim[1];
-        options.resx = this.resx;
-        options.resy = this.resy;
+        options.resx = this.resx * (options.x[1]-options.x[0])/sz[0];
+        options.resy = this.resy * (options.y[1]-options.y[0])/sz[1];
 
         this.ctx.save();
         this.ctx.translate(this.x, this.y);
         pcolor(this.ctx,sz,scalar,options);
         this.ctx.restore();
+
     }
 
     quiver(sz,u,v,options) {
@@ -215,7 +288,6 @@ export class Axis {
 
         this.ctx.save();
         this.ctx.translate(this.x, this.y);
-        //this.ctx.scale(this.resx,this.resy);
         quiver(this.ctx,sz,u,v,options);
         this.ctx.restore();
     }
@@ -238,7 +310,7 @@ export class Axis {
         let yticks_len = 5;
         let text_gap = 5;
 
-        let yticks = ticks(this.clim[0],this.clim[1],Math.min(
+        let yticks = ticks(this.ylim[0],this.ylim[1],Math.min(
             this.height / (ticks_min_space+ticks_fontsize),
             ticks_max_number
         ));
@@ -246,7 +318,7 @@ export class Axis {
         this.ctx.font = `${ticks_fontsize}px ${ticks_font}`;
 
         for (let i = 0; i < yticks.length; i++) {
-            let y = -this.height * (yticks[i]-this.clim[0])/(this.clim[1]-this.clim[0]);
+            let y = -this.height * (yticks[i]-this.ylim[0])/(this.ylim[1]-this.ylim[0]);
             this.ctx.beginPath();
             this.ctx.moveTo(this.width - yticks_len, y);
             this.ctx.lineTo(this.width, y);

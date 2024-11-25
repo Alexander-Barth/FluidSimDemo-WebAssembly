@@ -62,8 +62,8 @@ export async function run(document) {
     ax.ylim = [0,sz[1]];
 
     let cb_ax = new Axis(ctx,canvas.width-100+10,cb_padding,cb_width,cb_height);
-    cb_ax.xlim = [0,1];
-    cb_ax.ylim = [0,cb_pressure.length];
+    //cb_ax.xlim = [0,1];
+    //cb_ax.ylim = [0,cb_pressure.length];
 
     function step(timestamp) {
         let u0 = parseFloat(document.getElementById("u0").value);
@@ -97,11 +97,12 @@ export async function run(document) {
                 cb_pressure[i] = pmin + i * (pmax-pmin)/(cb_pressure.length-1)
             }
 
-            cb_ax.clim = [pmin,pmax];
             cb_ax.pcolor([1,cb_pressure.length],cb_pressure,{
+                x: [0,1],
+                y: [pmin,pmax],
                 cmap: colormap});
+            cb_ax.xticks = [];
             cb_ax.draw_axes();
-
 
         }
         window.requestAnimationFrame(step);
