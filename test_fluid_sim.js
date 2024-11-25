@@ -49,19 +49,17 @@ export async function run(document) {
     const canvas = document.getElementById("plot");
     const erase_elem = document.getElementById("erase");
     const pen_size_elem = document.getElementById("pen_size");
-    const [ctx,res] = mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz);
+    const ctx = mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz);
 
 
 
+    let colorbar_width = 100;
     let cb_padding = 20;
     let cb_width = 20;
     let cb_height = 300 - 2*cb_padding;
     const cb_pressure = new Float32Array(cb_height);
-    let ax = new Axis(ctx,0,0,canvas.width-100,canvas.height);
-    ax.xlim = [0,sz[0]];
-    ax.ylim = [0,sz[1]];
-
-    let cb_ax = new Axis(ctx,canvas.width-100+10,cb_padding,cb_width,cb_height);
+    let ax = new Axis(ctx,0,0,canvas.width-colorbar_width,canvas.height);
+    let cb_ax = new Axis(ctx,canvas.width-colorbar_width+10,cb_padding,cb_width,cb_height);
 
     function step(timestamp) {
         let u0 = parseFloat(document.getElementById("u0").value);

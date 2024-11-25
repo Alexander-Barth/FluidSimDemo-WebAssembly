@@ -201,6 +201,13 @@ export class Axis {
         this.ylim_automatic = true;
         this.clim_automatic = true;
 
+        this.ticks_fontsize = 12; // px
+        this.ticks_min_space = 5; // px
+        this.ticks_max_number = 6;
+        this.ticks_font = "sans-serif";
+        this.yticks_len = 5;
+        this.text_gap = 5;
+
         this.items = [];
     }
 
@@ -304,28 +311,21 @@ export class Axis {
 
         this.ctx.scale(1, -1);
 
-        let ticks_fontsize = 12; // px
-        let ticks_min_space = 5; // px
-        let ticks_max_number = 6;
-        let ticks_font = "sans-serif";
-        let yticks_len = 5;
-        let text_gap = 5;
-
         let yticks = ticks(this.ylim[0],this.ylim[1],Math.min(
-            this.height / (ticks_min_space+ticks_fontsize),
-            ticks_max_number
+            this.height / (this.ticks_min_space+this.ticks_fontsize),
+            this.ticks_max_number
         ));
         this.ctx.textBaseline = 'middle';
-        this.ctx.font = `${ticks_fontsize}px ${ticks_font}`;
+        this.ctx.font = `${this.ticks_fontsize}px ${this.ticks_font}`;
 
         for (let i = 0; i < yticks.length; i++) {
             let y = -this.height * (yticks[i]-this.ylim[0])/(this.ylim[1]-this.ylim[0]);
             this.ctx.beginPath();
-            this.ctx.moveTo(this.width - yticks_len, y);
+            this.ctx.moveTo(this.width - this.yticks_len, y);
             this.ctx.lineTo(this.width, y);
             this.ctx.stroke();
 
-            this.ctx.fillText(yticks[i], this.width + text_gap, y);
+            this.ctx.fillText(yticks[i], this.width + this.text_gap, y);
         }
         this.ctx.restore();
     }
@@ -383,16 +383,11 @@ export function mouse_edit_mask(canvas,erase_elem,pen_size_elem,mask,sz) {
 
     var ctx = canvas.getContext("2d");
     ctx.transform(1, 0, 0, -1, 0, canvas.height)
-    // resolution for the plot
-
-    let colorbar_ax_width = 100;
-    let res = Math.min((canvas.width-colorbar_ax_width)/sz[0],canvas.height/sz[1]);
-    console.log("res ",res);
 
     canvas.addEventListener("mousedown", handle_mouse);
     canvas.addEventListener("mousemove", handle_mouse);
     canvas.addEventListener("mouseup", handle_mouse);
-    return [ctx,res]
+    return ctx
 }
 
 
