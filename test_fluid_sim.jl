@@ -19,7 +19,7 @@ function fluid_sim_step(u0,h,Δt,ρ,overrelaxation,iter_pressure,ntime,
     config = (; u0,h,Δxy,Δt,ρ,overrelaxation,iter_pressure)
 
     if ntime == 0
-        set_mask!(config,mask,xy,uv; radius = radius)
+        set_mask!(config,mask,xy,uv; radius = radius, mask_type = 2)
     end
 
     p .= 0

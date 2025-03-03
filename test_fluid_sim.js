@@ -60,6 +60,23 @@ export async function run(document) {
 
     let cb_ax = new Axis(canvas,canvas.width-colorbar_width+10,cb_padding,cb_width,cb_height);
 
+    let cvs = document.createElement("canvas");
+    let ctx = cvs.getContext("2d");
+
+    document.getElementById('mask').addEventListener('change', function() {
+        console.log('You selected: ', this.value);
+        let img = document.getElementById(this.value);
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+        ctx.drawImage(img, 0, 0);
+        let mask_data = ctx.getImageData(0, 0, img.width, img.height).data;
+        console.log("data ",mask_data)
+        for (let i = 0; i < sz[0]; i++) {
+            for (let j = 0; j < sz[1]; j++) {
+                mask[i + sz[0] * j] = mask_data[4 * (i + sz[0] * (sz[1]-j))+3] < 100;
+            }
+        }
+    });
+
     function step(timestamp) {
         let u0 = parseFloat(document.getElementById("u0").value);
         let dt = parseFloat(document.getElementById("dt").value);
@@ -86,6 +103,20 @@ export async function run(document) {
                     subsample: 5,
                     scale: 2.5,
                     mask: mask});
+            }
+
+
+            if (ntime == 1) {
+                let img = document.getElementById(document.getElementById('mask').value);
+                ctx.clearRect(0, 0, cvs.width, cvs.height);
+                ctx.drawImage(img, 0, 0);
+                let mask_data = ctx.getImageData(0, 0, img.width, img.height).data;
+                console.log("data ",mask_data)
+                for (let i = 0; i < sz[0]; i++) {
+                    for (let j = 0; j < sz[1]; j++) {
+                        mask[i + sz[0] * j] = mask_data[4 * (i + sz[0] * (sz[1]-j))+3] < 100;
+                    }
+                }
             }
 
             ax.colorbar(cb_ax);

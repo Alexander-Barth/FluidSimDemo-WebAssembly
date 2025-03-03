@@ -46,6 +46,13 @@
         <input type="checkbox" id="erase" value="erase">
       </div>
       <div>
+        <label for="mask">Mask</label>
+        <select id="mask">
+          <option value="island">island</option>
+          <option value="airfoil">airfoil</option>
+        </select>
+      </div>
+      <div>
         <label for="u0">Inflow velocity (m/s)</label><input id="u0" type="number" value="2" step="0.01" min="0">
       </div>
       <div>
@@ -80,5 +87,9 @@
     </form>
     <p>The minimum and maximum pressure are only used for plotting the pressure field. The pressure is defined only up to an additive constant.</p>
     <p>More information and the code is <a href="https://github.com/Alexander-Barth/FluidSimDemo-WebAssembly">available here</a>.</p>
+
+    <img class="masks" id="island" src="island.png" >
+    <img class="masks" id="airfoil" style="display: none" src="airfoil.png" >
+
   </body>
 </html>
