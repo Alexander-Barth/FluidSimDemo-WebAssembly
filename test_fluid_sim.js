@@ -79,7 +79,7 @@ export async function run(document) {
             ax.ctx.clearRect(0, 0, canvas.width, canvas.height);
             ax.items = [];
             ax.clim = [pmin,pmax];
-            ax.pcolor(sz,pressure,{cmap: colormap, mask: mask});
+            ax.pcolor(sz,pressure,{cmap: colormap, mask: mask, pmin: pmin, pmax: pmax});
 
             if (velocity_show) {
                 ax.quiver(sz,u,v,{
