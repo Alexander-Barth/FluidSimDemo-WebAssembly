@@ -40,6 +40,15 @@ export function rgb(r, g, b){
 }
 
 
+
+function colormaps_rgb(cmap) {
+    return cmap.map(color => rgb(
+        Math.round(255*color[0]),
+        Math.round(255*color[1]),
+        Math.round(255*color[2])));
+}
+
+
 export function clamp(num, min, max) {
     return Math.min(Math.max(num, min), max);
 }
@@ -113,26 +122,32 @@ export function pcolor(ctx,sz,pressure,{
     resy = 1,
     pmin = null,
     pmax = null,
-    cmap = turbo_colormap,
+    cmap = 'turbo',
     mask = null
 } = {}) {
 
     if (typeof cmap === 'string' || cmap instanceof String) {
-        cmap = colormaps[cmap];
+        cmap = colormaps_string[cmap];
+    }
+    else {
+        cmap = colormaps_rgb(cmap);
     }
 
     ctx.save();
+
+    let white = rgb(255,255,255);
+    let max_ind = cmap.length - 1;
+    let a = max_ind / (pmax-pmin);
 
     for (let i=0; i < sz[0]; i++) {
         for (let j=0; j < sz[1]; j++) {
             let ij = i + sz[0] * j;
             if ((mask == null) || (mask[ij] == 1)) {
-                let ind = Math.floor(255 * clamp((pressure[ij] - pmin) / (pmax-pmin),0,1));
-                let color = cmap[ind];
-                ctx.fillStyle = rgb(255*color[0],255*color[1],255*color[2]);
+                let ind = clamp(Math.floor(a * (pressure[ij] - pmin)),0,max_ind);
+                ctx.fillStyle = cmap[ind];
             }
             else {
-                ctx.fillStyle = rgb(255,255,255);
+                ctx.fillStyle = white;
             }
             ctx.fillRect(resx*i, resy*j, resx, resy);
         }
@@ -439,3 +454,11 @@ const viridis_colormap = [
 ];
 
 export const colormaps = {"turbo": turbo_colormap, "viridis": viridis_colormap};
+
+const colormaps_string = {};
+
+for (var key in colormaps) {
+  if (colormaps.hasOwnProperty(key)) {
+      colormaps_string[key] = colormaps_rgb(colormaps[key]);
+  }
+}
