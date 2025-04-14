@@ -36,7 +36,17 @@ export function MallocArray2(typearray,memory,base,size,elsize4) {
 
 
 export function rgb(r, g, b){
-    return `rgb(${r}, ${g}, ${b})`
+    function _hex1(r) {
+        if (r < 16) {
+            return "0" + r.toString(16)
+        }
+        else {
+            return r.toString(16)
+        }
+    }
+
+    //faster to parse than `rgb(${r}, ${g}, ${b})`
+    return "#" + _hex1(r) + _hex1(g) + _hex1(b);
 }
 
 
@@ -135,7 +145,7 @@ export function pcolor(ctx,sz,pressure,{
 
     ctx.save();
 
-    let white = rgb(255,255,255);
+    let white = "#FFFFFF";
     let max_ind = cmap.length - 1;
     let a = max_ind / (pmax-pmin);
 
