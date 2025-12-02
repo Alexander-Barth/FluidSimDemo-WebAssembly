@@ -50,6 +50,6 @@ write("test_fluid_sim.o", obj)
 mem = 65536*16
 
 # the linker needs memset
-run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o memset.c`)
+run(`clang --target=wasm64 --no-standard-libraries -c -o memset.o memset.c`)
 
-run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o test_fluid_sim.wasm memset.o test_fluid_sim.o`)
+run(`wasm-ld -mwasm64 --initial-memory=$(mem) --no-entry --export-all -o test_fluid_sim.wasm memset.o test_fluid_sim.o`)
