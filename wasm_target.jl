@@ -10,8 +10,8 @@ using StaticTools
 
 struct WASMTarget <: GPUCompiler.AbstractCompilerTarget end
 
-GPUCompiler.llvm_triple(::WASMTarget) = "wasm32-unknown-wasi"
-#GPUCompiler.llvm_triple(::WASMTarget) = "wasm64-unknown-wasi"
+#GPUCompiler.llvm_triple(::WASMTarget) = "wasm32-unknown-wasi"
+GPUCompiler.llvm_triple(::WASMTarget) = "wasm64-unknown-wasi"
 GPUCompiler.runtime_slug(::GPUCompiler.CompilerJob{WASMTarget}) = "wasm-test"
 
 struct WASMTargetParams <: GPUCompiler.AbstractCompilerParams end

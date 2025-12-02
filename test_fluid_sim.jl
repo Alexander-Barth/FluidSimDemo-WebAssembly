@@ -4,9 +4,6 @@ using FluidSimDemo
 using FluidSimDemo.Physics2D: incompressibility!, advection!
 using FluidSimDemo: boundary_conditions!, set_mask!
 
-# assume that we use 32-bit julia
-@assert Int == Int32
-
 function fluid_sim_step(u0,h,Δt,ρ,overrelaxation,iter_pressure,ntime,
                     mask,p,u,v,newu,newv)
 
