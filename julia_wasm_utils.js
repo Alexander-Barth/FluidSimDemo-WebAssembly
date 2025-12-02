@@ -37,11 +37,12 @@ export function MallocArray2(typearray,memory,base,size,elsize4) {
 
 export function rgb(r, g, b){
     function _hex1(r) {
-        if (r < 16) {
-            return "0" + r.toString(16)
+        let rr = Math.round(r);
+        if (rr < 16) {
+            return "0" + rr.toString(16)
         }
         else {
-            return r.toString(16)
+            return rr.toString(16)
         }
     }
 
@@ -53,9 +54,9 @@ export function rgb(r, g, b){
 
 function colormaps_rgb(cmap) {
     return cmap.map(color => rgb(
-        Math.round(255*color[0]),
-        Math.round(255*color[1]),
-        Math.round(255*color[2])));
+        255*color[0],
+        255*color[1],
+        255*color[2]));
 }
 
 

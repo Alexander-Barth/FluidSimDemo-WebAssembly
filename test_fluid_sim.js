@@ -21,7 +21,7 @@ export async function run(document) {
     let dx = parseFloat(params.get("dx") || 0.01);
     let rho = parseFloat(params.get("rho") || 1000);
     let pmin = parseFloat(params.get("pmin") || -4000);
-    let pmax = parseFloat(params.get("pmax") || 2000);
+    let pmax = parseFloat(params.get("pmax") || 2800);
     let velocity_show = (params.get("pmax") || "false") == "true"
 
     document.getElementById("u0").value = u0;
