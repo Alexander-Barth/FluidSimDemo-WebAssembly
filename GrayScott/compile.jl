@@ -125,7 +125,7 @@ n = 0
 @time model_step(Δx,Δt,Du,Dv,f,k,r,n,mask,u,v,un,vn)
 
 #u_save = copy(u)
-@show maximum(abs.(u_save - u))
+#@show maximum(abs.(u_save - u))
 
 #@time model_step(Δx,Δt,Du,Dv,f,k,r,n,u,v,un,vn)
 #@time model_step(Δx,Δt,Du,Dv,f,k,r,n,u,v,un,vn)
@@ -147,7 +147,7 @@ for n = 0:nmax
     end
 end
 =#
-#=
+
 obj = build_obj(model_step, Tuple{
     Float32,
     Float32,
@@ -173,4 +173,3 @@ mem = 65536*16*2
 run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o ../memset.c`)
 
 run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm memset.o model.o`)
-=#
