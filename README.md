@@ -29,7 +29,7 @@ Luckily, the julia programming language does not get in your way to write low-le
 * Compiler clang
 * For testing, it is useful to use JavaScript runtime node
 
-On Ubuntu 22.04, these requirements can be install by:
+On Ubuntu 24.04, these requirements can be install by:
 
 ```bash
 sudo apt install wabt clang lld nodejs
@@ -155,6 +155,11 @@ The online demo is [avialable here](https://alexander-barth.github.io/FluidSimDe
 
 [![image](images/test_fluid_sim.png)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/)
 
+The WASM binary is created by:
+
+```julia
+include("test_fluid_sim.jl")
+```
 
 ### 2D shallow water equations
 
