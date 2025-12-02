@@ -1,26 +1,58 @@
+
+function lowerInt32(x) {
+    return Number(0xFFFFFFFFn & BigInt(x))
+}
+
+function higherInt32(x) {
+    return Number(BigInt(x) >> 32n);
+}
+
+
 export function MallocArray_elsize(typearray,memory,base,size,elsize4) {
     // number of elements in array
     let len = size.reduce((a, b)=> a*b, 1);
 
-    // pointer (Int32), length (Int32), size1 (Int32), size2, ...
-    // where
-    // length = size1*size2*...
-    let metadata = new Int32Array(memory.buffer, base[0], 2 + size.length);
-    base[0] += metadata.byteLength;
-    metadata.set([base[0], len].concat(size));
 
-    const data = new typearray(memory.buffer, base[0], len*elsize4);
-    base[0] += data.byteLength;
+    if (typeof base[0] === "number" || typeof base[0].value === "number") {
+        // wasm-memory32
+        // pointer (Int32), length (Int32), size1 (Int32), size2, ...
+        // where
+        // length = size1*size2*...
+        let metadata = new Int32Array(memory.buffer, base[0], 2 + size.length);
+        base[0] += metadata.byteLength;
+        metadata.set([base[0], len].concat(size));
 
-    return [metadata.byteOffset, data];
+        const data = new typearray(memory.buffer, base[0], len*elsize4);
+        base[0] += data.byteLength;
+
+        return [metadata.byteOffset, data];
+
+    }
+    else {
+        // wasm-memory64
+        // TODO check for large arrays
+        let metadata = new Int32Array(memory.buffer, Number(base[0]), 2*(2 + size.length));
+        base[0] += BigInt(metadata.byteLength);
+        metadata[0] = lowerInt32(base[0]);
+        metadata[1] = higherInt32(base[0]);
+        metadata[2] = lowerInt32(len);
+        metadata[3] = higherInt32(len);
+
+        for (let i = 0; i < size.length; i++) {
+            metadata[4+2*i] = lowerInt32(size[i]);
+            metadata[4+2*i+1] = higherInt32(size[i]);
+        }
+
+        const data = new typearray(memory.buffer, Number(base[0]), len*elsize4);
+        base[0] += BigInt(data.byteLength);
+
+        return [BigInt(metadata.byteOffset), data];
+    }
 }
 
 export function MallocArray(typearray,memory,base,size) {
     return MallocArray_elsize(typearray,memory,base,size,1)
 }
-
-
-
 
 
 export function rgb(r, g, b){
