@@ -1,4 +1,4 @@
-import { MallocArray, MallocArray2, pcolor, quiver, Axis, color, colormaps } from "../julia_wasm_utils.js";
+import { MallocArray, MallocArray_elsize, pcolor, quiver, Axis, color, colormaps } from "../julia_wasm_utils.js";
 
 export async function run(document) {
     const response = await fetch('model.wasm');
@@ -35,7 +35,7 @@ export async function run(document) {
     const sz_table = [76,57];
 
     let [mask_p, mask] = MallocArray(Int32Array,memory,base,sz);
-    let [particles_p, particles] = MallocArray2(Float32Array,memory,base,[nparticles],8);
+    let [particles_p, particles] = MallocArray_elsize(Float32Array,memory,base,[nparticles],8);
     let [table_p, table] = MallocArray(Int32Array,memory,base,[sz_table[0] * sz_table[1] + 1]);
     let [num_particles_p, num_particles] = MallocArray(Int32Array,memory,base,[nparticles]);
     let [visited_p, visited] = MallocArray(Int32Array,memory,base,[nparticles]);
