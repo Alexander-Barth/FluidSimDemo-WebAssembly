@@ -98,7 +98,8 @@ To test the WASM binary, it is convenient to use `node`. The code can be execute
 node test_add_node.js
 ```
 
-where `test_add_node.js` is the file:
+This should output the sum of 2 and 3 computed in Julia/WASM.
+The `test_add_node.js` file loads the WASM binary can call the `julia_add` function:
 
 ```javascript
 const fs = require('fs');
