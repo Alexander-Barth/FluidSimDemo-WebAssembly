@@ -44,6 +44,11 @@ Pkg.instantiate()
 ```
 
 The source code of the fluid model is in a separate repository: https://github.com/Alexander-Barth/FluidSimDemo.jl
+If you are not using the Manifest file, you can install the unregistered dependencies via:
+
+```julia
+]add https://github.com/Alexander-Barth/SpatialHashing.jl https://github.com/Alexander-Barth/SmoothedParticleHydrodynamics.jl  https://github.com/Alexander-Barth/FluidSimDemo.jl
+```
 
 ## Generating WASM binary from julia code
 
@@ -93,7 +98,8 @@ To test the WASM binary, it is convenient to use `node`. The code can be execute
 node test_add_node.js
 ```
 
-where `test_add_node.js` is the file:
+This should output the sum of 2 and 3 computed in Julia/WASM.
+The `test_add_node.js` file loads the WASM binary can call the `julia_add` function:
 
 ```javascript
 const fs = require('fs');
