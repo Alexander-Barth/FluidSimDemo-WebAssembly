@@ -155,6 +155,11 @@ The online demo is [avialable here](https://alexander-barth.github.io/FluidSimDe
 
 [![image](images/test_fluid_sim.png)](https://alexander-barth.github.io/FluidSimDemo-WebAssembly/)
 
+The WASM binary is created by:
+
+```julia
+include("test_fluid_sim.jl")
+```
 
 ### 2D shallow water equations
 
