@@ -44,6 +44,11 @@ Pkg.instantiate()
 ```
 
 The source code of the fluid model is in a separate repository: https://github.com/Alexander-Barth/FluidSimDemo.jl
+If you are not using the Manifest file, you can install the unregistered dependencies via:
+
+```julia
+]add https://github.com/Alexander-Barth/SpatialHashing.jl https://github.com/Alexander-Barth/SmoothedParticleHydrodynamics.jl  https://github.com/Alexander-Barth/FluidSimDemo.jl
+```
 
 ## Generating WASM binary from julia code
 
