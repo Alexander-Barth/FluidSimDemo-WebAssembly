@@ -17,7 +17,7 @@ void gpu_signal_exception() {
 }
 
 
-void gpu_report_exception(int err) {
+void gpu_report_exception(long err) {
 }
 
 
