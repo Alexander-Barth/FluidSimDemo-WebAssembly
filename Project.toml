@@ -6,4 +6,4 @@ SpatialHashing = "e2e8a281-5b48-4fd6-b542-65e07fde0794"
 StaticTools = "86c06d3c-3f03-46de-9781-57580aa96d0a"
 
 [compat]
-GPUCompiler = "0.26"
+GPUCompiler = "1.7"
