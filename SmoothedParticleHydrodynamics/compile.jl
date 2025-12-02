@@ -5,9 +5,6 @@ using SmoothedParticleHydrodynamics: Particle, W, update!
 using Random
 import Random: rand, AbstractRNG
 
-# assume that we use 32-bit julia
-@assert Int == Int32
-
 # need to inline because of named tuples
 
 
@@ -115,7 +112,7 @@ write("model.o", obj)
 
 # size of the total memory
 mem = 65536*16*2
-run(`clang --target=wasm32 --no-standard-libraries -c -o memset.o ../memset.c`)
+run(`clang --target=wasm64 --no-standard-libraries -c -o memset.o ../memset.c`)
 
 cd(@__DIR__) do
     if !isfile("llvm-project-llvmorg-18.1.4/compiler-rt/lib/builtins/ashlti3.c")
@@ -124,9 +121,9 @@ cd(@__DIR__) do
     end
 end
 
-run(`clang --target=wasm32 --no-standard-libraries -c llvm-project-llvmorg-18.1.4/compiler-rt/lib/builtins/lshrti3.c`)
-run(`clang --target=wasm32 --no-standard-libraries -c llvm-project-llvmorg-18.1.4/compiler-rt/lib/builtins/ashlti3.c`)
-run(`wasm-ld --initial-memory=$(mem) --no-entry --export-all -o model.wasm memset.o lshrti3.o ashlti3.o model.o`)
+run(`clang --target=wasm64 --no-standard-libraries -c llvm-project-llvmorg-18.1.4/compiler-rt/lib/builtins/lshrti3.c`)
+run(`clang --target=wasm64 --no-standard-libraries -c llvm-project-llvmorg-18.1.4/compiler-rt/lib/builtins/ashlti3.c`)
+run(`wasm-ld  -mwasm64 --initial-memory=$(mem) --no-entry --export-all -o model.wasm memset.o lshrti3.o ashlti3.o model.o`)
 
 
 
